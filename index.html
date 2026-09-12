@@ -47,29 +47,21 @@
 
 <script>
 /* ===================== ZONE À MODIFIER ===================== */
-/* Pour AJOUTER une matière : recopie un bloc { ... } ci-dessous. */
 /* Pour AJOUTER un exercice : ajoute une ligne { titre:..., lien:... } */
 /* "lien" = le nom du fichier .html de l'exerciseur, déposé dans GitHub. */
 const MATIERES = [
-  {
-    nom: "Maths",
-    couleur: "#4f46e5",
-    exercices: [
+  { nom: "Maths",      couleur: "#dc2626", exercices: [
       { titre: "Exemple : les fractions", lien: "maths-fractions.html" }
-    ]
-  },
-  {
-    nom: "Français",
-    couleur: "#e11d48",
-    exercices: [
-      { titre: "Exemple : la conjugaison", lien: "francais-conjugaison.html" }
-    ]
-  },
-  {
-    nom: "Anglais",
-    couleur: "#0891b2",
-    exercices: []
-  }
+  ]},
+  { nom: "Français",   couleur: "#7c3aed", exercices: [] },
+  { nom: "Histoire",   couleur: "#64748b", exercices: [] },
+  { nom: "Géographie", couleur: "#64748b", exercices: [] },
+  { nom: "EMC",        couleur: "#14532d", exercices: [] },
+  { nom: "Physique",   couleur: "#16a34a", exercices: [] },
+  { nom: "Chimie",     couleur: "#16a34a", exercices: [] },
+  { nom: "SVT",        couleur: "#ffffff", exercices: [] },
+  { nom: "Anglais",    couleur: "#2563eb", exercices: [] },
+  { nom: "Allemand",   couleur: "#ea580c", exercices: [] }
 ];
 /* =================== FIN DE LA ZONE ======================== */
 
@@ -77,6 +69,11 @@ const tabs = document.getElementById("tabs");
 const contenu = document.getElementById("contenu");
 let actuelle = 0;
 
+function estClair(hex) {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
+  return (0.299*r + 0.587*g + 0.114*b) > 200;
+}
 function estFait(lien) { return localStorage.getItem("fait:" + lien) === "1"; }
 function basculer(lien) {
   localStorage.setItem("fait:" + lien, estFait(lien) ? "0" : "1");
@@ -90,8 +87,9 @@ function afficher(i) {
   const total = m.exercices.length;
   const faits = m.exercices.filter(e => estFait(e.lien)).length;
   const pct = total ? Math.round(faits / total * 100) : 0;
+  const fill = estClair(m.couleur) ? "#94a3b8" : m.couleur;
   let html = '<div class="barre"><span style="width:' + pct +
-    '%;background:' + m.couleur + '"></span></div>';
+    '%;background:' + fill + '"></span></div>';
   if (!total) {
     html += '<p class="vide">Aucun exercice ici pour l\'instant.</p>';
   } else {
@@ -111,6 +109,10 @@ MATIERES.forEach((m, i) => {
   const b = document.createElement("button");
   b.textContent = m.nom;
   b.style.background = m.couleur;
+  if (estClair(m.couleur)) {
+    b.style.color = "#1e293b";
+    b.style.border = "1px solid #cbd5e1";
+  }
   b.onclick = () => afficher(i);
   tabs.appendChild(b);
 });
