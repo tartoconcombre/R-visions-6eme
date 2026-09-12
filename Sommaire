@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Révisions">
+<meta name="theme-color" content="#4f46e5">
+<title>Mes révisions</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Mes révisions","short_name":"Révisions","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#4f46e5"}'>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, system-ui, sans-serif;
+    background: #f8fafc; color: #1e293b; }
+  header { padding: 22px 18px 16px; }
+  header h1 { margin: 0; font-size: 1.5rem; }
+  header p { margin: 4px 0 0; color: #64748b; font-size: .9rem; }
+  nav { display: flex; gap: 8px; overflow-x: auto; padding: 0 14px 14px;
+    -webkit-overflow-scrolling: touch; }
+  nav button { flex: 0 0 auto; border: none; border-radius: 999px;
+    padding: 9px 16px; font-size: .95rem; font-weight: 600; color: #fff;
+    opacity: .45; transition: opacity .2s; cursor: pointer; }
+  nav button.actif { opacity: 1; }
+  main { padding: 4px 14px 40px; }
+  .barre { height: 7px; background: #e2e8f0; border-radius: 999px;
+    overflow: hidden; margin: 2px 0 16px; }
+  .barre span { display: block; height: 100%; transition: width .3s; }
+  .carte { display: flex; align-items: center; gap: 12px; background: #fff;
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06); text-decoration: none; color: inherit; }
+  .carte .titre { flex: 1; font-weight: 600; }
+  .check { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+    border: 2px solid #cbd5e1; display: grid; place-items: center;
+    font-size: 1rem; color: #fff; cursor: pointer; }
+  .check.ok { background: #22c55e; border-color: #22c55e; }
+  .vide { color: #94a3b8; font-size: .9rem; padding: 10px 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mes révisions</h1>
+  <p>Choisis une matière, puis un exercice.</p>
+</header>
+<nav id="tabs"></nav>
+<main id="contenu"></main>
+
+<script>
+/* ===================== ZONE À MODIFIER ===================== */
+/* Pour AJOUTER une matière : recopie un bloc { ... } ci-dessous. */
+/* Pour AJOUTER un exercice : ajoute une ligne { titre:..., lien:... } */
+/* "lien" = le nom du fichier .html de l'exerciseur, déposé dans GitHub. */
+const MATIERES = [
+  {
+    nom: "Maths",
+    couleur: "#4f46e5",
+    exercices: [
+      { titre: "Exemple : les fractions", lien: "maths-fractions.html" }
+    ]
+  },
+  {
+    nom: "Français",
+    couleur: "#e11d48",
+    exercices: [
+      { titre: "Exemple : la conjugaison", lien: "francais-conjugaison.html" }
+    ]
+  },
+  {
+    nom: "Anglais",
+    couleur: "#0891b2",
+    exercices: []
+  }
+];
+/* =================== FIN DE LA ZONE ======================== */
+
+const tabs = document.getElementById("tabs");
+const contenu = document.getElementById("contenu");
+let actuelle = 0;
+
+function estFait(lien) { return localStorage.getItem("fait:" + lien) === "1"; }
+function basculer(lien) {
+  localStorage.setItem("fait:" + lien, estFait(lien) ? "0" : "1");
+  afficher(actuelle);
+}
+
+function afficher(i) {
+  actuelle = i;
+  const m = MATIERES[i];
+  [...tabs.children].forEach((b, k) => b.classList.toggle("actif", k === i));
+  const total = m.exercices.length;
+  const faits = m.exercices.filter(e => estFait(e.lien)).length;
+  const pct = total ? Math.round(faits / total * 100) : 0;
+  let html = '<div class="barre"><span style="width:' + pct +
+    '%;background:' + m.couleur + '"></span></div>';
+  if (!total) {
+    html += '<p class="vide">Aucun exercice ici pour l\'instant.</p>';
+  } else {
+    m.exercices.forEach(e => {
+      const ok = estFait(e.lien);
+      html += '<div class="carte">' +
+        '<a class="titre" href="' + e.lien + '">' + e.titre + '</a>' +
+        '<div class="check ' + (ok ? "ok" : "") + '" ' +
+        'onclick="basculer(\'' + e.lien + '\')">' + (ok ? "✓" : "") + '</div>' +
+        '</div>';
+    });
+  }
+  contenu.innerHTML = html;
+}
+
+MATIERES.forEach((m, i) => {
+  const b = document.createElement("button");
+  b.textContent = m.nom;
+  b.style.background = m.couleur;
+  b.onclick = () => afficher(i);
+  tabs.appendChild(b);
+});
+afficher(0);
+</script>
+</body>
+</html>
