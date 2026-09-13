@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numbers 0 → 100 — Exercice d'anglais</title>
+<style>
+  :root{
+    --canvas:#eef3fb;
+    --panel:#ffffff;
+    --ink:#1b2a4a;
+    --ink-soft:#5a6a86;
+    --line:#d9e1ef;
+    --blue:#2e6ff2;   /* écouter  */
+    --teal:#0fa593;   /* lire     */
+    --coral:#f0603a;  /* écrire   */
+    --violet:#7a5af8; /* reconnaître */
+    --ok:#15a34a;
+    --ko:#e23d3d;
+    --shadow:0 10px 30px rgba(27,42,74,.10);
+    --accent:var(--blue);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--canvas);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    padding:16px;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+
+  /* ---------- Header ---------- */
+  header{text-align:center;padding:10px 0 18px}
+  .kicker{font-size:.8rem;letter-spacing:.06em;color:var(--ink-soft);margin:0 0 4px}
+  h1{
+    margin:0;font-size:clamp(2.1rem,9vw,3.1rem);font-weight:800;letter-spacing:-.02em;
+    background:linear-gradient(100deg,var(--blue),var(--violet) 55%,var(--coral));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{margin:.35rem 0 0;color:var(--ink-soft);font-size:1rem}
+
+  /* ---------- Cards / panels ---------- */
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    padding:22px;box-shadow:var(--shadow);
+  }
+  .hidden{display:none !important}
+
+  /* ---------- Setup ---------- */
+  .group{margin:0 0 20px}
+  .group:last-child{margin-bottom:0}
+  .label{font-weight:700;font-size:.95rem;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .label small{font-weight:600;color:var(--ink-soft)}
+
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tile{
+    border:2px solid var(--line);background:#fff;border-radius:16px;padding:14px;
+    cursor:pointer;text-align:left;transition:transform .08s,border-color .12s,background .12s;
+    display:flex;gap:12px;align-items:flex-start;font:inherit;color:inherit;
+  }
+  .tile:hover{transform:translateY(-2px)}
+  .tile .ico{font-size:1.6rem;line-height:1}
+  .tile b{display:block;font-size:1.02rem}
+  .tile span{font-size:.82rem;color:var(--ink-soft)}
+  .tile[aria-pressed="true"]{border-color:var(--tint,var(--blue));background:color-mix(in srgb,var(--tint,var(--blue)) 8%,#fff)}
+  .t-blue{--tint:var(--blue)} .t-teal{--tint:var(--teal)}
+  .t-coral{--tint:var(--coral)} .t-violet{--tint:var(--violet)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{
+    border:2px solid var(--line);background:#fff;border-radius:999px;
+    padding:9px 16px;font:inherit;font-weight:700;cursor:pointer;color:var(--ink);
+    transition:border-color .12s,background .12s;
+  }
+  .chip[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,#fff);color:var(--accent)}
+
+  .btn{
+    font:inherit;font-weight:800;border:none;border-radius:14px;cursor:pointer;
+    padding:15px 22px;color:#fff;background:var(--accent);width:100%;font-size:1.1rem;
+    transition:transform .08s,filter .12s;
+  }
+  .btn:hover{filter:brightness(1.05)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  .btn.small{width:auto;padding:11px 18px;font-size:1rem}
+
+  /* ---------- Exercise ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}
+  .badge{font-weight:800;font-size:.9rem;color:var(--accent);display:flex;align-items:center;gap:7px}
+  .score{font-weight:700;color:var(--ink-soft);font-size:.95rem}
+  .progress{height:10px;background:#e6ecf7;border-radius:99px;overflow:hidden;margin:0 0 20px}
+  .progress > i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+
+  .prompt{text-align:center;margin:6px 0 20px}
+  .prompt .hint{color:var(--ink-soft);font-size:.95rem;margin:0 0 14px}
+  .bignum{font-size:clamp(3.4rem,20vw,6rem);font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+  .bigword{font-size:clamp(2rem,10vw,3.2rem);font-weight:800;letter-spacing:-.01em;line-height:1.1;color:var(--ink);word-break:break-word}
+
+  .speaker{
+    border:none;background:var(--accent);color:#fff;border-radius:20px;cursor:pointer;
+    width:120px;height:120px;font-size:3rem;box-shadow:var(--shadow);margin:0 auto;
+    display:flex;align-items:center;justify-content:center;transition:transform .08s;
+  }
+  .speaker:active{transform:scale(.96)}
+  .replay{margin-top:12px;background:none;border:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer}
+
+  .answer input{
+    width:100%;font:inherit;font-size:1.6rem;font-weight:700;text-align:center;
+    padding:14px;border:2px solid var(--line);border-radius:14px;color:var(--ink);
+    outline:none;
+  }
+  .answer input:focus{border-color:var(--accent)}
+  .answer input::placeholder{color:#b6c1d6;font-weight:600}
+
+  .qcm{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .qcm button{
+    font:inherit;font-weight:800;font-size:1.5rem;padding:20px;border-radius:16px;
+    border:2px solid var(--line);background:#fff;cursor:pointer;color:var(--ink);
+    transition:transform .08s,border-color .12s;
+  }
+  .qcm button:hover{transform:translateY(-2px)}
+  .qcm button.pick-ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,#fff);color:var(--ok)}
+  .qcm button.pick-ko{border-color:var(--ko);background:color-mix(in srgb,var(--ko) 12%,#fff);color:var(--ko)}
+  .qcm button:disabled{cursor:default}
+
+  .actions{margin-top:18px;display:flex;gap:12px}
+  .actions .btn{flex:1}
+
+  .feedback{margin-top:16px;border-radius:14px;padding:14px 16px;font-weight:700;display:none;align-items:center;gap:10px}
+  .feedback.show{display:flex}
+  .feedback.good{background:color-mix(in srgb,var(--ok) 12%,#fff);color:var(--ok)}
+  .feedback.bad{background:color-mix(in srgb,var(--ko) 10%,#fff);color:var(--ko)}
+  .feedback .sol{color:var(--ink);font-weight:800}
+
+  .helpbar{margin-top:16px;text-align:center}
+  .linkish{background:none;border:none;color:var(--ink-soft);font:inherit;text-decoration:underline;cursor:pointer;font-size:.9rem}
+
+  /* ---------- End ---------- */
+  .result{text-align:center}
+  .result .emoji{font-size:3.2rem}
+  .result .big{font-size:2.4rem;font-weight:800;margin:6px 0}
+  .result p{color:var(--ink-soft);margin:0 0 20px}
+
+  /* ---------- Reference modal ---------- */
+  .modal{position:fixed;inset:0;background:rgba(27,42,74,.45);display:none;align-items:flex-start;justify-content:center;padding:20px;z-index:20}
+  .modal.show{display:flex}
+  .modal .box{background:#fff;border-radius:20px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:20px;box-shadow:var(--shadow)}
+  .modal h2{margin:0 0 4px;font-size:1.3rem}
+  .modal .close{float:right;border:none;background:#eef3fb;border-radius:10px;width:40px;height:40px;font-size:1.2rem;cursor:pointer;color:var(--ink)}
+  .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px 14px;margin-top:14px}
+  .ref-grid div{font-size:.9rem;padding:3px 0;border-bottom:1px dashed var(--line)}
+  .ref-grid b{color:var(--accent);display:inline-block;min-width:2.4em}
+
+  @media (max-width:420px){
+    .tiles{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">English • 6ème</p>
+    <h1>Numbers 0 → 100</h1>
+    <p class="sub">Lire, écrire et comprendre les nombres en anglais.</p>
+  </header>
+
+  <!-- ============ SETUP ============ -->
+  <section id="setup" class="panel">
+    <div class="group">
+      <p class="label">1. Choisis une activité</p>
+      <div class="tiles" id="modeTiles">
+        <button class="tile t-blue"   data-mode="listen"  aria-pressed="true">
+          <span class="ico">🔊</span><span><b>Écouter</b><span>J'entends, j'écris le chiffre</span></span>
+        </button>
+        <button class="tile t-teal"   data-mode="read"    aria-pressed="false">
+          <span class="ico">📖</span><span><b>Lire</b><span>Je lis le mot, j'écris le chiffre</span></span>
+        </button>
+        <button class="tile t-coral"  data-mode="write"   aria-pressed="false">
+          <span class="ico">✏️</span><span><b>Écrire</b><span>Je vois le chiffre, j'écris le mot</span></span>
+        </button>
+        <button class="tile t-violet" data-mode="qcm"     aria-pressed="false">
+          <span class="ico">🎯</span><span><b>Reconnaître</b><span>J'entends, je choisis (facile)</span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="label">2. Jusqu'à quel nombre&nbsp;? <small>(pour aller à son rythme)</small></p>
+      <div class="chips" id="rangeChips">
+        <button class="chip" data-max="20"  aria-pressed="false">0 → 20</button>
+        <button class="chip" data-max="50"  aria-pressed="false">0 → 50</button>
+        <button class="chip" data-max="100" aria-pressed="true">0 → 100</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="label">3. Combien de questions&nbsp;?</p>
+      <div class="chips" id="countChips">
+        <button class="chip" data-count="10" aria-pressed="true">10</button>
+        <button class="chip" data-count="20" aria-pressed="false">20</button>
+        <button class="chip" data-count="0"  aria-pressed="false">Sans fin</button>
+      </div>
+    </div>
+
+    <button class="btn" id="startBtn">C'est parti&nbsp;! ▶</button>
+  </section>
+
+  <!-- ============ EXERCISE ============ -->
+  <section id="exercise" class="panel hidden">
+    <div class="topbar">
+      <span class="badge" id="modeBadge">🔊 Écouter</span>
+      <span class="score" id="scoreLabel">Score : 0</span>
+    </div>
+    <div class="progress"><i id="progressBar"></i></div>
+
+    <div class="prompt" id="prompt"><!-- filled by JS --></div>
+
+    <!-- text answer -->
+    <div class="answer" id="answerText">
+      <input id="answerInput" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <!-- qcm answer -->
+    <div class="qcm hidden" id="answerQcm"></div>
+
+    <div class="actions" id="actions">
+      <button class="btn" id="validateBtn">Vérifier</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="helpbar">
+      <button class="linkish" id="showRef">📋 Voir le tableau des nombres</button>
+      &nbsp;·&nbsp;
+      <button class="linkish" id="quitBtn">Changer d'activité</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="result" class="panel result hidden">
+    <div class="emoji" id="resEmoji">🎉</div>
+    <div class="big" id="resScore">10 / 10</div>
+    <p id="resMsg">Bravo, c'est parfait&nbsp;!</p>
+    <div class="actions">
+      <button class="btn ghost" id="againBtn">Recommencer</button>
+      <button class="btn" id="menuBtn">Nouvelle activité</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- Reference chart -->
+<div class="modal" id="refModal">
+  <div class="box">
+    <button class="close" id="refClose" aria-label="Fermer">✕</button>
+    <h2>Numbers 0 → 100</h2>
+    <p class="sub" style="margin:0;color:var(--ink-soft)">Le tableau de la leçon, pour t'aider.</p>
+    <div class="ref-grid" id="refGrid"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Number → English words (0–100) ---------- */
+  var ONES = ["zero","one","two","three","four","five","six","seven","eight","nine",
+    "ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+  var TENS = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+  function toWords(n){
+    if(n===100) return "one hundred";
+    if(n<20) return ONES[n];
+    var t=Math.floor(n/10), o=n%10;
+    return o===0 ? TENS[t] : TENS[t]+"-"+ONES[o];
+  }
+  // Forgiving comparison: ignore case, spaces and hyphens
+  function norm(s){ return String(s).toLowerCase().trim().replace(/[\s\-]+/g,""); }
+  function wordAnswerOk(given, n){
+    var g = norm(given);
+    if(g === norm(toWords(n))) return true;
+    if(n===100 && (g==="hundred")) return true; // tolerate "hundred"
+    return false;
+  }
+
+  /* ---------- Speech (Web Speech API) ---------- */
+  var enVoice = null;
+  function pickVoice(){
+    if(!("speechSynthesis" in window)) return;
+    var vs = speechSynthesis.getVoices();
+    enVoice = vs.find(function(v){return /^en-GB/i.test(v.lang);})
+           || vs.find(function(v){return /^en[-_]/i.test(v.lang);})
+           || vs.find(function(v){return /english/i.test(v.name);})
+           || null;
+  }
+  if("speechSynthesis" in window){
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function speak(n){
+    if(!("speechSynthesis" in window)) return;
+    try{
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(toWords(n));
+      u.lang = "en-GB";
+      if(enVoice) u.voice = enVoice;
+      u.rate = 0.82;      // a little slower for learners
+      u.pitch = 1;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  /* ---------- State ---------- */
+  var S = { mode:"listen", max:100, count:10, i:0, correct:0, n:0, answered:false };
+  var MODES = {
+    listen: {badge:"🔊 Écouter",     accent:"var(--blue)"},
+    read:   {badge:"📖 Lire",        accent:"var(--teal)"},
+    write:  {badge:"✏️ Écrire",       accent:"var(--coral)"},
+    qcm:    {badge:"🎯 Reconnaître",  accent:"var(--violet)"}
+  };
+
+  /* ---------- Helpers ---------- */
+  function $(id){return document.getElementById(id);}
+  function rnd(max){return Math.floor(Math.random()*(max+1));} // 0..max inclusive
+  function show(el){el.classList.remove("hidden");}
+  function hide(el){el.classList.add("hidden");}
+
+  function setPressed(container, matchFn){
+    Array.prototype.forEach.call(container.children, function(b){
+      b.setAttribute("aria-pressed", matchFn(b) ? "true" : "false");
+    });
+  }
+
+  /* ---------- Setup interactions ---------- */
+  $("modeTiles").addEventListener("click", function(e){
+    var t = e.target.closest(".tile"); if(!t) return;
+    S.mode = t.dataset.mode;
+    setPressed(this, function(b){return b===t;});
+  });
+  $("rangeChips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip"); if(!c) return;
+    S.max = parseInt(c.dataset.max,10);
+    setPressed(this, function(b){return b===c;});
+  });
+  $("countChips").addEventListener("click", function(e){
+    var c = e.target.closest(".chip"); if(!c) return;
+    S.count = parseInt(c.dataset.count,10);
+    setPressed(this, function(b){return b===c;});
+  });
+
+  /* ---------- Flow ---------- */
+  $("startBtn").addEventListener("click", startExercise);
+  $("menuBtn").addEventListener("click", toMenu);
+  $("quitBtn").addEventListener("click", toMenu);
+  $("againBtn").addEventListener("click", startExercise);
+
+  function toMenu(){
+    if("speechSynthesis" in window) speechSynthesis.cancel();
+    hide($("exercise")); hide($("result")); show($("setup"));
+  }
+
+  function startExercise(){
+    document.documentElement.style.setProperty("--accent", MODES[S.mode].accent);
+    $("modeBadge").textContent = MODES[S.mode].badge;
+    S.i = 0; S.correct = 0;
+    hide($("setup")); hide($("result")); show($("exercise"));
+    nextQuestion();
+  }
+
+  function updateProgress(){
+    var total = S.count || Math.max(S.i, 10); // "sans fin" bar keeps moving
+    var pct = S.count ? Math.min(100, (S.i/S.count)*100) : ((S.i % 10)/10)*100;
+    $("progressBar").style.width = pct + "%";
+    $("scoreLabel").textContent = "Score : " + S.correct;
+  }
+
+  function nextQuestion(){
+    // finished?
+    if(S.count && S.i >= S.count){ return finish(); }
+    S.answered = false;
+    S.n = rnd(S.max);
+    updateProgress();
+
+    var fb = $("feedback"); fb.className = "feedback"; fb.innerHTML = "";
+    var actions = $("actions");
+    actions.innerHTML = '<button class="btn" id="validateBtn">Vérifier</button>';
+    $("validateBtn").addEventListener("click", validate);
+
+    var promptEl = $("prompt");
+    var textWrap = $("answerText");
+    var qcmWrap = $("answerQcm");
+    var input = $("answerInput");
+
+    if(S.mode === "write"){
+      // digit shown → write the English word
+      show(textWrap); hide(qcmWrap);
+      promptEl.innerHTML = '<p class="hint">Écris ce nombre en anglais&nbsp;:</p>'
+        + '<div class="bignum">'+S.n+'</div>';
+      input.value=""; input.placeholder="ex : forty-two"; input.type="text";
+      input.inputMode="text"; input.focus();
+    }
+    else if(S.mode === "read"){
+      // word shown → write the digit
+      show(textWrap); hide(qcmWrap);
+      promptEl.innerHTML = '<p class="hint">Écris le nombre en chiffres&nbsp;:</p>'
+        + '<div class="bigword">'+toWords(S.n)+'</div>';
+      input.value=""; input.placeholder="ex : 42"; input.type="text";
+      input.inputMode="numeric"; input.focus();
+    }
+    else if(S.mode === "listen"){
+      // audio → write the digit
+      show(textWrap); hide(qcmWrap);
+      promptEl.innerHTML = '<p class="hint">Écoute puis écris le nombre en chiffres&nbsp;:</p>'
+        + '<button class="speaker" id="speakBtn">🔊</button>'
+        + '<div><button class="replay" id="replayBtn">↺ Réécouter</button></div>';
+      input.value=""; input.placeholder="ex : 42"; input.type="text";
+      input.inputMode="numeric";
+      $("speakBtn").addEventListener("click", function(){speak(S.n);});
+      $("replayBtn").addEventListener("click", function(){speak(S.n);});
+      speak(S.n); input.focus();
+    }
+    else { // qcm — audio → choose the digit
+      hide(textWrap); show(qcmWrap);
+      promptEl.innerHTML = '<p class="hint">Écoute puis choisis le bon nombre&nbsp;:</p>'
+        + '<button class="speaker" id="speakBtn">🔊</button>'
+        + '<div><button class="replay" id="replayBtn">↺ Réécouter</button></div>';
+      $("speakBtn").addEventListener("click", function(){speak(S.n);});
+      $("replayBtn").addEventListener("click", function(){speak(S.n);});
+      buildQcm();
+      speak(S.n);
+    }
+  }
+
+  function buildQcm(){
+    var opts = [S.n];
+    var guard = 0;
+    while(opts.length < 4 && guard < 200){
+      var c = rnd(S.max);
+      if(opts.indexOf(c) === -1) opts.push(c);
+      guard++;
+    }
+    // shuffle
+    for(var k=opts.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var tmp=opts[k];opts[k]=opts[j];opts[j]=tmp;}
+    var q = $("answerQcm");
+    q.innerHTML = "";
+    opts.forEach(function(v){
+      var b=document.createElement("button");
+      b.textContent=v;
+      b.addEventListener("click", function(){ pickQcm(b, v); });
+      q.appendChild(b);
+    });
+    // no separate "Vérifier" button in QCM
+    $("actions").innerHTML = "";
+  }
+
+  function pickQcm(btn, value){
+    if(S.answered) return;
+    S.answered = true;
+    var buttons = $("answerQcm").querySelectorAll("button");
+    buttons.forEach(function(b){ b.disabled = true; });
+    if(value === S.n){
+      btn.classList.add("pick-ok");
+      registerGood();
+    }else{
+      btn.classList.add("pick-ko");
+      buttons.forEach(function(b){ if(parseInt(b.textContent,10)===S.n) b.classList.add("pick-ok"); });
+      registerBad();
+    }
+    afterAnswer();
+  }
+
+  function validate(){
+    if(S.answered) return;
+    var raw = $("answerInput").value.trim();
+    if(raw === "") { $("answerInput").focus(); return; }
+    S.answered = true;
+    var ok;
+    if(S.mode === "write"){ ok = wordAnswerOk(raw, S.n); }
+    else { ok = (parseInt(raw,10) === S.n); } // read + listen
+    if(ok) registerGood(); else registerBad();
+    afterAnswer();
+  }
+
+  function registerGood(){
+    S.correct++;
+    var fb=$("feedback"); fb.className="feedback good show";
+    fb.innerHTML = '✅ Bravo&nbsp;! <span class="sol">'+S.n+' = '+toWords(S.n)+'</span>';
+    speak(S.n);
+  }
+  function registerBad(){
+    var fb=$("feedback"); fb.className="feedback bad show";
+    fb.innerHTML = '❌ Presque&nbsp;! La bonne réponse&nbsp;: <span class="sol">'+S.n+' = '+toWords(S.n)+'</span>';
+    speak(S.n);
+  }
+
+  function afterAnswer(){
+    S.i++;
+    updateProgress();
+    var actions=$("actions");
+    var last = (S.count && S.i >= S.count);
+    actions.innerHTML = '<button class="btn" id="nextBtn">'+(last?"Voir le résultat ▶":"Question suivante ▶")+'</button>';
+    var nb=$("nextBtn");
+    nb.addEventListener("click", nextQuestion);
+    nb.focus();
+  }
+
+  // Enter key: validate, then go next
+  document.addEventListener("keydown", function(e){
+    if(e.key!=="Enter") return;
+    if($("exercise").classList.contains("hidden")) return;
+    var nb=$("nextBtn");
+    if(nb){ e.preventDefault(); nb.click(); return; }
+    if(!S.answered && (S.mode!=="qcm")){ e.preventDefault(); validate(); }
+  });
+
+  function finish(){
+    if("speechSynthesis" in window) speechSynthesis.cancel();
+    hide($("exercise")); show($("result"));
+    var total=S.count, ok=S.correct;
+    var pct = total? Math.round(ok/total*100) : 100;
+    $("resScore").textContent = ok + " / " + total;
+    var emoji, msg;
+    if(pct>=90){emoji="🏆";msg="Excellent&nbsp;! Tu maîtrises tes numbers.";}
+    else if(pct>=70){emoji="🎉";msg="Très bien&nbsp;! Encore un petit effort sur quelques nombres.";}
+    else if(pct>=50){emoji="💪";msg="Bon travail&nbsp;! Recommence pour progresser encore.";}
+    else{emoji="🌱";msg="C'est en s'entraînant qu'on y arrive. On recommence&nbsp;?";}
+    $("resEmoji").innerHTML=emoji; $("resMsg").innerHTML=msg;
+  }
+
+  /* ---------- Reference chart ---------- */
+  (function buildRef(){
+    var g=$("refGrid"), html="";
+    for(var n=0;n<=100;n++){ html += "<div><b>"+n+"</b> "+toWords(n)+"</div>"; }
+    g.innerHTML=html;
+  })();
+  $("showRef").addEventListener("click", function(){ $("refModal").classList.add("show"); });
+  $("refClose").addEventListener("click", function(){ $("refModal").classList.remove("show"); });
+  $("refModal").addEventListener("click", function(e){ if(e.target===this) this.classList.remove("show"); });
+
+})();
+</script>
+</body>
+</html>
