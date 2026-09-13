@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réviser l'écriture des nombres</title>
+<style>
+  :root{
+    --paper:#fbfaf5;
+    --line:#d9e6f2;
+    --ink:#1f2a3a;
+    --ink-soft:#5a6678;
+    --jaune:#ffe94d;
+    --vert:#8ef0a6;
+    --rose:#ff9ec4;
+    --bleu:#8fd8f2;
+    --ok:#159957;
+    --ko:#c23b3b;
+    --accent:var(--jaune);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px);
+    background-size:100% 34px;
+    line-height:1.5;
+    padding:22px 16px 60px;
+    min-height:100vh;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+  .band{height:6px;background:var(--ink);border-radius:6px;margin:0 0 20px;opacity:.08}
+
+  /* Surligneur */
+  .hl{
+    background:linear-gradient(104deg, transparent .5%, var(--accent) .5%, var(--accent) 99%, transparent 99%);
+    background-repeat:no-repeat;
+    padding:0 .12em;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  }
+  h1{
+    font-size:1.7rem;line-height:1.25;margin:0 0 6px;letter-spacing:-.01em;
+  }
+  .swipe{
+    display:inline;
+    background:linear-gradient(104deg, transparent .5%, var(--jaune) .5%, var(--jaune) 99%, transparent 99%);
+    background-repeat:no-repeat;background-size:0% 88%;background-position:0 62%;
+    padding:0 .1em;
+    animation:swipe .8s .25s ease-out forwards;
+  }
+  @keyframes swipe{to{background-size:100% 88%}}
+  .sub{color:var(--ink-soft);margin:0 0 24px;font-size:.98rem}
+
+  /* Cartes de thème */
+  .cards{display:grid;gap:14px}
+  .card{
+    text-align:left;width:100%;cursor:pointer;
+    background:#fff;border:2px solid var(--ink);border-radius:14px;
+    padding:16px 16px 15px;font:inherit;color:inherit;
+    box-shadow:4px 4px 0 var(--tab,#000);transition:transform .08s ease;
+  }
+  .card:hover{transform:translate(-1px,-1px)}
+  .card:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--tab,#000)}
+  .card .tag{display:inline-block;font-weight:bold;font-size:.78rem;padding:2px 9px;border-radius:20px;margin-bottom:9px;color:var(--ink)}
+  .card .ct{font-size:1.15rem;font-weight:bold;margin:0 0 3px}
+  .card .cd{color:var(--ink-soft);font-size:.92rem;margin:0}
+
+  /* Quiz */
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .back{background:none;border:none;font:inherit;color:var(--ink-soft);cursor:pointer;padding:6px 2px;text-decoration:underline}
+  .prog{flex:1;height:12px;background:#fff;border:2px solid var(--ink);border-radius:20px;overflow:hidden;min-width:120px}
+  .prog span{display:block;height:100%;background:var(--accent);width:0;transition:width .3s ease}
+  .count{font-size:.85rem;color:var(--ink-soft);font-weight:bold}
+
+  .rappel{
+    background:#fff;border:2px dashed var(--ink);border-radius:12px;padding:11px 13px;margin-bottom:16px;font-size:.9rem;
+  }
+  .rappel b{color:var(--ink)}
+  .rlabel{font-size:.72rem;font-weight:bold;letter-spacing:.03em;color:var(--ink-soft);display:block;margin-bottom:3px}
+
+  .qbox{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:18px 17px;box-shadow:5px 5px 0 rgba(31,42,58,.12)}
+  .qtext{font-size:1.18rem;margin:0 0 16px}
+  .qtext b{white-space:nowrap}
+  .num{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .num .mark{border-radius:4px;padding:1px 3px;background:var(--accent);font-weight:bold}
+
+  .opts{display:grid;gap:10px}
+  .opt{
+    font:inherit;text-align:left;cursor:pointer;background:#fff;color:var(--ink);
+    border:2px solid var(--ink);border-radius:11px;padding:12px 14px;font-size:1.02rem;transition:background .1s;
+  }
+  .opt:hover:not(:disabled){background:#f2f6fb}
+  .opt:disabled{cursor:default}
+  .opt.good{background:var(--vert);border-color:var(--ok);font-weight:bold}
+  .opt.bad{background:#ffdede;border-color:var(--ko)}
+
+  .inrow{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text]{
+    font:inherit;flex:1;min-width:0;padding:12px 14px;border:2px solid var(--ink);border-radius:11px;
+    font-size:1.15rem;font-variant-numeric:tabular-nums;
+  }
+  input[type=text]:focus{outline:3px solid var(--accent);outline-offset:1px}
+
+  .btn{
+    font:inherit;font-weight:bold;cursor:pointer;border:2px solid var(--ink);border-radius:11px;
+    padding:12px 20px;font-size:1.02rem;background:var(--ink);color:#fff;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:#fff;color:var(--ink)}
+
+  .fb{margin-top:15px;padding:12px 14px;border-radius:11px;font-size:.96rem;display:none}
+  .fb.show{display:block}
+  .fb.win{background:#e4f7ec;border:2px solid var(--ok)}
+  .fb.lose{background:#fdeaea;border:2px solid var(--ko)}
+  .fb .verdict{font-weight:bold;display:block;margin-bottom:3px}
+
+  .foot{margin-top:16px;display:flex;justify-content:flex-end;gap:10px}
+  .hidden{display:none}
+
+  /* Résultat */
+  .result{text-align:center;background:#fff;border:2px solid var(--ink);border-radius:16px;padding:26px 18px;box-shadow:5px 5px 0 rgba(31,42,58,.12)}
+  .score{font-size:2.6rem;font-weight:bold;margin:4px 0}
+  .stars{font-size:1.6rem;letter-spacing:4px;margin:6px 0 4px}
+  .rmsg{color:var(--ink-soft);margin:2px 0 20px}
+  .result .foot{justify-content:center;flex-wrap:wrap}
+
+  @media (prefers-reduced-motion: reduce){
+    .swipe{animation:none;background-size:100% 88%}
+    .card,.btn{transition:none}
+  }
+  @media (max-width:420px){
+    h1{font-size:1.45rem}.qtext{font-size:1.08rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="band"></div>
+
+  <!-- ACCUEIL -->
+  <section id="home">
+    <h1>Réviser <span class="swipe">l'écriture des nombres</span></h1>
+    <p class="sub">Choisis une notion à travailler. Chaque couleur reprend un surligneur de la leçon.</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="top">
+      <button class="back" id="backBtn">← Changer de thème</button>
+      <div class="prog"><span id="progBar"></span></div>
+      <div class="count" id="count"></div>
+    </div>
+    <div class="rappel" id="rappel"></div>
+    <div class="qbox">
+      <p class="qtext" id="qtext"></p>
+      <div id="answerArea"></div>
+      <div class="fb" id="fb"></div>
+      <div class="foot">
+        <button class="btn hidden" id="nextBtn">Question suivante →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTAT -->
+  <section id="end" class="hidden">
+    <div class="result">
+      <div class="stars" id="stars"></div>
+      <div class="score" id="finalScore"></div>
+      <p class="rmsg" id="rmsg"></p>
+      <div class="foot">
+        <button class="btn" id="againBtn">Refaire ce thème</button>
+        <button class="btn ghost" id="menuBtn">Autre thème</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- Données des thèmes ---------- */
+const THEMES = {
+  decimal: {
+    title:"Fractions décimales & nombres décimaux",
+    desc:"Reconnaître une fraction décimale, passer de la fraction au nombre décimal.",
+    tag:"Définitions", color:"var(--jaune)", cssvar:"#ffe94d",
+    rappel:'Une <span class="hl">fraction décimale</span> a pour dénominateur <b>1, 10, 100, 1000…</b> Un <span class="hl">nombre décimal</span> est un nombre qui peut s\'écrire sous la forme d\'une fraction décimale.'
+  },
+  numeration: {
+    title:"Chiffre, nombre & rang",
+    desc:"Lire le tableau de numération : ne pas confondre le chiffre, le nombre et le rang.",
+    tag:"Tableau de numération", color:"var(--vert)", cssvar:"#8ef0a6",
+    rappel:'Le <span class="hl">chiffre des</span> dizaines = <b>un seul chiffre</b>. Le <span class="hl">nombre de</span> dizaines = <b>tous les chiffres</b> jusqu\'à cette colonne. Le <span class="hl">rang</span> = le <b>nom de la colonne</b>.'
+  },
+  ortho: {
+    title:"Orthographe des nombres",
+    desc:"Traits d'union, « mille » invariable, le « s » de vingt, cent, million…",
+    tag:"Règles d'écriture", color:"var(--rose)", cssvar:"#ff9ec4",
+    rappel:'<span class="hl">Traits d\'union</span> entre les mots. <span class="hl">« mille » est invariable</span>. <b>vingt</b> et <b>cent</b> prennent un <b>s</b> s\'ils sont multipliés ET à la fin. <b>million/milliard</b> prennent un <b>s</b> au pluriel.'
+  },
+  compose: {
+    title:"Composer & décomposer",
+    desc:"Un même nombre, plusieurs écritures : décimale, fraction, décomposition.",
+    tag:"Écritures d'un nombre", color:"var(--bleu)", cssvar:"#8fd8f2",
+    rappel:'Un nombre a <b>une seule valeur</b> mais <span class="hl">plusieurs écritures</span> : décimale, fraction décimale et décomposition ( par ex. <b>(1×10)+(6×1)+(8×0,1)</b> ).'
+  }
+};
+
+/* ---------- Numération : noms des rangs ---------- */
+const INT_NAMES = ["unités","dizaines","centaines","unités de mille","dizaines de mille","centaines de mille","millions","dizaines de millions","centaines de millions","milliards"];
+const DEC_NAMES = ["dixièmes","centièmes","millièmes","dix-millièmes"];
+
+const ri = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+function genInt(len){let s=""+ri(1,9);for(let i=1;i<len;i++)s+=ri(0,9);return s;}
+function genDec(len){let s="";for(let i=0;i<len;i++)s+=ri(0,9);return s;}
+function fmt(intS,decS){
+  const g=intS.replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F");
+  return decS?g+","+decS:g;
+}
+const ofName=n=>/^[aeiouéèêh]/i.test(n)?"d'"+n:"de "+n;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* Construit le nombre avec un chiffre surligné (pour le rang) */
+function markedNumber(intS,decS,isDec,idx){
+  const iChars=intS.split(""), dChars=decS.split("");
+  if(!isDec){iChars[intS.length-1-idx]=`<span class="mark">${iChars[intS.length-1-idx]}</span>`;}
+  else{dChars[idx]=`<span class="mark">${dChars[idx]}</span>`;}
+  const gi=iChars.join("").replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F"); // spacing brut : les balises restent groupées visuellement
+  // regroupement simple lisible : on reconstruit sans espaces fins pour éviter de casser les spans
+  const plainI=intS.replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F");
+  return {plain:decS?plainI+","+decS:plainI, marked:decS?iChars.join("")+","+dChars.join(""):iChars.join("")};
+}
+
+/* ---------- Générateurs de questions ---------- */
+function genNumeration(){
+  const out=[];
+  const kinds=shuffle(["chiffre","chiffre","chiffre","nombre","nombre","nombre","rang","rang","rang"]);
+  for(const k of kinds){
+    const intLen=ri(6,9), decLen=ri(2,4);
+    const intS=genInt(intLen), decS=genDec(decLen);
+    const numDisp=fmt(intS,decS);
+    if(k==="chiffre"){
+      const isDec=Math.random()<0.4;
+      let idx, name, digit;
+      if(isDec){idx=ri(0,decLen-1);name=DEC_NAMES[idx];digit=decS[idx];}
+      else{idx=ri(0,intLen-1);name=INT_NAMES[idx];digit=intS[intLen-1-idx];}
+      out.push({
+        type:"input",
+        prompt:`Dans le nombre <b class="num">${numDisp}</b>,<br>quel est le <span class="hl">chiffre des ${name}</span> ?`,
+        answer:digit,
+        exp:`Le <b>chiffre des ${name}</b> est le chiffre placé dans cette colonne : c'est <b>un seul chiffre</b> → <b>${digit}</b>.`
+      });
+    } else if(k==="nombre"){
+      const idx=ri(1,intLen-1);
+      const name=INT_NAMES[idx];
+      const ans=intS.slice(0,intLen-idx);
+      const digit=intS[intLen-1-idx];
+      out.push({
+        type:"input",
+        prompt:`Dans le nombre <b class="num">${numDisp}</b>,<br>quel est le <span class="hl">nombre ${ofName(name)}</span> ?`,
+        answer:ans,
+        exp:`On lit tous les chiffres depuis la colonne des ${name} jusqu'à la gauche : le <b>nombre ${ofName(name)}</b> = <b>${fmt(ans,"")}</b>.<br>⚠️ À ne pas confondre : le <i>chiffre</i> des ${name}, lui, vaut <b>${digit}</b>.`
+      });
+    } else {
+      const isDec=Math.random()<0.4 && decLen>0;
+      let idx, correct;
+      const pool=[...INT_NAMES.slice(0,intLen),...DEC_NAMES.slice(0,decLen)];
+      if(isDec){idx=ri(0,decLen-1);correct=DEC_NAMES[idx];}
+      else{idx=ri(0,intLen-1);correct=INT_NAMES[idx];}
+      const m=markedNumber(intS,decS,isDec,idx);
+      const distractors=shuffle(pool.filter(n=>n!==correct)).slice(0,3);
+      out.push({
+        type:"mcq",
+        prompt:`Quel est le <span class="hl">rang</span> du chiffre surligné ?<br><span class="num" style="font-size:1.05em">${m.marked}</span>`,
+        options:shuffle([correct,...distractors]),
+        answer:correct,
+        exp:`Le chiffre surligné est dans la colonne des <b>${correct}</b> : son <b>rang</b> est « ${correct} ».`
+      });
+    }
+  }
+  return out;
+}
+
+/* ---------- JAUNE : fractions décimales & nombres décimaux (généré) ---------- */
+const POW=["1","10","100","1000","10000"];
+function decFromNum(numStr,d){                 // numérateur -> écriture décimale
+  numStr=(numStr.replace(/^0+/,'')||"0");
+  if(d===0)return numStr;
+  while(numStr.length<=d)numStr="0"+numStr;
+  const cut=numStr.length-d;
+  return numStr.slice(0,cut)+","+numStr.slice(cut);
+}
+const DEC_CONCEPT=[
+  {type:"mcq",prompt:'Vrai ou faux : <b>tout nombre entier est un nombre décimal</b>.',options:["Vrai","Faux"],answer:"Vrai",exp:"Vrai : par exemple 7 = 7/1 = 70/10. Tout nombre entier peut s'écrire comme une fraction décimale."},
+  {type:"mcq",prompt:'Un <span class="hl">nombre décimal</span> est un nombre qui…',options:["peut s'écrire comme une fraction décimale","a toujours une virgule","est plus petit que 1","n'est jamais entier"],answer:"peut s'écrire comme une fraction décimale",exp:"C'est la définition du cours."},
+  {type:"mcq",prompt:'Le dénominateur d\'une <span class="hl">fraction décimale</span> est…',options:["1, 10, 100, 1000…","un nombre pair","un multiple de 5","n'importe quel nombre"],answer:"1, 10, 100, 1000…",exp:"Une fraction décimale a toujours pour dénominateur une puissance de 10."}
+];
+function genDecimal(){
+  const out=[];
+  const nonPow=[3,6,7,9,11,12,13,20,25,30,40,50,60];
+  for(let r=0;r<2;r++){                          // reconnaître une fraction décimale
+    const oui=Math.random()<0.5;
+    const num=ri(1,99);
+    const den=oui?POW[ri(1,4)]:(""+nonPow[ri(0,nonPow.length-1)]);
+    out.push({type:"mcq",
+      prompt:`La fraction <b>${num}/${den}</b> est-elle une <span class="hl">fraction décimale</span> ?`,
+      options:["Oui","Non"],answer:oui?"Oui":"Non",
+      exp:oui?`Oui : le dénominateur ${den} est une puissance de 10 (1, 10, 100, 1000…).`
+             :`Non : ${den} n'est pas une puissance de 10. Le dénominateur doit être 1, 10, 100, 1000…`});
+  }
+  for(let r=0;r<2;r++){                          // décimal -> fraction décimale
+    const d=ri(1,3), ip=""+ri(0,99), dp=genDec(d);
+    const numAll=(ip+dp).replace(/^0+/,'')||"0", den=POW[d], good=`${numAll}/${den}`;
+    const cand=[`${numAll}/${POW[Math.min(4,d+1)]}`,`${numAll}/${POW[Math.max(0,d-1)]}`,`${numAll}0/${den}`];
+    out.push({type:"mcq",
+      prompt:`Écris <b>${fmt(ip,dp)}</b> sous forme de <span class="hl">fraction décimale</span>.`,
+      options:[good,...pickOpts(cand,good,3)],answer:good,
+      exp:`${d} chiffre(s) après la virgule → dénominateur ${den} : ${good}.`});
+  }
+  for(let r=0;r<2;r++){                          // fraction décimale -> décimal
+    const d=ri(1,3), num=""+ri(11,9999), den=POW[d], good=decFromNum(num,d);
+    const cand=[decFromNum(num,Math.min(4,d+1)),decFromNum(num,Math.max(0,d-1)),num];
+    out.push({type:"mcq",
+      prompt:`Combien vaut <b>${num}/${den}</b> en écriture décimale ?`,
+      options:[good,...pickOpts(cand,good,3)],answer:good,
+      exp:`Diviser par ${den} déplace la virgule de ${d} rang(s) vers la gauche : ${good}.`});
+  }
+  shuffle(DEC_CONCEPT).slice(0,2).forEach(q=>out.push(q));
+  return shuffle(out);
+}
+
+const POOL_ORTHO=[
+  {n:"80",options:["quatre-vingts","quatre-vingt"],answer:"quatre-vingts",exp:"« vingt » prend un s : il est multiplié (4×20) et se trouve à la fin."},
+  {n:"81",options:["quatre-vingt-un","quatre-vingts-un"],answer:"quatre-vingt-un",exp:"Pas de s à « vingt » : il est suivi d'un autre mot (un)."},
+  {n:"90",options:["quatre-vingt-dix","quatre-vingts-dix"],answer:"quatre-vingt-dix",exp:"Pas de s : « vingt » est suivi de « dix »."},
+  {n:"91",options:["quatre-vingt-onze","quatre-vingts-onze"],answer:"quatre-vingt-onze",exp:"Pas de s : « vingt » est suivi de « onze »."},
+  {n:"99",options:["quatre-vingt-dix-neuf","quatre-vingts-dix-neuf"],answer:"quatre-vingt-dix-neuf",exp:"Pas de s à « vingt » : il est suivi d'autres mots."},
+  {n:"200",options:["deux-cents","deux-cent"],answer:"deux-cents",exp:"« cent » prend un s : multiplié (2×100) et à la fin."},
+  {n:"203",options:["deux-cent-trois","deux-cents-trois"],answer:"deux-cent-trois",exp:"Pas de s à « cent » : il est suivi d'un autre mot (trois)."},
+  {n:"300",options:["trois-cents","trois-cent"],answer:"trois-cents",exp:"« cent » multiplié (3×100) et à la fin → prend un s."},
+  {n:"400",options:["quatre-cents","quatre-cent"],answer:"quatre-cents",exp:"« cent » multiplié (4×100) et à la fin → prend un s."},
+  {n:"402",options:["quatre-cent-deux","quatre-cents-deux"],answer:"quatre-cent-deux",exp:"Pas de s à « cent » : il est suivi d'un autre mot (deux)."},
+  {n:"500",options:["cinq-cents","cinq-cent"],answer:"cinq-cents",exp:"« cent » multiplié (5×100) et à la fin → prend un s."},
+  {n:"250",options:["deux-cent-cinquante","deux-cents-cinquante"],answer:"deux-cent-cinquante",exp:"Pas de s à « cent » : il est suivi de « cinquante »."},
+  {n:"800",options:["huit-cents","huit-cent"],answer:"huit-cents",exp:"« cent » multiplié (8×100) et à la fin → prend un s."},
+  {n:"801",options:["huit-cent-un","huit-cents-un"],answer:"huit-cent-un",exp:"Pas de s à « cent » : il est suivi d'un autre mot (un)."},
+  {n:"100",options:["cent","cents"],answer:"cent",exp:"« cent » seul (une seule fois) ne prend pas de s."},
+  {n:"180",options:["cent-quatre-vingts","cent-quatre-vingt"],answer:"cent-quatre-vingts",exp:"« cent » ne prend pas de s (non multiplié) mais « vingt » en prend un (multiplié et à la fin)."},
+  {n:"21",options:["vingt-et-un","vingt et un"],answer:"vingt-et-un",exp:"Depuis 1990, tous les mots d'un nombre sont reliés par des traits d'union, même « et »."},
+  {n:"31",options:["trente-et-un","trente et un"],answer:"trente-et-un",exp:"Les mots d'un même nombre sont reliés par des traits d'union."},
+  {n:"71",options:["soixante-et-onze","soixante et onze"],answer:"soixante-et-onze",exp:"Les mots d'un même nombre sont reliés par des traits d'union."},
+  {n:"142",options:["cent-quarante-deux","cent quarante deux"],answer:"cent-quarante-deux",exp:"Les mots d'un même nombre sont reliés par des traits d'union."},
+  {n:"1 000",options:["mille","milles"],answer:"mille",exp:"« mille » est invariable : jamais de s."},
+  {n:"2 000",options:["deux-mille","deux-milles"],answer:"deux-mille",exp:"« mille » est invariable : jamais de s."},
+  {n:"3 000",options:["trois-mille","trois-milles"],answer:"trois-mille",exp:"« mille » est invariable : jamais de s."},
+  {n:"1 000 000",options:["un million","un millions"],answer:"un million",exp:"« million » est un nom : au singulier (un seul), pas de s."},
+  {n:"4 000 000",options:["quatre millions","quatre million"],answer:"quatre millions",exp:"« million » est un nom : il prend un s quand il y en a plusieurs."},
+  {n:"5 000 000",options:["cinq millions","cinq million"],answer:"cinq millions",exp:"« million » est un nom : il prend un s au pluriel."},
+  {n:"1 000 000 000",options:["un milliard","un milliards"],answer:"un milliard",exp:"« milliard » est un nom : au singulier (un seul), pas de s."},
+  {n:"2 000 000 000",options:["deux milliards","deux milliard"],answer:"deux milliards",exp:"« milliard » est un nom : il prend un s au pluriel."}
+];
+
+/* ---------- BLEU : composer & décomposer (généré) ---------- */
+const INTPLACE=["1","10","100"], DECPLACE=["0,1","0,01"];
+function pickOpts(cands,correct,n){            // distracteurs distincts, ≠ bonne réponse
+  const u=[];for(const c of cands){if(c!==correct&&!u.includes(c))u.push(c);}
+  return shuffle(u).slice(0,n);
+}
+function numStr2(intD,decD){
+  const ig=intD.join("").replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F");
+  return decD.length?ig+","+decD.join(""):ig;
+}
+function decompose(intD,decD){                 // décomposition canonique (on saute les 0)
+  const t=[],L=intD.length;
+  for(let j=0;j<L;j++){const d=intD[L-1-j];if(d!==0)t.push(`(${d}×${INTPLACE[j]})`);}
+  for(let k=0;k<decD.length;k++){const d=decD[k];if(d!==0)t.push(`(${d}×${DECPLACE[k]})`);}
+  if(!t.length)t.push("(0×1)");
+  return t.join("+");
+}
+function mkNumber(){
+  const iL=ri(1,3), dL=ri(1,2);
+  const intD=[ri(1,9)];for(let i=1;i<iL;i++)intD.push(ri(0,9));
+  const decD=[];for(let i=0;i<dL;i++)decD.push(ri(0,9));
+  if(decD.every(x=>x===0))decD[dL-1]=ri(1,9);
+  return {intD,decD,dL};
+}
+function genCompose(){
+  const out=[];
+  for(let r=0;r<2;r++){                          // nombre -> décomposition
+    const {intD,decD}=mkNumber(), good=decompose(intD,decD);
+    const cand=[
+      good.replace("×0,01)","×0,1)"), good.replace("×0,1)","×0,01)"),
+      good.replace("×10)","×100)"), good.replace("×1)","×10)"), good.replace("×100)","×10)"),
+      intD.concat(decD).filter(x=>x!==0).map(x=>`(${x}×1)`).join("+")
+    ];
+    out.push({type:"mcq",
+      prompt:`Quelle <span class="hl">décomposition</span> correspond à <b>${numStr2(intD,decD)}</b> ?`,
+      options:[good,...pickOpts(cand,good,3)],answer:good,
+      exp:`On multiplie chaque chiffre par la valeur de son rang : ${good}.`});
+  }
+  for(let r=0;r<2;r++){                          // décomposition -> nombre
+    const {intD,decD,dL}=mkNumber(), good=numStr2(intD,decD);
+    const whole=intD.join("")+decD.join("");
+    const cand=[decFromNum(whole,dL+1),decFromNum(whole,Math.max(0,dL-1)),
+                decFromNum(whole.slice(0,-1)+((+whole.slice(-1)+5)%10),dL)];
+    out.push({type:"mcq",
+      prompt:`Combien vaut <b>${decompose(intD,decD)}</b> ?`,
+      options:[good,...pickOpts(cand,good,3)],answer:good,
+      exp:`On additionne les valeurs de chaque rang : ${good}.`});
+  }
+  {                                              // X = partie entière + ? (fraction)
+    const {intD,decD,dL}=mkNumber();
+    const ip=intD.join("").replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F");
+    const num=(decD.join("").replace(/^0+/,'')||"0"), den=POW[dL], good=`${num}/${den}`;
+    const cand=[`${num}/${POW[Math.min(4,dL+1)]}`,`${num}/${POW[Math.max(0,dL-1)]}`,`0,${decD.join("")}`];
+    out.push({type:"mcq",
+      prompt:`<b>${numStr2(intD,decD)}</b> = ${ip} + … ?`,
+      options:[good,...pickOpts(cand,good,3)],answer:good,
+      exp:`La partie après la virgule vaut ${good}.`});
+  }
+  {                                              // écriture fractionnaire
+    const {intD,decD,dL}=mkNumber();
+    const numAll=(intD.join("")+decD.join("")).replace(/^0+/,'')||"0", den=POW[dL], good=`${numAll}/${den}`;
+    const cand=[`${numAll}/${POW[Math.min(4,dL+1)]}`,`${numAll}/${POW[Math.max(0,dL-1)]}`,`${numAll}0/${den}`];
+    out.push({type:"mcq",
+      prompt:`Quelle <span class="hl">écriture fractionnaire</span> correspond à <b>${numStr2(intD,decD)}</b> ?`,
+      options:[good,...pickOpts(cand,good,3)],answer:good,
+      exp:`${dL} chiffre(s) après la virgule → dénominateur ${den} : ${good}.`});
+  }
+  return shuffle(out);
+}
+
+function buildQuestions(key){
+  if(key==="numeration") return genNumeration();
+  if(key==="decimal") return genDecimal();
+  if(key==="compose") return genCompose();
+  if(key==="ortho") return shuffle(POOL_ORTHO).slice(0,8).map(o=>({
+    type:"mcq",
+    prompt:`Quelle est la bonne orthographe de <b>${o.n}</b> ?`,
+    options:shuffle(o.options),
+    answer:o.answer, exp:o.exp
+  }));
+}
+
+/* ---------- État & UI ---------- */
+const $=id=>document.getElementById(id);
+let state={key:null,qs:[],i:0,score:0,done:false};
+
+function normalize(s){return (s||"").replace(/[\s\u202F]/g,"").toLowerCase();}
+
+function renderHome(){
+  $("home").classList.remove("hidden");
+  $("quiz").classList.add("hidden");
+  $("end").classList.add("hidden");
+  const c=$("cards");c.innerHTML="";
+  Object.entries(THEMES).forEach(([key,t])=>{
+    const b=document.createElement("button");
+    b.className="card";
+    b.style.setProperty("--tab",t.cssvar);
+    b.innerHTML=`<span class="tag" style="background:${t.color}">${t.tag}</span>
+      <div class="ct">${t.title}</div><p class="cd">${t.desc}</p>`;
+    b.onclick=()=>startTheme(key);
+    c.appendChild(b);
+  });
+}
+
+function startTheme(key){
+  state={key,qs:buildQuestions(key),i:0,score:0,done:false};
+  document.documentElement.style.setProperty("--accent",THEMES[key].cssvar);
+  $("home").classList.add("hidden");
+  $("end").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  $("rappel").innerHTML=`<span class="rlabel">À RETENIR</span>${THEMES[key].rappel}`;
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=state.qs[state.i];
+  const total=state.qs.length;
+  $("count").textContent=`${state.i+1} / ${total}`;
+  $("progBar").style.width=`${(state.i/total)*100}%`;
+  $("qtext").innerHTML=q.prompt;
+  $("fb").className="fb";$("fb").innerHTML="";
+  $("nextBtn").classList.add("hidden");
+  $("nextBtn").textContent = state.i===total-1 ? "Voir mon score →" : "Question suivante →";
+  const area=$("answerArea");area.innerHTML="";
+
+  if(q.type==="mcq"){
+    const box=document.createElement("div");box.className="opts";
+    shuffle(q.options).forEach(opt=>{
+      const btn=document.createElement("button");
+      btn.className="opt";btn.innerHTML=opt;
+      btn.onclick=()=>checkMcq(btn,opt,q,box);
+      box.appendChild(btn);
+    });
+    area.appendChild(box);
+  } else {
+    const row=document.createElement("div");row.className="inrow";
+    const inp=document.createElement("input");
+    inp.type="text";inp.inputMode="numeric";inp.autocomplete="off";
+    inp.placeholder="Ta réponse…";inp.id="userInput";
+    const btn=document.createElement("button");btn.className="btn";btn.textContent="Vérifier";
+    const go=()=>checkInput(inp,btn,q);
+    btn.onclick=go;
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+    row.appendChild(inp);row.appendChild(btn);
+    area.appendChild(row);
+    setTimeout(()=>inp.focus(),50);
+  }
+}
+
+function feedback(win,q){
+  const fb=$("fb");
+  fb.className="fb show "+(win?"win":"lose");
+  fb.innerHTML=`<span class="verdict">${win?"✔ Bravo !":"✘ Pas tout à fait."}</span>${q.exp}`;
+  $("nextBtn").classList.remove("hidden");
+  if(win)state.score++;
+}
+
+function checkMcq(btn,opt,q,box){
+  [...box.children].forEach(b=>b.disabled=true);
+  const win=opt===q.answer;
+  btn.classList.add(win?"good":"bad");
+  if(!win){[...box.children].forEach(b=>{if(b.innerHTML===q.answer)b.classList.add("good");});}
+  feedback(win,q);
+}
+
+function checkInput(inp,btn,q){
+  if(btn.disabled)return;
+  inp.disabled=true;btn.disabled=true;
+  const win=normalize(inp.value)===normalize(q.answer);
+  inp.style.borderColor=win?"var(--ok)":"var(--ko)";
+  inp.style.background=win?"#e4f7ec":"#fdeaea";
+  feedback(win,q);
+}
+
+function next(){
+  state.i++;
+  if(state.i>=state.qs.length){showEnd();}
+  else renderQuestion();
+}
+
+function showEnd(){
+  $("quiz").classList.add("hidden");
+  $("end").classList.remove("hidden");
+  const s=state.score,t=state.qs.length,p=s/t;
+  $("finalScore").textContent=`${s} / ${t}`;
+  const nb=p>=0.9?3:p>=0.6?2:p>=0.3?1:0;
+  $("stars").innerHTML="★".repeat(nb)+"☆".repeat(3-nb);
+  $("stars").style.color=THEMES[state.key].cssvar==="#ffe94d"?"#e0b800":THEMES[state.key].cssvar;
+  let msg;
+  if(p>=0.9)msg="Excellent, c'est maîtrisé !";
+  else if(p>=0.6)msg="Bon travail, encore un petit tour pour tout revoir.";
+  else if(p>=0.3)msg="Tu progresses. Relis l'encadré « À retenir » puis recommence.";
+  else msg="On révise la leçon ensemble, puis on réessaie tranquillement.";
+  $("rmsg").textContent=msg;
+}
+
+/* ---------- Boutons ---------- */
+$("nextBtn").onclick=next;
+$("backBtn").onclick=renderHome;
+$("menuBtn").onclick=renderHome;
+$("againBtn").onclick=()=>startTheme(state.key);
+
+renderHome();
+</script>
+</body>
+</html>
