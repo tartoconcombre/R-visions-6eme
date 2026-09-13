@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La verrerie de chimie — entraînement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e7eef3; --panel:#ffffff; --ink:#173049; --muted:#5b7183;
+    --accent:#0d9c99; --accent-dark:#097a78; --accent2:#3567c9;
+    --good:#1a9d63; --good-bg:#e3f6ec; --bad:#d8503f; --bad-bg:#fceae6;
+    --glass:#254866; --liquid:#7cd3cc; --line:#d3dee6;
+    --shadow:0 10px 30px rgba(23,48,73,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%, #f2f7fa, var(--bg));
+    color:var(--ink); min-height:100vh; line-height:1.5;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{max-width:600px; margin:0 auto; padding:18px 16px 60px}
+  h1{font-family:'Fredoka',sans-serif; font-weight:600; font-size:1.55rem; margin:.2em 0 .1em; letter-spacing:.2px}
+  .sub{color:var(--muted); font-weight:600; margin:0 0 18px}
+  .hidden{display:none !important}
+
+  /* Buttons */
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-weight:800; font-size:1rem; padding:14px 18px; border-radius:14px;
+    background:var(--accent); color:#fff; box-shadow:0 4px 0 var(--accent-dark);
+    transition:transform .06s ease, box-shadow .06s ease; width:100%;
+  }
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--accent-dark)}
+  .btn.ghost{background:#fff; color:var(--accent2); box-shadow:inset 0 0 0 2px #cdd9e6}
+  .btn.small{width:auto; padding:10px 14px; font-size:.92rem; border-radius:11px}
+  .btn:focus-visible{outline:3px solid #ffb43e; outline-offset:2px}
+
+  /* Home menu */
+  .menu{display:grid; gap:12px}
+  .mode{
+    display:flex; align-items:center; gap:14px; text-align:left; width:100%;
+    background:var(--panel); border-radius:18px; padding:16px; box-shadow:var(--shadow);
+    transition:transform .08s ease;
+  }
+  .mode:active{transform:scale(.98)}
+  .mode .emo{font-size:1.9rem; width:52px; height:52px; flex:none; display:grid; place-items:center;
+    background:#eef6f6; border-radius:14px}
+  .mode .t{font-family:'Fredoka',sans-serif; font-weight:600; font-size:1.12rem}
+  .mode .d{color:var(--muted); font-weight:600; font-size:.9rem}
+
+  /* Card / screens */
+  .screen{background:var(--panel); border-radius:22px; box-shadow:var(--shadow); padding:18px; margin-top:6px}
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px}
+  .back{font-weight:800; color:var(--accent2); background:#eef4fb; padding:9px 14px; border-radius:11px}
+  .progress{font-weight:800; color:var(--muted); font-size:.95rem}
+
+  .stage{display:grid; place-items:center; padding:6px 0 4px}
+  .glassbox{width:190px; height:230px; background:linear-gradient(#fbfdfe,#f1f6f8);
+    border:2px solid var(--line); border-radius:18px; display:grid; place-items:center}
+  .glassbox svg{width:150px; height:200px}
+  .gl{fill:none; stroke:var(--glass); stroke-width:3; stroke-linecap:round; stroke-linejoin:round}
+  .liq{fill:var(--liquid); opacity:.5; stroke:none}
+
+  .namecard{margin-top:14px; text-align:center; min-height:54px; display:grid; place-items:center}
+  .name{font-family:'Fredoka',sans-serif; font-weight:600; font-size:1.5rem; color:var(--ink)}
+  .reveal-hint{color:var(--muted); font-weight:700}
+
+  .row{display:flex; gap:10px; margin-top:14px}
+  .row .btn{flex:1}
+
+  /* QCM options */
+  .options{display:grid; gap:10px; margin-top:16px}
+  .opt{
+    width:100%; text-align:left; background:#fff; border-radius:14px; padding:15px 16px;
+    font-weight:800; font-size:1.05rem; box-shadow:inset 0 0 0 2px #d6e0ea; color:var(--ink);
+    transition:transform .06s ease;
+  }
+  .opt:active{transform:scale(.985)}
+  .opt.correct{box-shadow:inset 0 0 0 3px var(--good); background:var(--good-bg); color:#0f6f45}
+  .opt.wrong{box-shadow:inset 0 0 0 3px var(--bad); background:var(--bad-bg); color:#a8392b}
+  .opt:disabled{cursor:default}
+
+  /* Type-in */
+  .typewrap{margin-top:16px}
+  .tinput{width:100%; font-family:'Fredoka',sans-serif; font-weight:500; font-size:1.25rem;
+    padding:14px 16px; border-radius:14px; border:2px solid #cdd9e6; color:var(--ink); text-align:center;
+    background:#fff}
+  .tinput:focus{outline:none; border-color:var(--accent)}
+  .feedback{margin-top:12px; text-align:center; font-weight:800; min-height:26px}
+  .feedback.ok{color:var(--good)} .feedback.no{color:var(--bad)}
+
+  /* Matching */
+  .match-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px}
+  .mcol{display:grid; gap:10px}
+  .mcell{background:#fff; border-radius:14px; box-shadow:inset 0 0 0 2px #d6e0ea; padding:8px; min-height:64px;
+    display:grid; place-items:center; transition:transform .06s ease}
+  .mcell:active{transform:scale(.97)}
+  .mcell.pic svg{width:52px; height:66px}
+  .mcell.word{font-family:'Fredoka',sans-serif; font-weight:500; font-size:1rem; text-align:center; padding:10px}
+  .mcell.sel{box-shadow:inset 0 0 0 3px var(--accent2); background:#eef4fb}
+  .mcell.done{box-shadow:inset 0 0 0 3px var(--good); background:var(--good-bg); opacity:.75}
+  .mcell.miss{animation:shake .3s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* Results */
+  .result{text-align:center; padding:8px 4px}
+  .bigscore{font-family:'Fredoka',sans-serif; font-weight:700; font-size:3rem; color:var(--accent)}
+  .medal{font-size:3.4rem; margin-bottom:4px}
+  .msg{font-weight:800; font-size:1.15rem; margin:6px 0 4px}
+  .note{color:var(--muted); font-weight:700; font-size:.92rem; margin-top:14px; background:#f3f7f9;
+    border-radius:12px; padding:12px 14px; text-align:left}
+  .note b{color:var(--ink)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <h1>La verrerie de chimie 🧪</h1>
+    <p class="sub">Choisis une activité pour apprendre les noms.</p>
+    <div class="menu">
+      <button class="mode" onclick="startLearn()">
+        <span class="emo">🔎</span>
+        <span><span class="t">Je découvre</span><br><span class="d">Regarde chaque objet et son nom (12 cartes)</span></span>
+      </button>
+      <button class="mode" onclick="startQuiz()">
+        <span class="emo">✅</span>
+        <span><span class="t">Je reconnais</span><br><span class="d">Trouve le bon nom parmi 4 propositions</span></span>
+      </button>
+      <button class="mode" onclick="startType()">
+        <span class="emo">⌨️</span>
+        <span><span class="t">J'écris le nom</span><br><span class="d">Écris toi-même le nom de l'objet</span></span>
+      </button>
+      <button class="mode" onclick="startMatch()">
+        <span class="emo">🔗</span>
+        <span><span class="t">J'associe</span><br><span class="d">Relie chaque dessin à son étiquette</span></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section id="learn" class="screen hidden">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">‹ Menu</button>
+      <span class="progress" id="learn-prog"></span>
+    </div>
+    <div class="stage"><div class="glassbox"><svg id="learn-svg" viewBox="0 0 120 170"></svg></div></div>
+    <div class="namecard" id="learn-name"></div>
+    <div class="row">
+      <button class="btn ghost" onclick="learnStep(-1)">‹ Précédent</button>
+      <button class="btn" id="learn-next" onclick="learnStep(1)">Suivant ›</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="screen hidden">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">‹ Menu</button>
+      <span class="progress" id="quiz-prog"></span>
+    </div>
+    <div class="stage"><div class="glassbox"><svg id="quiz-svg" viewBox="0 0 120 170"></svg></div></div>
+    <div class="options" id="quiz-opts"></div>
+  </section>
+
+  <!-- TYPE -->
+  <section id="type" class="screen hidden">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">‹ Menu</button>
+      <span class="progress" id="type-prog"></span>
+    </div>
+    <div class="stage"><div class="glassbox"><svg id="type-svg" viewBox="0 0 120 170"></svg></div></div>
+    <div class="typewrap">
+      <input class="tinput" id="type-in" placeholder="écris le nom ici…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="feedback" id="type-fb"></div>
+      <button class="btn" id="type-btn" onclick="typeCheck()">Vérifier</button>
+    </div>
+  </section>
+
+  <!-- MATCH -->
+  <section id="match" class="screen hidden">
+    <div class="topbar">
+      <button class="back" onclick="goHome()">‹ Menu</button>
+      <span class="progress" id="match-prog"></span>
+    </div>
+    <p class="sub" style="margin:4px 0 2px">Touche un dessin, puis son étiquette.</p>
+    <div class="match-grid">
+      <div class="mcol" id="match-pics"></div>
+      <div class="mcol" id="match-words"></div>
+    </div>
+    <div class="row"><button class="btn hidden" id="match-next" onclick="matchNext()">Continuer ›</button></div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="screen hidden">
+    <div class="result">
+      <div class="medal" id="res-medal"></div>
+      <div class="bigscore" id="res-score"></div>
+      <div class="msg" id="res-msg"></div>
+      <div class="note" id="res-note"></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn ghost" onclick="goHome()">Menu</button>
+        <button class="btn" id="res-again">Recommencer</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------- Données : dessins + noms ---------- */
+const ITEMS = [
+  {id:'becher', name:'Bécher', svg:`
+    <path class="liq" d="M37 108 L83 108 L83 132 Q83 136 79 136 L41 136 Q37 136 37 132 Z"/>
+    <path class="gl" d="M37 44 L37 132 Q37 136 41 136 L79 136 Q83 136 83 132 L83 44 L90 40"/>
+    <path class="gl" d="M72 58 L82 58 M72 72 L82 72 M72 86 L82 86"/>`},
+  {id:'tube', name:'Tube à essais', svg:`
+    <path class="liq" d="M51 106 L69 106 L69 126 Q69 138 60 138 Q51 138 51 126 Z"/>
+    <path class="gl" d="M51 36 L51 126 Q51 138 60 138 Q69 138 69 126 L69 36"/>
+    <path class="gl" d="M48 36 L72 36"/>`},
+  {id:'verre', name:'Verre à pied', svg:`
+    <path class="liq" d="M52 76 L60 92 L68 76 Z"/>
+    <path class="gl" d="M40 42 L60 92 L80 42"/>
+    <path class="gl" d="M60 92 L60 122"/>
+    <path class="gl" d="M46 126 Q60 132 74 126"/>`},
+  {id:'brond', name:'Ballon à fond rond', svg:`
+    <path class="liq" d="M32.5 116 A30 30 0 0 1 87.5 116 Z"/>
+    <circle class="gl" cx="60" cy="104" r="30"/>
+    <path class="gl" d="M50 78 L50 44 L46 40 M70 78 L70 44 L74 40"/>`},
+  {id:'bplat', name:'Ballon à fond plat', svg:`
+    <path class="liq" d="M44 110 C50 120 70 120 76 110 L74 122 L46 122 Z"/>
+    <path class="gl" d="M50 44 L50 80 C40 92 34 108 46 122 L74 122 C86 108 80 92 70 80 L70 44"/>
+    <path class="gl" d="M50 44 L46 40 M70 44 L74 40"/>`},
+  {id:'crista', name:'Cristallisoir', svg:`
+    <path class="liq" d="M28 102 L92 102 L92 116 Q92 122 86 122 L34 122 Q28 122 28 116 Z"/>
+    <path class="gl" d="M26 70 L28 116 Q28 122 34 122 L86 122 Q92 122 92 116 L94 70"/>`},
+  {id:'erlen', name:'Erlenmeyer', svg:`
+    <path class="liq" d="M39.8 112 L80.2 112 L86 134 L34 134 Z"/>
+    <path class="gl" d="M52 40 L52 66 L34 134 L86 134 L68 66 L68 40"/>
+    <path class="gl" d="M52 40 L48 36 M68 40 L72 36"/>`},
+  {id:'enton', name:'Entonnoir', svg:`
+    <path class="gl" d="M34 48 L57 96 L57 134 M86 48 L63 96 L63 134"/>
+    <path class="gl" d="M34 48 L34 44 M86 48 L86 44"/>`},
+  {id:'eprou', name:'Éprouvette graduée', svg:`
+    <path class="liq" d="M52 100 L68 100 L68 130 L52 130 Z"/>
+    <path class="gl" d="M52 36 L48 32 M52 36 L52 130 L46 140 L74 140 L68 130 L68 36"/>
+    <path class="gl" d="M68 50 L62 50 M68 60 L64 60 M68 70 L62 70 M68 80 L64 80 M68 90 L62 90 M68 100 L64 100 M68 110 L62 110 M68 120 L64 120"/>`},
+  {id:'fiole', name:'Fiole jaugée', svg:`
+    <path class="liq" d="M43 112 C50 122 70 122 77 112 L74 124 L46 124 Z"/>
+    <path class="gl" d="M55 32 L55 86 C47 96 36 110 46 124 L74 124 C84 110 73 96 65 86 L65 32"/>
+    <path class="gl" d="M55 32 L51 28 M65 32 L69 28"/>
+    <path class="gl" d="M55 62 L65 62"/>`},
+  {id:'ampoule', name:'Ampoule à décanter', svg:`
+    <path class="liq" d="M48 76 C46 94 50 104 60 113 C70 104 74 94 72 76 Z"/>
+    <path class="gl" d="M52 34 L52 40 L54 40 L54 64 C45 76 45 100 60 114 C75 100 75 76 66 64 L66 40 L68 40 L68 34 Z"/>
+    <circle class="gl" cx="60" cy="120" r="4.5"/>
+    <path class="gl" d="M60 114 L60 116 M60 124 L60 134 M64 117 L70 113"/>`},
+  {id:'refri', name:'Réfrigérant à eau', svg:`
+    <path class="liq" d="M50 42 L56 42 L56 126 L50 126 Z"/>
+    <path class="liq" d="M64 42 L70 42 L70 126 L64 126 Z"/>
+    <path class="gl" d="M56 30 L56 140 M64 30 L64 140"/>
+    <path class="gl" d="M50 42 L50 126 M70 42 L70 126"/>
+    <path class="gl" d="M50 42 L56 42 M64 42 L70 42 M50 126 L56 126 M64 126 L70 126"/>
+    <path class="gl" d="M70 54 L86 46 M50 114 L34 122"/>
+    <path class="gl" d="M56 30 L53 27 M64 30 L67 27"/>`},
+];
+
+/* ---------- Utilitaires ---------- */
+function draw(svgEl, item){ svgEl.innerHTML = item.svg; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; }
+function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z]/g,''); }
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];}
+
+const $=id=>document.getElementById(id);
+const screens=['home','learn','quiz','type','match','result'];
+function show(id){ screens.forEach(s=>$(s).classList.toggle('hidden', s!==id)); window.scrollTo(0,0); }
+function goHome(){ show('home'); }
+
+/* ---------- Mode Découverte ---------- */
+let learnOrder=[], learnIdx=0, learnRevealed=false;
+function startLearn(){ learnOrder=ITEMS.slice(); learnIdx=0; renderLearn(); show('learn'); }
+function renderLearn(){
+  const it=learnOrder[learnIdx];
+  draw($('learn-svg'), it);
+  learnRevealed=false;
+  $('learn-name').innerHTML='<button class="btn ghost small" onclick="revealLearn()">Afficher le nom 👀</button>';
+  $('learn-prog').textContent=(learnIdx+1)+' / '+learnOrder.length;
+  $('learn-next').textContent = learnIdx===learnOrder.length-1 ? 'Terminer ✓' : 'Suivant ›';
+}
+function revealLearn(){ $('learn-name').innerHTML='<span class="name">'+learnOrder[learnIdx].name+'</span>'; learnRevealed=true; }
+function learnStep(dir){
+  if(dir>0 && learnIdx===learnOrder.length-1){ goHome(); return; }
+  learnIdx=Math.max(0,Math.min(learnOrder.length-1,learnIdx+dir));
+  renderLearn();
+}
+
+/* ---------- Mode QCM ---------- */
+let quizOrder=[], quizIdx=0, quizScore=0;
+function startQuiz(){ quizOrder=shuffle(ITEMS); quizIdx=0; quizScore=0; renderQuiz(); show('quiz'); }
+function renderQuiz(){
+  const it=quizOrder[quizIdx];
+  draw($('quiz-svg'), it);
+  $('quiz-prog').textContent=(quizIdx+1)+' / '+quizOrder.length+'  •  '+quizScore+' pts';
+  const distract=shuffle(ITEMS.filter(x=>x.id!==it.id)).slice(0,3);
+  const opts=shuffle([it,...distract]);
+  const box=$('quiz-opts'); box.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button'); b.className='opt'; b.textContent=o.name;
+    b.onclick=()=>answerQuiz(b,o.id===it.id,it.id,box);
+    box.appendChild(b);
+  });
+}
+function answerQuiz(btn,correct,correctId,box){
+  [...box.children].forEach(c=>c.disabled=true);
+  if(correct){ btn.classList.add('correct'); quizScore++; }
+  else{
+    btn.classList.add('wrong');
+    [...box.children].forEach(c=>{ if(c.textContent===ITEMS.find(i=>i.id===correctId).name) c.classList.add('correct'); });
+  }
+  setTimeout(()=>{
+    quizIdx++;
+    if(quizIdx>=quizOrder.length) endGame(quizScore, quizOrder.length, startQuiz);
+    else renderQuiz();
+  }, correct?650:1350);
+}
+
+/* ---------- Mode Écriture ---------- */
+let typeOrder=[], typeIdx=0, typeScore=0, typeLocked=false;
+function startType(){ typeOrder=shuffle(ITEMS); typeIdx=0; typeScore=0; renderType(); show('type'); setTimeout(()=>$('type-in').focus(),50); }
+function renderType(){
+  const it=typeOrder[typeIdx];
+  draw($('type-svg'), it);
+  $('type-prog').textContent=(typeIdx+1)+' / '+typeOrder.length+'  •  '+typeScore+' pts';
+  $('type-in').value=''; $('type-in').disabled=false;
+  $('type-fb').textContent=''; $('type-fb').className='feedback';
+  $('type-btn').textContent='Vérifier'; typeLocked=false;
+  $('type-in').focus();
+}
+function typeCheck(){
+  const it=typeOrder[typeIdx];
+  if(typeLocked){ // = bouton "Suivant"
+    typeIdx++;
+    if(typeIdx>=typeOrder.length) endGame(typeScore, typeOrder.length, startType);
+    else renderType();
+    return;
+  }
+  const guess=norm($('type-in').value), target=norm(it.name);
+  const ok = guess.length>0 && (guess===target || lev(guess,target)<=1);
+  const fb=$('type-fb');
+  if(ok){ typeScore++; fb.className='feedback ok'; fb.textContent='Bravo ! ✔  '+it.name; }
+  else{ fb.className='feedback no'; fb.textContent='La bonne réponse : '+it.name; }
+  $('type-in').disabled=true; typeLocked=true;
+  $('type-btn').textContent = typeIdx===typeOrder.length-1 ? 'Voir mon score ›' : 'Suivant ›';
+}
+$('type-in').addEventListener('keydown',e=>{ if(e.key==='Enter') typeCheck(); });
+
+/* ---------- Mode Association ---------- */
+let matchRounds=[], matchRound=0, matchPicSel=null, matchDone=0, matchScoreTotal=0;
+function startMatch(){
+  const groups=shuffle(ITEMS); matchRounds=[];
+  for(let i=0;i<groups.length;i+=4) matchRounds.push(groups.slice(i,i+4));
+  matchRound=0; matchScoreTotal=0; renderMatch(); show('match');
+}
+function renderMatch(){
+  const set=matchRounds[matchRound];
+  matchPicSel=null; matchDone=0;
+  $('match-prog').textContent='Série '+(matchRound+1)+' / '+matchRounds.length;
+  $('match-next').classList.add('hidden');
+  const pics=$('match-pics'), words=$('match-words');
+  pics.innerHTML=''; words.innerHTML='';
+  set.forEach(it=>{
+    const p=document.createElement('button'); p.className='mcell pic'; p.dataset.id=it.id;
+    p.innerHTML='<svg viewBox="0 0 120 170">'+it.svg+'</svg>';
+    p.onclick=()=>selectPic(p); pics.appendChild(p);
+  });
+  shuffle(set).forEach(it=>{
+    const w=document.createElement('button'); w.className='mcell word'; w.dataset.id=it.id;
+    w.textContent=it.name; w.onclick=()=>selectWord(w); words.appendChild(w);
+  });
+}
+function selectPic(el){
+  if(el.classList.contains('done')) return;
+  [...$('match-pics').children].forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); matchPicSel=el;
+}
+function selectWord(el){
+  if(el.classList.contains('done')||!matchPicSel) return;
+  if(el.dataset.id===matchPicSel.dataset.id){
+    el.classList.add('done'); matchPicSel.classList.add('done'); matchPicSel.classList.remove('sel');
+    matchPicSel=null; matchDone++; matchScoreTotal++;
+    if(matchDone===matchRounds[matchRound].length){
+      $('match-next').classList.remove('hidden');
+      $('match-next').textContent = matchRound===matchRounds.length-1 ? 'Voir mon score ›' : 'Continuer ›';
+    }
+  }else{
+    el.classList.add('miss'); const ps=matchPicSel; ps.classList.add('miss');
+    setTimeout(()=>{el.classList.remove('miss'); ps.classList.remove('miss');},320);
+  }
+}
+function matchNext(){
+  matchRound++;
+  if(matchRound>=matchRounds.length) endGame(matchScoreTotal, ITEMS.length, startMatch);
+  else renderMatch();
+}
+
+/* ---------- Écran résultat ---------- */
+function endGame(score,total,againFn){
+  const pct=score/total;
+  let medal='🎉', msg='Bien joué !';
+  if(pct===1){ medal='🏆'; msg='Sans-faute, parfait !'; }
+  else if(pct>=.75){ medal='🥇'; msg='Très bien !'; }
+  else if(pct>=.5){ medal='🥈'; msg='C’est en bonne voie.'; }
+  else{ medal='🌱'; msg='On continue à s’entraîner !'; }
+  $('res-medal').textContent=medal;
+  $('res-score').textContent=score+' / '+total;
+  $('res-msg').textContent=msg;
+  $('res-note').innerHTML='<b>Astuce :</b> refais le mode « Je découvre » pour revoir les objets ratés, puis retente le quiz. La régularité fait la mémoire !';
+  $('res-again').onclick=againFn;
+  show('result');
+}
+</script>
+</body>
+</html>
