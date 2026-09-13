@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die Zahlen von 1 bis 12 — voix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFF3F7; --panel:#FFFFFF; --border:#D7E1EA;
+    --ink:#2A3037; --muted:#6B7682;
+    --green:#2F9E6E; --green-dark:#25835B;
+    --amber:#E08A3C; --rust:#C4593B;
+    --shadow:0 10px 30px rgba(40,60,80,.10);
+    --display:'Fredoka','Trebuchet MS',Verdana,sans-serif;
+    --body:'Atkinson Hyperlegible','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--body);color:var(--ink);
+    background:radial-gradient(1200px 600px at 50% -10%, #F6F9FC 0%, var(--paper) 60%);
+    min-height:100vh;line-height:1.5;padding:20px 16px 40px;
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  header{text-align:center;margin-bottom:18px}
+  h1{font-family:var(--display);font-weight:600;font-size:clamp(28px,7vw,44px);margin:0;letter-spacing:.5px}
+  .sub{color:var(--muted);margin:4px 0 0;font-size:15px}
+
+  .tabs{display:flex;gap:6px;margin:20px 0;background:var(--panel);border:1px solid var(--border);
+    border-radius:16px;padding:6px;box-shadow:var(--shadow)}
+  .tab{flex:1;border:0;background:transparent;cursor:pointer;font-family:var(--body);font-weight:700;
+    font-size:14px;color:var(--muted);padding:11px 4px;border-radius:11px;transition:background .15s,color .15s;line-height:1.15}
+  .tab .ic{display:block;font-size:19px;margin-bottom:3px}
+  .tab[aria-selected="true"]{background:var(--green);color:#fff}
+  .tab:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:26px 22px}
+
+  .progress{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .bar{flex:1;height:12px;background:#E7EDF3;border-radius:99px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .35s ease}
+  .count{font-family:var(--display);font-weight:600;font-size:15px;color:var(--muted);white-space:nowrap}
+
+  .tile{width:150px;height:150px;margin:6px auto 0;border-radius:26px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:76px;color:#fff;
+    box-shadow:inset 0 -8px 0 rgba(0,0,0,.12), 0 6px 14px rgba(40,60,80,.18);user-select:none}
+  .tile.speak{cursor:pointer;position:relative}
+  .tile.speak::after{content:"🔊";position:absolute;right:10px;bottom:8px;font-size:22px;opacity:.9}
+
+  .prompt{text-align:center;color:var(--muted);margin:16px 0 6px;font-size:16px}
+
+  .answer{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:6px}
+  input[type=text]{font-family:var(--display);font-weight:500;font-size:30px;text-align:center;width:100%;max-width:340px;
+    padding:14px 16px;border:2px solid var(--border);border-radius:16px;color:var(--ink);background:#FBFDFF}
+  input[type=text]:focus{outline:none;border-color:var(--green)}
+  input.ok{border-color:var(--green);background:#EEFBF4}
+  input.no{border-color:var(--rust);background:#FDF0EC}
+
+  .umlaut{display:flex;gap:10px}
+  .umlaut button{font-family:var(--display);font-size:24px;font-weight:600;width:54px;height:54px;border-radius:14px;
+    cursor:pointer;background:#F3F7FB;border:2px solid var(--border);color:var(--ink)}
+  .umlaut button:active{transform:translateY(1px)}
+
+  .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+  button.primary,button.ghost,button.hint{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;
+    padding:13px 22px;border-radius:14px;border:2px solid transparent}
+  button.primary{background:var(--green);color:#fff}
+  button.primary:hover{background:var(--green-dark)}
+  button.ghost{background:transparent;color:var(--muted);border-color:var(--border)}
+  button.ghost:hover{color:var(--ink);border-color:#c2ccd6}
+  button.hint{background:#FFF6EC;color:#8a5a1e;border-color:#F1D9B6}
+  button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  button:disabled{opacity:.45;cursor:default}
+
+  /* micro */
+  .mic{font-family:var(--display);font-weight:700;font-size:22px;color:#fff;background:var(--green);border:0;
+    border-radius:18px;padding:18px 34px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;
+    box-shadow:0 6px 14px rgba(40,60,80,.18)}
+  .mic:hover{background:var(--green-dark)}
+  .mic.listening{background:var(--rust);animation:pulse 1.1s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(196,89,59,.45)}70%{box-shadow:0 0 0 18px rgba(196,89,59,0)}100%{box-shadow:0 0 0 0 rgba(196,89,59,0)}}
+  .heard{min-height:22px;color:var(--muted);font-size:15px;text-align:center;margin:6px 0 0}
+  .heard b{font-family:var(--display);color:var(--ink)}
+
+  .feedback{min-height:30px;text-align:center;font-size:18px;font-weight:700;margin-top:12px}
+  .feedback .de{font-family:var(--display);font-size:26px;display:inline-block;margin-top:2px}
+  .feedback.good{color:var(--green)}
+  .feedback.bad{color:var(--rust)}
+  .feedback small{display:block;font-weight:400;color:var(--muted);font-size:14px;margin-top:2px}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+  @media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .card{border:1px solid var(--border);border-radius:16px;padding:12px 8px 10px;text-align:center;cursor:pointer;
+    background:#FBFDFF;transition:transform .12s}
+  .card:hover{transform:translateY(-2px)}
+  .card:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  .card .bead{width:56px;height:56px;border-radius:14px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-family:var(--display);font-weight:700;font-size:28px;box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+  .card .word{font-family:var(--display);font-weight:600;font-size:20px}
+  .card .say{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+  body.hidewords .card .word{filter:blur(7px)}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .toolbar label{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:15px;cursor:pointer}
+  .toolbar input{width:20px;height:20px;accent-color:var(--green)}
+
+  .done{text-align:center;padding:10px 0}
+  .done .big{font-family:var(--display);font-size:56px}
+  .done p{font-size:19px;font-weight:700;color:var(--green);margin:6px 0 16px}
+
+  .warnbox{background:#FFF6EC;border:1px solid #F1D9B6;color:#8a5a1e;border-radius:14px;padding:12px 14px;
+    font-size:14px;text-align:center;margin-top:10px}
+
+  .footnote{color:var(--muted);font-size:13px;text-align:center;margin-top:18px;line-height:1.6}
+
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .pop{animation:pop .35s ease}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Die Zahlen von 1 bis 12</h1>
+    <p class="sub">Les nombres en allemand · les écrire et les dire</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Choisir un exercice">
+    <button class="tab" role="tab" aria-selected="true"  data-mode="discover"><span class="ic">👀</span>Découvrir</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="write"><span class="ic">✏️</span>Écrire</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="listen"><span class="ic">👂</span>Écouter</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="speak"><span class="ic">🎤</span>Parler</button>
+  </div>
+
+  <!-- DÉCOUVRIR -->
+  <section id="discover" class="panel">
+    <p class="prompt">Clique sur une carte pour <b>entendre</b> le nombre, puis répète‑le à voix haute.</p>
+    <div class="grid" id="grid"></div>
+    <div class="toolbar">
+      <label><input type="checkbox" id="hideWords"> Cacher les mots (pour m'entraîner)</label>
+      <button class="ghost" id="playAll">▶ Tout écouter</button>
+    </div>
+  </section>
+
+  <!-- QUIZ : écrire / écouter / parler -->
+  <section id="quiz" class="panel hidden">
+    <div class="progress">
+      <span class="count" id="count">0 / 12</span>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+
+    <div id="question">
+      <div class="tile speak" id="qTile" role="button" tabindex="0" aria-label="Écouter le nombre"></div>
+      <p class="prompt" id="qPrompt"></p>
+
+      <!-- zone ÉCRIRE / ÉCOUTER -->
+      <div class="answer" id="writeArea">
+        <input type="text" id="answer" lang="de" autocomplete="off" autocapitalize="off"
+               autocorrect="off" spellcheck="false" placeholder="Écris le mot allemand…"
+               aria-label="Ta réponse en allemand">
+        <div class="umlaut">
+          <button type="button" data-ch="ä">ä</button>
+          <button type="button" data-ch="ö">ö</button>
+          <button type="button" data-ch="ü">ü</button>
+        </div>
+        <div class="btns">
+          <button class="hint"    id="btnHear">🔊 Entendre</button>
+          <button class="primary" id="btnCheck">Vérifier</button>
+          <button class="ghost"   id="btnShow">Montrer</button>
+        </div>
+      </div>
+
+      <!-- zone PARLER -->
+      <div class="answer hidden" id="speakArea">
+        <button class="mic" id="btnMic">🎤 Parler</button>
+        <p class="heard" id="heard">Clique, puis prononce le nombre en allemand.</p>
+        <div class="btns">
+          <button class="hint"    id="btnHear2">🔊 Entendre le modèle</button>
+          <button class="ghost"   id="btnShow2">Montrer le mot</button>
+          <button class="primary hidden" id="btnNext2">Suivant ➜</button>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+    </div>
+
+    <div id="finished" class="done hidden">
+      <div class="big" id="doneEmoji">🎉</div>
+      <p id="doneMsg"></p>
+      <div class="btns"><button class="primary" id="btnRestart">Recommencer</button></div>
+    </div>
+
+    <div class="toolbar">
+      <label><input type="checkbox" id="shuffle"> Mélanger l'ordre</label>
+      <span class="count" id="scoreLine"></span>
+    </div>
+  </section>
+
+  <p class="footnote">
+    🎤 Le mode <b>Parler</b> a besoin du micro : ouvre le fichier dans <b>Chrome</b> ou <b>Edge</b>, avec internet,
+    et <b>autorise le microphone</b> quand il te le demande.<br>
+    Astuce : dans « Parler », regarde le nombre, dis‑le, et si tu te trompes l'ordinateur te redonne la bonne réponse à voix haute.
+  </p>
+</div>
+
+<script>
+const NUMBERS = [
+  {n:1,de:"eins"},{n:2,de:"zwei"},{n:3,de:"drei"},{n:4,de:"vier"},
+  {n:5,de:"fünf",alt:"fuenf"},{n:6,de:"sechs"},{n:7,de:"sieben"},{n:8,de:"acht"},
+  {n:9,de:"neun"},{n:10,de:"zehn"},{n:11,de:"elf"},{n:12,de:"zwölf",alt:"zwoelf"},
+];
+const COLORS = [
+  {bg:"#E4572E",fg:"#fff"},{bg:"#EF933B",fg:"#3a2a10"},{bg:"#F0C33C",fg:"#3a2e08"},
+  {bg:"#84B531",fg:"#22300c"},{bg:"#3E9E6E",fg:"#fff"},{bg:"#2FA5A8",fg:"#fff"},
+  {bg:"#3E8EDE",fg:"#fff"},{bg:"#5C6FD6",fg:"#fff"},{bg:"#8E5FD0",fg:"#fff"},
+  {bg:"#C05BB0",fg:"#fff"},{bg:"#E06A88",fg:"#fff"},{bg:"#B07A4A",fg:"#fff"},
+];
+// Formes acceptées à l'oral (variantes de prononciation, chiffres, anglais)
+const ACCEPT = {
+  1:["eins","ein","hein","1","one"],
+  2:["zwei","zwo","zwai","2","two"],
+  3:["drei","dry","dray","3","three"],
+  4:["vier","fier","fear","4","four"],
+  5:["fünf","funf","fuenf","fount","5","five"],
+  6:["sechs","sex","zex","seks","6","six"],
+  7:["sieben","siben","zieben","7","seven"],
+  8:["acht","akt","ach","8","eight"],
+  9:["neun","noin","noyn","9","nine"],
+  10:["zehn","zen","tseen","10","ten"],
+  11:["elf","elve","11","eleven"],
+  12:["zwölf","zwolf","zwoelf","12","twelve"],
+};
+
+/* ---------- Synthèse vocale (allemand) ---------- */
+let deVoice=null;
+function pickVoice(){
+  const v=speechSynthesis.getVoices();
+  deVoice=v.find(x=>/de[-_]/i.test(x.lang))||v.find(x=>/german/i.test(x.name))||null;
+}
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="de-DE"; if(deVoice) u.voice=deVoice; u.rate=0.85; u.pitch=1;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Reconnaissance vocale ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, listening=false;
+function initRecog(){
+  const r=new SR();
+  r.lang="de-DE"; r.interimResults=false; r.maxAlternatives=6; r.continuous=false;
+  r.onresult=onSpeech;
+  r.onerror=onSpeechErr;
+  r.onend=()=>{ listening=false; setMicUI(false); };
+  return r;
+}
+function lev(a,b){
+  const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+function matches(transcript,item){
+  const acc=ACCEPT[item.n], target=item.de.toLowerCase();
+  const toks=transcript.toLowerCase().normalize('NFC').split(/[^a-zA-Zäöü0-9]+/).filter(Boolean);
+  const whole=transcript.toLowerCase().replace(/[^a-zäöü0-9]/g,'');
+  const test=w=>acc.includes(w)||lev(w,target)<=1;
+  return toks.some(test)||test(whole);
+}
+
+/* ---------- Découvrir ---------- */
+const grid=document.getElementById('grid');
+NUMBERS.forEach((item,i)=>{
+  const c=COLORS[i];
+  const card=document.createElement('button');
+  card.className='card'; card.setAttribute('aria-label',item.n+' : '+item.de);
+  card.innerHTML='<div class="bead" style="background:'+c.bg+';color:'+c.fg+'">'+item.n+'</div>'+
+    '<div class="word">'+item.de+'</div><span class="say">🔊 écouter</span>';
+  card.addEventListener('click',()=>{speak(item.de);card.classList.remove('pop');void card.offsetWidth;card.classList.add('pop');});
+  grid.appendChild(card);
+});
+document.getElementById('hideWords').addEventListener('change',e=>document.body.classList.toggle('hidewords',e.target.checked));
+document.getElementById('playAll').addEventListener('click',()=>{
+  let i=0;(function next(){if(i>=NUMBERS.length)return;speak(NUMBERS[i].de);i++;setTimeout(next,1300);})();
+});
+
+/* ---------- Quiz ---------- */
+let mode='discover', order=[], pos=0, solved=0, tries=0;
+const el={
+  quiz:document.getElementById('quiz'), discover:document.getElementById('discover'),
+  tile:document.getElementById('qTile'), prompt:document.getElementById('qPrompt'),
+  input:document.getElementById('answer'), fb:document.getElementById('feedback'),
+  count:document.getElementById('count'), bar:document.getElementById('barFill'),
+  question:document.getElementById('question'), finished:document.getElementById('finished'),
+  doneMsg:document.getElementById('doneMsg'), scoreLine:document.getElementById('scoreLine'),
+  check:document.getElementById('btnCheck'), show:document.getElementById('btnShow'),
+  writeArea:document.getElementById('writeArea'), speakArea:document.getElementById('speakArea'),
+  mic:document.getElementById('btnMic'), heard:document.getElementById('heard'),
+  next2:document.getElementById('btnNext2'),
+};
+
+function buildOrder(){
+  order=NUMBERS.map((_,i)=>i);
+  if(document.getElementById('shuffle').checked)
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+}
+function startQuiz(){ buildOrder(); pos=0; solved=0; el.finished.classList.add('hidden'); el.question.classList.remove('hidden'); render(); }
+function current(){ return NUMBERS[order[pos]]; }
+
+function render(){
+  stopListening();
+  const item=current(), c=COLORS[order[pos]];
+  tries=0;
+  el.tile.style.background=c.bg; el.tile.style.color=c.fg;
+  el.fb.className='feedback'; el.fb.textContent='';
+  el.writeArea.classList.toggle('hidden', mode==='speak');
+  el.speakArea.classList.toggle('hidden', mode!=='speak');
+
+  if(mode==='speak'){
+    el.tile.textContent=item.n; el.tile.style.fontSize='76px';
+    el.prompt.textContent='Regarde le nombre et dis‑le en allemand.';
+    el.heard.textContent='Clique sur 🎤, puis prononce le nombre.';
+    el.next2.classList.add('hidden');
+    el.mic.disabled=false;
+    setMicUI(false);
+  } else {
+    el.input.value=''; el.input.className='';
+    el.check.textContent='Vérifier'; el.show.disabled=false;
+    if(mode==='write'){
+      el.tile.textContent=item.n; el.tile.style.fontSize='76px';
+      el.prompt.textContent='Quel est ce nombre en allemand ? Écris le mot.';
+    } else {
+      el.tile.textContent='👂'; el.tile.style.fontSize='58px';
+      el.prompt.textContent='Écoute, répète à voix haute, puis écris le mot.';
+      setTimeout(()=>speak(item.de),350);
+    }
+    el.input.focus();
+  }
+  el.count.textContent=(pos+1)+' / 12';
+  el.bar.style.width=(solved/12*100)+'%';
+  el.scoreLine.textContent=solved+' réussi'+(solved>1?'s':'');
+}
+function popTile(){ el.tile.classList.remove('pop'); void el.tile.offsetWidth; el.tile.classList.add('pop'); }
+function markSolved(item){
+  solved++; el.bar.style.width=(solved/12*100)+'%';
+  el.scoreLine.textContent=solved+' réussi'+(solved>1?'s':'');
+  popTile(); speak(item.de);
+}
+
+/* --- écrire / écouter --- */
+function norm(s){ return s.trim().toLowerCase().replace(/\s+/g,''); }
+function check(){
+  if(el.check.textContent==='Suivant'){ next(); return; }
+  const item=current(), v=norm(el.input.value); if(!v) return;
+  if(v===norm(item.de)){
+    el.input.className='ok';
+    el.fb.className='feedback good';
+    el.fb.innerHTML='Richtig ! · Bravo 🎉<span class="de">'+item.de+'</span>';
+    markSolved(item); el.check.textContent='Suivant'; el.show.disabled=true; el.input.blur();
+  } else if(item.alt && v===norm(item.alt)){
+    el.input.className='no'; el.fb.className='feedback bad';
+    el.fb.innerHTML='Presque ! On écrit avec un tréma : <span class="de">'+item.de+'</span><small>Utilise le bouton ö ou ü, puis réessaie.</small>';
+  } else {
+    tries++; el.input.className='no'; el.fb.className='feedback bad';
+    el.fb.innerHTML = tries>=2
+      ? 'Pas encore. Le mot est <span class="de">'+item.de+'</span><small>Recopie‑le, puis clique sur Suivant.</small>'
+      : 'Essaie encore ! 💪<small>Besoin d\'aide ? Clique sur 🔊 ou sur « Montrer ».</small>';
+    speak(item.de);
+  }
+}
+
+/* --- parler --- */
+function setMicUI(on){
+  listening=on;
+  el.mic.classList.toggle('listening',on);
+  el.mic.innerHTML = on ? '● J\'écoute…' : '🎤 Parler';
+}
+function stopListening(){ if(recog && listening){ try{recog.stop();}catch(e){} } setMicUI(false); }
+function startListening(){
+  if(!SR){
+    el.fb.className='feedback bad';
+    el.fb.innerHTML='Le micro n\'est pas disponible ici.<small>Ouvre le fichier dans Chrome ou Edge, ou utilise l\'onglet « Écrire ».</small>';
+    return;
+  }
+  if(listening){ stopListening(); return; }
+  if(!recog) recog=initRecog();
+  el.heard.textContent='Parle maintenant…';
+  el.fb.className='feedback'; el.fb.textContent='';
+  try{ recog.start(); setMicUI(true); }catch(e){ /* déjà démarré */ }
+}
+function onSpeech(e){
+  const item=current();
+  const res=e.results[0];
+  const heardText=res[0].transcript;
+  let ok=false;
+  for(let i=0;i<res.length;i++){ if(matches(res[i].transcript,item)){ ok=true; break; } }
+  el.heard.innerHTML='J\'ai entendu : <b>'+heardText+'</b>';
+  if(ok){
+    el.fb.className='feedback good';
+    el.fb.innerHTML='Richtig gesprochen ! 🎉<span class="de">'+item.de+'</span>';
+    markSolved(item);
+    el.mic.disabled=true; el.next2.classList.remove('hidden'); el.next2.focus();
+  } else {
+    el.fb.className='feedback bad';
+    el.fb.innerHTML='Pas tout à fait. Écoute bien la bonne réponse : <span class="de">'+item.de+'</span><small>Puis reclique sur 🎤 pour réessayer.</small>';
+    // >>> répète la bonne réponse à voix haute <<<
+    setTimeout(()=>{ speak(item.de); setTimeout(()=>speak(item.de),900); }, 250);
+  }
+}
+function onSpeechErr(e){
+  setMicUI(false);
+  const map={
+    'not-allowed':'Le micro est bloqué. Autorise le microphone dans le navigateur, puis réessaie.',
+    'service-not-allowed':'Le micro est bloqué. Autorise le microphone dans le navigateur, puis réessaie.',
+    'no-speech':'Je n\'ai rien entendu. Clique sur 🎤 et parle bien fort.',
+    'audio-capture':'Aucun micro détecté sur cet appareil.',
+    'network':'Le micro a besoin d\'une connexion internet.',
+  };
+  if(e.error==='no-speech'){ el.heard.textContent='Je n\'ai rien entendu — réessaie.'; return; }
+  el.fb.className='feedback bad';
+  el.fb.innerHTML=(map[e.error]||'Le micro n\'a pas fonctionné. Réessaie.');
+}
+
+function next(){ if(pos<NUMBERS.length-1){ pos++; render(); } else finish(); }
+function finish(){
+  stopListening();
+  el.question.classList.add('hidden'); el.finished.classList.remove('hidden');
+  el.bar.style.width='100%'; el.count.textContent='12 / 12';
+  el.doneMsg.textContent = solved===12 ? 'Parfait ! Tu connais les 12 nombres 🌟'
+    : solved>=8 ? 'Très bien ! '+solved+' / 12 réussis.'
+    : 'Bon travail ! '+solved+' / 12. On recommence ?';
+}
+
+/* boutons */
+el.check.addEventListener('click',check);
+el.input.addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
+document.getElementById('btnHear').addEventListener('click',()=>speak(current().de));
+document.getElementById('btnHear2').addEventListener('click',()=>speak(current().de));
+el.tile.addEventListener('click',()=>speak(current().de));
+el.tile.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();speak(current().de);} });
+el.show.addEventListener('click',()=>{ const it=current(); el.fb.className='feedback'; el.fb.innerHTML='<span class="de" style="color:var(--muted)">'+it.de+'</span>'; speak(it.de); });
+document.getElementById('btnShow2').addEventListener('click',()=>{ const it=current(); el.heard.innerHTML='Le mot : <b>'+it.de+'</b>'; speak(it.de); });
+el.mic.addEventListener('click',startListening);
+el.next2.addEventListener('click',next);
+document.querySelectorAll('.umlaut button').forEach(b=>b.addEventListener('click',()=>{
+  const i=el.input,ch=b.dataset.ch,s=i.selectionStart??i.value.length,e=i.selectionEnd??i.value.length;
+  i.value=i.value.slice(0,s)+ch+i.value.slice(e); i.selectionStart=i.selectionEnd=s+1; i.focus();
+}));
+document.getElementById('btnRestart').addEventListener('click',startQuiz);
+document.getElementById('shuffle').addEventListener('change',()=>{ if(mode!=='discover') startQuiz(); });
+
+/* onglets */
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+  stopListening();
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected','false'));
+  tab.setAttribute('aria-selected','true');
+  mode=tab.dataset.mode;
+  if(mode==='discover'){ el.discover.classList.remove('hidden'); el.quiz.classList.add('hidden'); }
+  else { el.discover.classList.add('hidden'); el.quiz.classList.remove('hidden'); startQuiz(); }
+}));
+</script>
+</body>
+</html>
