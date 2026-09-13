@@ -12,111 +12,172 @@
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, system-ui, sans-serif;
-    background: #f8fafc; color: #1e293b; }
-  header { padding: 22px 18px 16px; }
-  header h1 { margin: 0; font-size: 1.5rem; }
-  header p { margin: 4px 0 0; color: #64748b; font-size: .9rem; }
-  nav { display: flex; gap: 8px; overflow-x: auto; padding: 0 14px 14px;
-    -webkit-overflow-scrolling: touch; }
-  nav button { flex: 0 0 auto; border: none; border-radius: 999px;
-    padding: 9px 16px; font-size: .95rem; font-weight: 600; color: #fff;
-    opacity: .45; transition: opacity .2s; cursor: pointer; }
-  nav button.actif { opacity: 1; }
-  main { padding: 4px 14px 40px; }
-  .barre { height: 7px; background: #e2e8f0; border-radius: 999px;
-    overflow: hidden; margin: 2px 0 16px; }
+    background: #f8fafc; color: #1e293b; padding: 20px 16px 40px; }
+  .wrap { max-width: 620px; margin: 0 auto; }
+  header h1 { margin: 0; font-size: 1.6rem; }
+  header p { margin: 5px 0 20px; color: #64748b; font-size: .95rem; }
+  .hidden { display: none !important; }
+
+  /* ---- Grille d'accueil ---- */
+  .grille { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tuile { border: none; border-radius: 18px; padding: 18px 14px;
+    min-height: 104px; text-align: left; cursor: pointer; color: #fff;
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 4px 14px rgba(30,41,59,.10); font-family: inherit; }
+  .tuile:active { transform: translateY(2px); }
+  .tuile .nom { font-size: 1.15rem; font-weight: 800; line-height: 1.15; }
+  .tuile .info { font-size: .82rem; font-weight: 600; opacity: .92;
+    display: flex; align-items: center; gap: 6px; }
+  .tuile.clair { border: 1px solid #e2e8f0; }
+  .mini { height: 6px; border-radius: 999px; background: rgba(255,255,255,.4);
+    overflow: hidden; margin-top: 8px; }
+  .mini span { display: block; height: 100%; background: #fff; }
+  .tuile.clair .mini { background: #e2e8f0; }
+  .pastille { background: rgba(255,255,255,.28); border-radius: 999px;
+    padding: 1px 8px; font-size: .78rem; }
+  .tuile.vide .info { opacity: .8; }
+
+  /* ---- Vue d'une matière ---- */
+  .retour { background: none; border: none; color: #475569; font-weight: 700;
+    font-size: 1rem; padding: 4px 0 14px; cursor: pointer; font-family: inherit; }
+  .titreMat { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .pastilleMat { width: 16px; height: 16px; border-radius: 5px; flex: 0 0 auto; }
+  .titreMat h2 { margin: 0; font-size: 1.45rem; }
+  .barre { height: 8px; background: #e2e8f0; border-radius: 999px;
+    overflow: hidden; margin: 12px 0 18px; }
   .barre span { display: block; height: 100%; transition: width .3s; }
   .carte { display: flex; align-items: center; gap: 12px; background: #fff;
-    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    border-radius: 14px; padding: 15px 16px; margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,.06); text-decoration: none; color: inherit; }
   .carte .titre { flex: 1; font-weight: 600; }
   .check { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
     border: 2px solid #cbd5e1; display: grid; place-items: center;
     font-size: 1rem; color: #fff; cursor: pointer; }
   .check.ok { background: #22c55e; border-color: #22c55e; }
-  .vide { color: #94a3b8; font-size: .9rem; padding: 10px 4px; }
+  .vide-msg { color: #94a3b8; font-size: .95rem; padding: 24px 4px; text-align: center; }
 </style>
 </head>
 <body>
-<header>
-  <h1>Mes révisions</h1>
-  <p>Choisis une matière, puis un exercice.</p>
-</header>
-<nav id="tabs"></nav>
-<main id="contenu"></main>
+<div class="wrap">
+  <header>
+    <h1>Mes révisions</h1>
+    <p id="sous-titre">Choisis une matière.</p>
+  </header>
+  <main id="accueil"></main>
+  <section id="matiere" class="hidden"></section>
+</div>
 
 <script>
+"use strict";
+
 /* ===================== ZONE À MODIFIER ===================== */
-/* Pour AJOUTER un exercice : ajoute une ligne { titre:..., lien:... } */
-/* "lien" = le nom du fichier .html de l'exerciseur, déposé dans GitHub. */
-const MATIERES = [
+/* Pour AJOUTER un exercice : ajoute une ligne { titre:"...", lien:"..." } */
+/* "lien" = le nom EXACT du fichier .html déposé dans GitHub. */
+var MATIERES = [
   { nom: "Maths",      couleur: "#dc2626", exercices: [
       { titre: "L'écriture des nombres", lien: "exercices-ecriture-nombres.html" }
   ]},
   { nom: "Français",   couleur: "#7c3aed", exercices: [] },
   { nom: "Histoire",   couleur: "#64748b", exercices: [] },
-  { nom: "Géographie", couleur: "#64748b", exercices: [] },
+  { nom: "Géographie", couleur: "#94a3b8", exercices: [] },
   { nom: "EMC",        couleur: "#14532d", exercices: [] },
   { nom: "Physique",   couleur: "#16a34a", exercices: [] },
-  { nom: "Chimie",     couleur: "#16a34a", exercices: [{ titre: " La verrerie de chimie", lien: "verrerie-chimie.html" } ] },
+  { nom: "Chimie",     couleur: "#16a34a", exercices: [
+      { titre: "La verrerie de chimie", lien: "verrerie-chimie.html" }
+  ]},
   { nom: "SVT",        couleur: "#ffffff", exercices: [] },
-  { nom: "Anglais",    couleur: "#2563eb", exercices: [{ titre: " numbers from 1 to 100", lien: "exercice-numbers-anglais.html"} ] },
-  { nom: "Allemand",   couleur: "#ea580c", exercices: [{titre:" Zalhen 1 bis 12" , lien: "zahlen-1-bis-12.html"}], }
+  { nom: "Anglais",    couleur: "#2563eb", exercices: [
+      { titre: "Numbers from 1 to 100", lien: "exercice-numbers-anglais.html" }
+  ]},
+  { nom: "Allemand",   couleur: "#ea580c", exercices: [
+      { titre: "Zahlen 1 bis 12", lien: "zahlen-1-bis-12.html" }
+  ]}
 ];
 /* =================== FIN DE LA ZONE ======================== */
 
-const tabs = document.getElementById("tabs");
-const contenu = document.getElementById("contenu");
-let actuelle = 0;
+var accueil = document.getElementById("accueil");
+var vueMat  = document.getElementById("matiere");
+var sousTitre = document.getElementById("sous-titre");
 
-function estClair(hex) {
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
+function estClair(hex){
+  var c = hex.replace("#","");
+  var r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
   return (0.299*r + 0.587*g + 0.114*b) > 200;
 }
-function estFait(lien) { return localStorage.getItem("fait:" + lien) === "1"; }
-function basculer(lien) {
+function estFait(lien){ return localStorage.getItem("fait:" + lien) === "1"; }
+function basculer(lien){
   localStorage.setItem("fait:" + lien, estFait(lien) ? "0" : "1");
-  afficher(actuelle);
 }
 
-function afficher(i) {
-  actuelle = i;
-  const m = MATIERES[i];
-  [...tabs.children].forEach((b, k) => b.classList.toggle("actif", k === i));
-  const total = m.exercices.length;
-  const faits = m.exercices.filter(e => estFait(e.lien)).length;
-  const pct = total ? Math.round(faits / total * 100) : 0;
-  const fill = estClair(m.couleur) ? "#94a3b8" : m.couleur;
-  let html = '<div class="barre"><span style="width:' + pct +
-    '%;background:' + fill + '"></span></div>';
-  if (!total) {
-    html += '<p class="vide">Aucun exercice ici pour l\'instant.</p>';
+/* ---------- Écran d'accueil : la grille ---------- */
+function renderAccueil(){
+  vueMat.classList.add("hidden");
+  accueil.classList.remove("hidden");
+  sousTitre.textContent = "Choisis une matière.";
+  var html = '<div class="grille">';
+  MATIERES.forEach(function(m, i){
+    var clair = estClair(m.couleur);
+    var total = m.exercices.length;
+    var faits = m.exercices.filter(function(e){ return estFait(e.lien); }).length;
+    var pct = total ? Math.round(faits/total*100) : 0;
+    var info;
+    if(total === 0){
+      info = '<span class="pastille">à venir</span>';
+    } else if(faits === total){
+      info = '<span class="pastille">✓ terminé</span>';
+    } else {
+      info = '<span>' + faits + ' / ' + total + ' fait' + (faits>1?'s':'') + '</span>';
+    }
+    var mini = total ? '<div class="mini"><span style="width:' + pct + '%"></span></div>' : '';
+    html += '<button class="tuile ' + (clair?'clair ':'') + (total?'':'vide') +
+      '" style="background:' + m.couleur + (clair?';color:#1e293b':'') + '" data-i="' + i + '">' +
+      '<div class="nom">' + m.nom + '</div>' +
+      '<div><div class="info">' + info + '</div>' + mini + '</div>' +
+      '</button>';
+  });
+  html += '</div>';
+  accueil.innerHTML = html;
+  [].forEach.call(accueil.querySelectorAll(".tuile"), function(t){
+    t.addEventListener("click", function(){ renderMatiere(parseInt(t.getAttribute("data-i"),10)); });
+  });
+}
+
+/* ---------- Vue d'une matière ---------- */
+function renderMatiere(i){
+  var m = MATIERES[i];
+  accueil.classList.add("hidden");
+  vueMat.classList.remove("hidden");
+  sousTitre.textContent = "Choisis un exercice.";
+  var total = m.exercices.length;
+  var faits = m.exercices.filter(function(e){ return estFait(e.lien); }).length;
+  var pct = total ? Math.round(faits/total*100) : 0;
+  var fill = estClair(m.couleur) ? "#94a3b8" : m.couleur;
+
+  var html = '<button class="retour" id="btn-retour">‹ Toutes les matières</button>' +
+    '<div class="titreMat"><span class="pastilleMat" style="background:' + m.couleur +
+      (estClair(m.couleur)?';border:1px solid #e2e8f0':'') + '"></span><h2>' + m.nom + '</h2></div>' +
+    '<div class="barre"><span style="width:' + pct + '%;background:' + fill + '"></span></div>';
+
+  if(total === 0){
+    html += '<p class="vide-msg">Bientôt des exercices ici.</p>';
   } else {
-    m.exercices.forEach(e => {
-      const ok = estFait(e.lien);
+    m.exercices.forEach(function(e){
+      var ok = estFait(e.lien);
       html += '<div class="carte">' +
         '<a class="titre" href="' + e.lien + '">' + e.titre + '</a>' +
-        '<div class="check ' + (ok ? "ok" : "") + '" ' +
-        'onclick="basculer(\'' + e.lien + '\')">' + (ok ? "✓" : "") + '</div>' +
+        '<div class="check ' + (ok?'ok':'') + '" data-lien="' + e.lien + '">' + (ok?'✓':'') + '</div>' +
         '</div>';
     });
   }
-  contenu.innerHTML = html;
+  vueMat.innerHTML = html;
+  document.getElementById("btn-retour").addEventListener("click", renderAccueil);
+  [].forEach.call(vueMat.querySelectorAll(".check"), function(c){
+    c.addEventListener("click", function(){ basculer(c.getAttribute("data-lien")); renderMatiere(i); });
+  });
+  window.scrollTo(0,0);
 }
 
-MATIERES.forEach((m, i) => {
-  const b = document.createElement("button");
-  b.textContent = m.nom;
-  b.style.background = m.couleur;
-  if (estClair(m.couleur)) {
-    b.style.color = "#1e293b";
-    b.style.border = "1px solid #cbd5e1";
-  }
-  b.onclick = () => afficher(i);
-  tabs.appendChild(b);
-});
-afficher(0);
+renderAccueil();
 </script>
 </body>
 </html>

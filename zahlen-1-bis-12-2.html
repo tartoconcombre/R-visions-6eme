@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Zahlen von 1 bis 12</title>
+<style>
+  :root{
+    --paper:#f3efe6; --panel:#ffffff; --ink:#26221c; --muted:#7a7367;
+    --line:#e2dccf; --brand:#c2410c; --brand2:#1d4ed8;
+    --good:#15803d; --good-bg:#e6f4ea; --bad:#b91c1c;
+    --shadow:0 8px 26px rgba(60,50,35,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    color:var(--ink); background:var(--paper); min-height:100vh;
+    line-height:1.5; padding:18px 15px 46px; -webkit-tap-highlight-color:transparent;}
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:1.7rem;margin:.1em 0}
+  .lead{color:var(--muted);margin:0 0 12px;font-size:.95rem}
+  .hidden{display:none !important}
+  .home{display:inline-block;margin-bottom:8px;color:var(--brand2);font-weight:700;text-decoration:none}
+
+  .voice{display:inline-flex;align-items:center;gap:7px;font-size:.82rem;font-weight:600;
+    padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel);margin-bottom:16px;}
+  .voice .dot{width:9px;height:9px;border-radius:50%;background:#cbb;flex:0 0 auto}
+  .voice.ok .dot{background:var(--good)} .voice.ko .dot{background:var(--bad)}
+
+  .tabs{display:flex;gap:7px;margin-bottom:18px}
+  .tab{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    font-weight:700;font-size:.9rem;padding:11px 6px;border-radius:12px;cursor:pointer;}
+  .tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+    padding:22px 18px;box-shadow:var(--shadow);text-align:center;}
+  .count{color:var(--muted);font-weight:700;font-size:.85rem;margin-bottom:8px}
+  .numeral{font-size:4.2rem;font-weight:800;line-height:1;margin:6px 0 4px;color:var(--brand)}
+  .word{font-size:2rem;font-weight:800;margin:2px 0 6px}
+  .word.hide{color:transparent;text-shadow:0 0 18px rgba(0,0,0,.28)}
+
+  button{font-family:inherit;cursor:pointer}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-weight:800;font-size:1rem;padding:13px 16px;border-radius:13px;border:none;
+    background:var(--brand);color:#fff;width:100%;}
+  .btn:active{transform:translateY(2px)}
+  .btn.sec{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+  .btn.blue{background:var(--brand2)}
+  .row{display:flex;gap:9px;margin-top:14px}
+  .row .btn{flex:1}
+  .speak{font-size:2rem;background:var(--panel);border:1px solid var(--line);
+    width:74px;height:74px;border-radius:50%;margin:6px auto 2px;display:grid;place-items:center;}
+
+  input[type=text]{width:100%;font-family:inherit;font-size:1.35rem;font-weight:700;text-align:center;
+    padding:12px;border:2px solid var(--line);border-radius:13px;margin-top:10px;}
+  input:focus{outline:none;border-color:var(--brand2)}
+  .umlaut{display:flex;gap:8px;justify-content:center;margin-top:10px}
+  .umlaut button{font-size:1.2rem;font-weight:800;width:52px;height:46px;border-radius:11px;
+    border:1px solid var(--line);background:var(--panel);}
+  .fb{min-height:26px;margin-top:12px;font-weight:800;font-size:1.05rem}
+  .fb.good{color:var(--good)} .fb.bad{color:var(--bad)}
+  .bar{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin:14px 0 0}
+  .bar span{display:block;height:100%;background:var(--brand);width:0;transition:width .3s}
+  .done{font-size:1.15rem;font-weight:800;margin:8px 0}
+  .record{color:var(--muted);font-weight:700;margin:2px 0 14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="index.html">‹ Retour aux matières</a>
+  <h1>Die Zahlen von 1 bis 12</h1>
+  <p class="lead">Les nombres de 1 à 12 en allemand : les écrire et les dire.</p>
+
+  <div id="voice" class="voice"><span class="dot"></span><span id="voiceTxt">Vérification du son…</span></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true"  data-mode="discover">Découvrir</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="write">Écrire</button>
+    <button class="tab" role="tab" aria-selected="false" data-mode="listen">Écouter</button>
+  </div>
+
+  <section id="discover" class="card">
+    <div class="count" id="d-count"></div>
+    <div class="numeral" id="d-num"></div>
+    <div class="speak" id="d-speak" role="button" tabindex="0" aria-label="Écouter">🔊</div>
+    <div class="word" id="d-word"></div>
+    <label style="display:inline-flex;gap:7px;align-items:center;color:var(--muted);font-weight:600;font-size:.9rem;margin-top:4px">
+      <input type="checkbox" id="d-hide"> cacher le mot
+    </label>
+    <div class="row">
+      <button class="btn sec" id="d-prev">‹ Précédent</button>
+      <button class="btn" id="d-next">Suivant ›</button>
+    </div>
+  </section>
+
+  <section id="quiz" class="card hidden">
+    <div class="count" id="q-count"></div>
+    <div class="numeral" id="q-num"></div>
+    <div class="speak hidden" id="q-speak" role="button" tabindex="0" aria-label="Écouter">🔊</div>
+    <input type="text" id="q-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Écris en allemand">
+    <div class="umlaut">
+      <button data-ch="ä">ä</button><button data-ch="ö">ö</button><button data-ch="ü">ü</button>
+    </div>
+    <div class="fb" id="q-fb"></div>
+    <div class="row">
+      <button class="btn" id="q-check">Vérifier</button>
+      <button class="btn sec" id="q-next">Suivant ›</button>
+    </div>
+    <div class="bar"><span id="q-bar"></span></div>
+  </section>
+
+  <section id="end" class="card hidden">
+    <div class="done" id="end-msg"></div>
+    <div class="record" id="end-record"></div>
+    <button class="btn blue" id="end-again">Recommencer</button>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+var NUMBERS = [
+  {n:1,de:"eins"},{n:2,de:"zwei"},{n:3,de:"drei"},{n:4,de:"vier"},
+  {n:5,de:"fünf"},{n:6,de:"sechs"},{n:7,de:"sieben"},{n:8,de:"acht"},
+  {n:9,de:"neun"},{n:10,de:"zehn"},{n:11,de:"elf"},{n:12,de:"zwölf"}
+];
+
+/* ====== Enregistrement du meilleur score (lu par la page d'accueil) ====== */
+function enregistrerMeilleurScore(bon, total){
+  try{
+    var lien = location.pathname.split("/").pop() || "index.html";
+    var cle = "meilleur:" + lien;
+    var prev = null;
+    try { prev = JSON.parse(localStorage.getItem(cle)); } catch(e){}
+    var mieux = !prev || (bon/total) > (prev.bon/prev.total) ||
+                ((bon/total) === (prev.bon/prev.total) && bon > prev.bon);
+    if(mieux) localStorage.setItem(cle, JSON.stringify({bon:bon, total:total}));
+    return meilleurConnu();
+  }catch(e){ return null; }
+}
+function meilleurConnu(){
+  try{
+    var lien = location.pathname.split("/").pop() || "index.html";
+    return JSON.parse(localStorage.getItem("meilleur:" + lien));
+  }catch(e){ return null; }
+}
+
+/* ---------- Synthèse vocale robuste ---------- */
+var germanVoice = null;
+function pickGermanVoice(){
+  if(!("speechSynthesis" in window)) return null;
+  var voices = window.speechSynthesis.getVoices() || [];
+  var exact = voices.filter(function(v){ return /^de(-|_|$)/i.test(v.lang); });
+  return exact.length ? exact[0] : null;
+}
+function updateVoiceBadge(){
+  var box = document.getElementById("voice"), txt = document.getElementById("voiceTxt");
+  if(!("speechSynthesis" in window)){
+    box.className = "voice ko"; txt.textContent = "Ce navigateur ne lit pas le son. Ouvre la page dans Chrome."; return;
+  }
+  if(germanVoice){ box.className = "voice ok"; txt.textContent = "Voix allemande prête"; }
+  else { box.className = "voice ko"; txt.textContent = "Voix allemande absente : installe l'allemand dans Réglages → Synthèse vocale."; }
+}
+function refreshVoices(){ germanVoice = pickGermanVoice(); updateVoiceBadge(); }
+if("speechSynthesis" in window){
+  refreshVoices();
+  window.speechSynthesis.onvoiceschanged = refreshVoices;
+  setTimeout(refreshVoices, 400); setTimeout(refreshVoices, 1200);
+} else { updateVoiceBadge(); }
+function speak(text){
+  if(!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = "de-DE";
+  if(!germanVoice) germanVoice = pickGermanVoice();
+  if(germanVoice) u.voice = germanVoice;
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+
+/* ---------- Comparaison tolérante ---------- */
+function normalize(s){
+  return (s||"").toLowerCase().trim()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[^a-z]/g,"");
+}
+function distance(a,b){
+  var m=a.length,n=b.length,d=[],i,j;
+  for(i=0;i<=m;i++){d[i]=[i];}
+  for(j=0;j<=n;j++){d[0][j]=j;}
+  for(i=1;i<=m;i++){for(j=1;j<=n;j++){
+    var c=a.charAt(i-1)===b.charAt(j-1)?0:1;
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+c);
+  }}
+  return d[m][n];
+}
+function isCorrect(input, answer){
+  var a=normalize(input), b=normalize(answer);
+  if(!a) return false;
+  if(a===b) return true;
+  return distance(a,b)<=1;
+}
+
+/* ---------- DÉCOUVRIR ---------- */
+var dPos=0;
+var dCount=document.getElementById("d-count"), dNum=document.getElementById("d-num"),
+    dWord=document.getElementById("d-word"), dHide=document.getElementById("d-hide");
+function renderDiscover(){
+  var item=NUMBERS[dPos];
+  dCount.textContent=(dPos+1)+" / "+NUMBERS.length;
+  dNum.textContent=item.n; dWord.textContent=item.de;
+  dWord.classList.toggle("hide", dHide.checked);
+}
+document.getElementById("d-speak").addEventListener("click", function(){ speak(NUMBERS[dPos].de); });
+document.getElementById("d-speak").addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();speak(NUMBERS[dPos].de);} });
+document.getElementById("d-next").addEventListener("click", function(){ dPos=(dPos+1)%NUMBERS.length; renderDiscover(); speak(NUMBERS[dPos].de); });
+document.getElementById("d-prev").addEventListener("click", function(){ dPos=(dPos-1+NUMBERS.length)%NUMBERS.length; renderDiscover(); speak(NUMBERS[dPos].de); });
+dHide.addEventListener("change", renderDiscover);
+dWord.addEventListener("click", function(){ if(dHide.checked){dWord.classList.remove("hide");} });
+
+/* ---------- QUIZ ---------- */
+var mode="discover", order=[], qPos=0, solved=0;
+var qCount=document.getElementById("q-count"), qNum=document.getElementById("q-num"),
+    qSpeak=document.getElementById("q-speak"), qInput=document.getElementById("q-input"),
+    qFb=document.getElementById("q-fb"), qBar=document.getElementById("q-bar"),
+    qCheck=document.getElementById("q-check"), qNext=document.getElementById("q-next");
+function shuffle(arr){ var a=arr.slice(),i,j,t; for(i=a.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function startQuiz(){
+  order=shuffle(NUMBERS); qPos=0; solved=0;
+  document.getElementById("end").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  renderQuiz();
+}
+function currentQ(){ return order[qPos]; }
+function renderQuiz(){
+  var item=currentQ();
+  qCount.textContent=(qPos+1)+" / "+order.length;
+  qFb.textContent=""; qFb.className="fb";
+  qInput.value=""; qInput.focus();
+  qBar.style.width=Math.round(qPos/order.length*100)+"%";
+  if(mode==="listen"){ qNum.textContent="?"; qSpeak.classList.remove("hidden"); speak(item.de); }
+  else { qNum.textContent=item.n; qSpeak.classList.add("hidden"); }
+}
+function checkQ(){
+  var item=currentQ();
+  if(isCorrect(qInput.value, item.de)){
+    qFb.textContent="✔ "+item.de; qFb.className="fb good"; solved++;
+    speak(item.de); setTimeout(nextQ, 700);
+  } else {
+    qFb.textContent="Presque… c'est « "+item.de+" »"; qFb.className="fb bad"; speak(item.de);
+  }
+}
+function nextQ(){ if(qPos<order.length-1){ qPos++; renderQuiz(); } else finishQuiz(); }
+function finishQuiz(){
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("end").classList.remove("hidden");
+  var msg = solved===order.length ? "Parfait ! "+solved+" / "+order.length+" 🌟"
+          : solved>=Math.ceil(order.length*0.7) ? "Très bien ! "+solved+" / "+order.length
+          : "Bon travail ! "+solved+" / "+order.length+". On recommence ?";
+  document.getElementById("end-msg").textContent=msg;
+  var best = enregistrerMeilleurScore(solved, order.length);
+  var rec = document.getElementById("end-record");
+  if(best){ rec.textContent = "Meilleur score : " + best.bon + " / " + best.total; }
+}
+qCheck.addEventListener("click", checkQ);
+qNext.addEventListener("click", nextQ);
+qInput.addEventListener("keydown", function(e){ if(e.key==="Enter") checkQ(); });
+qSpeak.addEventListener("click", function(){ speak(currentQ().de); });
+qSpeak.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();speak(currentQ().de);} });
+document.getElementById("end-again").addEventListener("click", startQuiz);
+[].forEach.call(document.querySelectorAll(".umlaut button"), function(b){
+  b.addEventListener("click", function(){
+    var ch=b.getAttribute("data-ch");
+    var s=qInput.selectionStart, e=qInput.selectionEnd;
+    if(s==null){ qInput.value+=ch; }
+    else { qInput.value=qInput.value.slice(0,s)+ch+qInput.value.slice(e); qInput.selectionStart=qInput.selectionEnd=s+1; }
+    qInput.focus();
+  });
+});
+
+/* ---------- Onglets ---------- */
+[].forEach.call(document.querySelectorAll(".tab"), function(tab){
+  tab.addEventListener("click", function(){
+    [].forEach.call(document.querySelectorAll(".tab"), function(t){ t.setAttribute("aria-selected","false"); });
+    tab.setAttribute("aria-selected","true");
+    mode=tab.getAttribute("data-mode");
+    if(mode==="discover"){
+      document.getElementById("discover").classList.remove("hidden");
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("end").classList.add("hidden");
+      renderDiscover();
+    } else {
+      document.getElementById("discover").classList.add("hidden");
+      startQuiz();
+    }
+  });
+});
+
+renderDiscover();
+</script>
+</body>
+</html>
