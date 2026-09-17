@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die Wochentage — exercice interactif</title>
+<meta name="description" content="Exercice interactif d'allemand (6e) : les jours de la semaine — écouter, comprendre, écrire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page-bg:#e7eef3; --paper:#ffffff;
+    --ink:#26333b; --ink-soft:#5d6f79; --line:#cfdae1;
+    --primary:#2e6fb7; --primary-tint:#e9f1fa;
+    --ok:#2f9e6b; --ok-tint:#e4f5ec; --no:#d9534f; --no-tint:#fbe9e8;
+    --mo:#ef7d57; --di:#f0ab2f; --mi:#5cae4f; --do:#2ca39c;
+    --fr:#4a90d9; --sa:#8b6fc7; --so:#e0688e;
+    --sans:"Nunito",system-ui,-apple-system,sans-serif;
+    --display:"Fredoka",system-ui,sans-serif;
+  }
+  :root[data-theme="dark"]{ --page-bg:#1c242a; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --page-bg:#1c242a; } }
+
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--page-bg); font-family:var(--sans);
+    color:var(--ink); line-height:1.5; padding:22px 12px 60px; }
+  .sheet{ background:var(--paper); max-width:760px; margin:0 auto;
+    padding:30px 34px 40px; border-radius:16px; box-shadow:0 10px 40px rgba(38,51,59,.14); }
+
+  header{ padding-bottom:14px; border-bottom:3px solid var(--primary); }
+  h1{ font-family:var(--display); font-weight:700; font-size:2.2rem; line-height:1.02;
+    margin:0; color:var(--primary); letter-spacing:-.5px; }
+  header p{ margin:5px 0 0; color:var(--ink-soft); }
+
+  .progress{ display:flex; align-items:center; gap:10px; margin:18px 0 4px; }
+  .bar{ flex:1; height:12px; background:var(--primary-tint); border-radius:99px; overflow:hidden; }
+  .bar span{ display:block; height:100%; width:0; background:var(--primary);
+    border-radius:99px; transition:width .4s ease; }
+  .score{ font-family:var(--display); font-weight:600; color:var(--primary); white-space:nowrap; }
+
+  section{ margin-top:28px; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+  .badge{ width:38px; height:38px; border-radius:11px; display:grid; place-items:center;
+    font-size:1.25rem; background:var(--primary-tint); flex:0 0 auto; }
+  h2{ font-family:var(--display); font-weight:600; font-size:1.35rem; margin:0; color:var(--primary); }
+  h2 .de{ font-weight:400; color:var(--ink-soft); font-size:.95rem; }
+  .lead{ color:var(--ink-soft); margin:2px 0 12px; font-size:.93rem; }
+
+  /* buttons/chips */
+  button{ font-family:var(--sans); font-size:1rem; cursor:pointer; }
+  .chip{ border:2px solid var(--line); background:#fff; color:var(--ink); font-weight:700;
+    padding:9px 14px; border-radius:11px; transition:all .15s; }
+  .chip:hover{ border-color:var(--primary); }
+  .chip.sel{ border-color:var(--primary); background:var(--primary-tint); }
+  .chip.correct{ border-color:var(--ok); background:var(--ok-tint); color:var(--ok); cursor:default; }
+  .chip.wrong{ border-color:var(--no); background:var(--no-tint); color:var(--no); animation:shake .3s; }
+  .chip:disabled{ cursor:default; opacity:1; }
+  @keyframes shake{ 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+  /* écouter */
+  .speakgrid{ display:flex; flex-wrap:wrap; gap:9px; }
+  .speak{ display:flex; align-items:center; gap:8px; border-left:6px solid var(--dc);
+    border:2px solid var(--line); border-left-width:6px; background:#fff; border-radius:11px; padding:8px 13px; }
+  .speak b{ font-size:1.02rem; }
+  .speak .fr{ color:var(--ink-soft); font-weight:400; font-size:.85rem; }
+  .speak .ico{ font-size:1.1rem; }
+  .note{ font-size:.82rem; color:var(--ink-soft); margin-top:8px; }
+
+  /* relier */
+  .match{ display:flex; gap:22px; }
+  .match .col{ flex:1; display:flex; flex-direction:column; gap:9px; }
+  .match .chip{ width:100%; text-align:left; }
+
+  /* qcm */
+  .q{ margin:16px 0; }
+  .q p{ margin:0 0 8px; font-weight:600; }
+  .q .gloss{ font-weight:400; color:var(--ink-soft); font-size:.85rem; }
+  .opts{ display:flex; flex-wrap:wrap; gap:9px; }
+
+  /* compléter */
+  .fill{ display:flex; align-items:center; gap:10px; margin:11px 0; flex-wrap:wrap; }
+  .fill label{ min-width:120px; }
+  .fill input{ font-family:var(--sans); font-size:1rem; font-weight:700; color:var(--ink);
+    padding:8px 12px; border:2px solid var(--line); border-radius:10px; width:170px; background:#fff; }
+  .fill input:focus{ outline:none; border-color:var(--primary); }
+  .fill input.correct{ border-color:var(--ok); background:var(--ok-tint); }
+  .fill input.wrong{ border-color:var(--no); background:var(--no-tint); }
+  .fb{ font-size:.85rem; font-weight:700; }
+  .fb.ok{ color:var(--ok); } .fb.no{ color:var(--no); }
+
+  .action{ margin-top:10px; }
+  .btn{ background:var(--primary); color:#fff; border:none; font-weight:700;
+    padding:10px 20px; border-radius:10px; box-shadow:0 4px 14px rgba(46,111,183,.3); }
+  .btn.ghost{ background:#fff; color:var(--primary); border:2px solid var(--line); box-shadow:none; }
+  .btn:active{ transform:translateY(1px); }
+
+  .done{ margin-top:8px; font-weight:700; color:var(--ok); }
+  .celebrate{ display:none; text-align:center; margin-top:26px; padding:18px;
+    background:var(--ok-tint); border-radius:14px; }
+  .celebrate.show{ display:block; }
+  .celebrate .big{ font-family:var(--display); font-size:1.6rem; color:var(--ok); }
+
+  footer{ margin-top:26px; text-align:center; }
+
+  @media (max-width:560px){
+    .sheet{ padding:20px 16px 30px; } h1{ font-size:1.75rem; }
+    .fill label{ min-width:100px; } .fill input{ width:140px; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <h1>Die Wochentage</h1>
+    <p>Les jours de la semaine en allemand · exercice interactif · 6ᵉ</p>
+  </header>
+
+  <div class="progress">
+    <div class="bar"><span id="barfill"></span></div>
+    <div class="score" id="score">⭐ 0 / 4</div>
+  </div>
+
+  <!-- ÉCOUTER / DIRE -->
+  <section>
+    <div class="sec-head"><div class="badge">🔊</div>
+      <h2>Écouter &amp; répéter <span class="de">— Hören &amp; Sprechen</span></h2></div>
+    <p class="lead">Clique sur un jour pour l'entendre, puis répète-le à voix haute.</p>
+    <div class="speakgrid" id="speakgrid"></div>
+    <p class="note" id="speaknote"></p>
+  </section>
+
+  <!-- RELIER -->
+  <section>
+    <div class="sec-head"><div class="badge">🔗</div>
+      <h2>Relier <span class="de">— Verstehen</span></h2></div>
+    <p class="lead">Clique un mot allemand, puis sa traduction en français.</p>
+    <div class="match">
+      <div class="col" id="matchDe"></div>
+      <div class="col" id="matchFr"></div>
+    </div>
+    <p class="done" id="matchDone" style="display:none">Bravo, tout est relié ! ✅</p>
+  </section>
+
+  <!-- QCM -->
+  <section>
+    <div class="sec-head"><div class="badge">✔️</div>
+      <h2>Choisir la bonne réponse <span class="de">— Verstehen</span></h2></div>
+    <div id="qcm"></div>
+    <p class="done" id="qcmDone" style="display:none">Toutes les réponses sont bonnes ! ✅</p>
+  </section>
+
+  <!-- COMPLÉTER -->
+  <section>
+    <div class="sec-head"><div class="badge">✏️</div>
+      <h2>Écrire le jour <span class="de">— Schreiben</span></h2></div>
+    <p class="lead">Écris le jour en allemand. Attention à la <b>majuscule</b> !</p>
+    <div id="fillgrid"></div>
+    <div class="action">
+      <button class="btn" onclick="checkFill()">Vérifier</button>
+    </div>
+    <p class="done" id="fillDone" style="display:none">Parfaitement écrit ! ✅</p>
+  </section>
+
+  <!-- ORDRE -->
+  <section>
+    <div class="sec-head"><div class="badge">🗓️</div>
+      <h2>Remettre dans l'ordre <span class="de">— Schreiben</span></h2></div>
+    <p class="lead">Clique les 7 jours dans l'ordre, de <b>Montag</b> à <b>Sonntag</b>.</p>
+    <div class="speakgrid" id="ordergrid"></div>
+    <p class="done" id="orderDone" style="display:none">Semaine complète et dans l'ordre ! ✅</p>
+  </section>
+
+  <div class="celebrate" id="celebrate">
+    <div class="big">🎉 Sehr gut! Bravo !</div>
+    <div>Tu maîtrises les jours de la semaine en allemand.</div>
+  </div>
+
+  <footer>
+    <button class="btn ghost" onclick="location.reload()">↻ Recommencer</button>
+  </footer>
+
+</div>
+
+<script>
+const DAYS = [
+  {de:"Montag",    fr:"lundi",    c:"var(--mo)"},
+  {de:"Dienstag",  fr:"mardi",    c:"var(--di)"},
+  {de:"Mittwoch",  fr:"mercredi", c:"var(--mi)"},
+  {de:"Donnerstag",fr:"jeudi",    c:"var(--do)"},
+  {de:"Freitag",   fr:"vendredi", c:"var(--fr)"},
+  {de:"Samstag",   fr:"samedi",   c:"var(--sa)"},
+  {de:"Sonntag",   fr:"dimanche", c:"var(--so)"},
+];
+const shuffle = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+
+/* ---- progression ---- */
+const TOTAL = 4;               // relier, qcm, écrire, ordre
+const solved = {match:false, qcm:false, fill:false, order:false};
+function refreshScore(){
+  const n = Object.values(solved).filter(Boolean).length;
+  document.getElementById('score').textContent = "⭐ "+n+" / "+TOTAL;
+  document.getElementById('barfill').style.width = (n/TOTAL*100)+"%";
+  document.getElementById('celebrate').classList.toggle('show', n===TOTAL);
+}
+function markSolved(k, el){ solved[k]=true; if(el) el.style.display='block'; refreshScore(); }
+
+/* ---- Écouter ---- */
+function speak(text){
+  if(!('speechSynthesis' in window)){
+    document.getElementById('speaknote').textContent =
+      "🔇 Ton navigateur ne lit pas encore le son : appuie sur un mot et lis la prononciation à voix haute.";
+    return;
+  }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang="de-DE"; u.rate=.88;
+  const v = speechSynthesis.getVoices().find(x=>x.lang&&x.lang.toLowerCase().startsWith('de'));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = ()=>speechSynthesis.getVoices(); }
+const sg = document.getElementById('speakgrid');
+DAYS.forEach(d=>{
+  const b=document.createElement('button');
+  b.className='chip speak'; b.style.setProperty('--dc', d.c);
+  b.innerHTML=`<span class="ico">🔊</span><span><b>${d.de}</b><br><span class="fr">${d.fr}</span></span>`;
+  b.onclick=()=>speak(d.de);
+  sg.appendChild(b);
+});
+
+/* ---- Relier (5 paires) ---- */
+const MATCH = DAYS.slice(0,5);
+let selDe=null, matched=0;
+const colDe=document.getElementById('matchDe'), colFr=document.getElementById('matchFr');
+shuffle(MATCH).forEach(d=>{
+  const b=document.createElement('button'); b.className='chip'; b.textContent=d.de; b.dataset.k=d.de;
+  b.onclick=()=>{ if(b.classList.contains('correct'))return;
+    document.querySelectorAll('#matchDe .chip').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel'); selDe=b; };
+  colDe.appendChild(b);
+});
+shuffle(MATCH).forEach(d=>{
+  const b=document.createElement('button'); b.className='chip'; b.textContent=d.fr; b.dataset.k=d.de;
+  b.onclick=()=>{
+    if(!selDe || b.classList.contains('correct')) return;
+    if(selDe.dataset.k===b.dataset.k){
+      selDe.classList.remove('sel'); selDe.classList.add('correct'); selDe.disabled=true;
+      b.classList.add('correct'); b.disabled=true; selDe=null; matched++;
+      if(matched===MATCH.length) markSolved('match', document.getElementById('matchDone'));
+    } else {
+      const s=selDe; b.classList.add('wrong'); s.classList.add('wrong');
+      setTimeout(()=>{ b.classList.remove('wrong'); s.classList.remove('wrong','sel'); },400);
+      selDe=null;
+    }
+  };
+  colFr.appendChild(b);
+});
+
+/* ---- QCM ---- */
+const QCM=[
+  {q:'« Heute ist <b>Freitag</b>. »', g:"(Aujourd'hui, c'est…)", opts:["lundi","vendredi","dimanche"], a:1},
+  {q:'Welcher Tag kommt <b>nach Montag</b>?', g:"(Quel jour vient après lundi ?)", opts:["Sonntag","Mittwoch","Dienstag"], a:2},
+  {q:"Le week-end (<b>das Wochenende</b>), c'est :", g:"", opts:["Montag + Dienstag","Samstag + Sonntag","Freitag + Samstag"], a:1},
+];
+let qok=0;
+const qcm=document.getElementById('qcm');
+QCM.forEach((item,i)=>{
+  const wrap=document.createElement('div'); wrap.className='q';
+  wrap.innerHTML=`<p>${i+1}. ${item.q} <span class="gloss">${item.g}</span></p>`;
+  const opts=document.createElement('div'); opts.className='opts';
+  item.opts.forEach((o,j)=>{
+    const b=document.createElement('button'); b.className='chip'; b.innerHTML=o;
+    b.onclick=()=>{
+      if(wrap.dataset.done) return;
+      if(j===item.a){ b.classList.add('correct'); wrap.dataset.done=1; qok++;
+        if(qok===QCM.length) markSolved('qcm', document.getElementById('qcmDone')); }
+      else { b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),400); }
+    };
+    opts.appendChild(b);
+  });
+  wrap.appendChild(opts); qcm.appendChild(wrap);
+});
+
+/* ---- Compléter ---- */
+const FILL=[{fr:"mercredi",de:"Mittwoch"},{fr:"vendredi",de:"Freitag"},{fr:"dimanche",de:"Sonntag"}];
+const fg=document.getElementById('fillgrid');
+FILL.forEach((d,i)=>{
+  const row=document.createElement('div'); row.className='fill';
+  row.innerHTML=`<label>${d.fr} →</label>
+    <input id="fill${i}" type="text" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="…">
+    <span class="fb" id="fb${i}"></span>`;
+  fg.appendChild(row);
+});
+function checkFill(){
+  let all=true;
+  FILL.forEach((d,i)=>{
+    const inp=document.getElementById('fill'+i), fb=document.getElementById('fb'+i);
+    const raw=inp.value.trim(); inp.classList.remove('correct','wrong'); fb.className='fb';
+    if(raw.toLowerCase()===d.de.toLowerCase()){
+      inp.classList.add('correct'); inp.value=d.de;
+      if(raw[0]!==d.de[0]){ fb.textContent="✅ (pense à la majuscule !)"; fb.classList.add('ok'); }
+      else { fb.textContent="✅"; fb.classList.add('ok'); }
+    } else { inp.classList.add('wrong'); fb.textContent="❌ réessaie"; fb.classList.add('no'); all=false; }
+  });
+  if(all) markSolved('fill', document.getElementById('fillDone'));
+}
+
+/* ---- Ordre ---- */
+let next=0;
+const og=document.getElementById('ordergrid');
+shuffle(DAYS).forEach(d=>{
+  const b=document.createElement('button'); b.className='chip'; b.textContent=d.de; b.dataset.de=d.de;
+  b.onclick=()=>{
+    if(b.classList.contains('correct')) return;
+    if(d.de===DAYS[next].de){ b.classList.add('correct'); b.disabled=true; next++;
+      if(next===DAYS.length) markSolved('order', document.getElementById('orderDone')); }
+    else { b.classList.add('wrong'); setTimeout(()=>b.classList.remove('wrong'),400); }
+  };
+  og.appendChild(b);
+});
+
+refreshScore();
+</script>
+</body>
+</html>
