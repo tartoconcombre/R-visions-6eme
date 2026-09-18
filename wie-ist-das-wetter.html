@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wie ist das Wetter? — Exercices de météo en allemand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#eef3f7;
+    --card:#ffffff;
+    --ink:#1d2a3a;
+    --ink-soft:#5a6b7b;
+    --sun:#f5b301;
+    --sun-deep:#d99700;
+    --rain:#2e7dd1;
+    --rain-soft:#e3eefa;
+    --ok:#2fa36b;
+    --ok-soft:#e2f4ea;
+    --no:#e0533d;
+    --no-soft:#fbe6e1;
+    --line:#dce4ec;
+    --radius:18px;
+    --shadow:0 10px 30px rgba(29,42,58,.08);
+    font-family:'Nunito',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--sky);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:20px 16px 64px;}
+
+  /* ---------- En-tête ---------- */
+  header{
+    text-align:center;
+    padding:14px 0 6px;
+  }
+  .eyebrow{
+    font-size:.95rem;color:var(--ink-soft);font-weight:700;margin:0 0 4px;
+  }
+  h1{
+    font-family:'Fredoka',sans-serif;
+    font-weight:700;
+    font-size:clamp(2rem,7vw,3.1rem);
+    margin:0;
+    color:var(--ink);
+    letter-spacing:-.5px;
+  }
+  h1 .sun{color:var(--sun-deep);}
+  .sub{color:var(--ink-soft);margin:6px 0 0;font-size:1.02rem;}
+
+  /* ---------- Navigation des activités ---------- */
+  nav{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    margin:22px 0 8px;
+  }
+  .tab{
+    font-family:'Fredoka',sans-serif;font-weight:500;
+    border:2px solid var(--line);background:var(--card);color:var(--ink-soft);
+    padding:9px 15px;border-radius:999px;cursor:pointer;font-size:1rem;
+    display:inline-flex;align-items:center;gap:7px;transition:transform .12s,border-color .12s,color .12s;
+  }
+  .tab .num{
+    width:22px;height:22px;border-radius:50%;background:var(--sky);color:var(--ink-soft);
+    display:grid;place-items:center;font-size:.85rem;font-weight:700;
+  }
+  .tab[aria-selected="true"]{
+    border-color:var(--sun);color:var(--ink);box-shadow:0 4px 12px rgba(245,179,1,.25);
+  }
+  .tab[aria-selected="true"] .num{background:var(--sun);color:#fff;}
+  .tab.done .num::after{content:"✓";}
+  .tab.done .num{background:var(--ok);color:#fff;font-size:0;}
+  .tab.done .num::after{font-size:.85rem;}
+  .tab:hover{transform:translateY(-1px);}
+
+  /* ---------- Panneaux ---------- */
+  .panel{display:none;animation:rise .35s ease both;}
+  .panel.active{display:block;}
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  .card{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:22px;margin-top:16px;
+  }
+  .intro{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;}
+  .intro h2{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.4rem;margin:0;}
+  .intro p{margin:2px 0 0;color:var(--ink-soft);width:100%;}
+  .goal{
+    display:inline-block;background:var(--rain-soft);color:var(--rain);
+    font-weight:700;font-size:.82rem;padding:4px 11px;border-radius:999px;white-space:nowrap;
+  }
+  .score{font-weight:800;color:var(--ink-soft);font-family:'Fredoka',sans-serif;}
+  .score b{color:var(--sun-deep);}
+
+  /* ---------- Découverte (mémo) ---------- */
+  .memo{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;}
+  .memo .item{
+    border:2px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:4px;background:#fbfdff;
+  }
+  .memo .emoji{font-size:2.6rem;line-height:1;}
+  .memo .de{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;}
+  .memo .fr{color:var(--ink-soft);font-size:.9rem;}
+  .listen{
+    margin-top:6px;border:none;background:var(--sun);color:#3a2c00;font-weight:800;
+    border-radius:999px;padding:7px 14px;cursor:pointer;font-size:.9rem;display:inline-flex;
+    align-items:center;gap:6px;font-family:'Nunito';transition:transform .1s;
+  }
+  .listen:hover{transform:scale(1.04);}
+  .listen:active{transform:scale(.97);}
+
+  /* ---------- Question générique ---------- */
+  .q{margin-top:6px;}
+  .prompt{
+    text-align:center;padding:20px 10px 6px;
+  }
+  .prompt .big-emoji{font-size:4.5rem;line-height:1;}
+  .prompt .big-de{font-family:'Fredoka',sans-serif;font-weight:600;font-size:2rem;margin-top:4px;}
+  .prompt .big-fr{color:var(--ink-soft);margin-top:2px;}
+  .audio-big{
+    margin:10px auto 0;border:none;background:var(--rain);color:#fff;font-weight:800;
+    border-radius:999px;padding:12px 22px;cursor:pointer;font-size:1.05rem;display:inline-flex;
+    align-items:center;gap:9px;font-family:'Nunito';transition:transform .1s,background .15s;
+  }
+  .audio-big:hover{transform:scale(1.03);}
+  .audio-big:active{transform:scale(.97);}
+
+  .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px;}
+  .choice{
+    border:2px solid var(--line);background:#fbfdff;border-radius:16px;padding:16px 12px;
+    cursor:pointer;font-family:'Fredoka',sans-serif;font-size:1.25rem;font-weight:500;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;gap:10px;min-height:74px;
+    transition:transform .1s,border-color .12s,background .12s;text-align:center;
+  }
+  .choice .em{font-size:2.4rem;}
+  .choice:hover:not(:disabled){transform:translateY(-2px);border-color:var(--rain);}
+  .choice:disabled{cursor:default;}
+  .choice.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .choice.wrong{border-color:var(--no);background:var(--no-soft);}
+
+  /* ---------- Zone de saisie (écrire) ---------- */
+  .type-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center;}
+  input[type=text]{
+    flex:1;min-width:220px;font-family:'Fredoka',sans-serif;font-size:1.3rem;
+    padding:12px 16px;border:2px solid var(--line);border-radius:14px;color:var(--ink);
+    background:#fbfdff;
+  }
+  input[type=text]:focus{outline:none;border-color:var(--rain);box-shadow:0 0 0 3px var(--rain-soft);}
+  .btn{
+    font-family:'Fredoka',sans-serif;font-weight:600;border:none;border-radius:14px;
+    padding:12px 20px;cursor:pointer;font-size:1.05rem;transition:transform .1s,filter .12s;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn.primary{background:var(--sun);color:#3a2c00;}
+  .btn.ghost{background:var(--card);color:var(--ink-soft);border:2px solid var(--line);}
+  .btn.rain{background:var(--rain);color:#fff;}
+  .hint-line{text-align:center;margin-top:10px;color:var(--ink-soft);font-size:.95rem;min-height:1.2em;}
+
+  /* ---------- Micro (dire) ---------- */
+  .mic-btn{
+    margin:14px auto 0;border:none;border-radius:999px;padding:14px 26px;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.1rem;color:#fff;background:var(--ok);
+    display:inline-flex;align-items:center;gap:10px;transition:transform .1s;
+  }
+  .mic-btn.listening{background:var(--no);animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+  .mic-btn:active{transform:scale(.97);}
+  .self-check{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+
+  /* ---------- Rétroaction ---------- */
+  .feedback{
+    margin-top:16px;border-radius:14px;padding:13px 16px;font-weight:700;
+    display:none;align-items:flex-start;gap:10px;line-height:1.4;
+  }
+  .feedback.show{display:flex;animation:pop .25s ease both;}
+  @keyframes pop{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:none;}}
+  .feedback.good{background:var(--ok-soft);color:#1c6e48;}
+  .feedback.bad{background:var(--no-soft);color:#a13320;}
+  .feedback.info{background:var(--rain-soft);color:#1c568f;}
+  .feedback .ic{font-size:1.3rem;line-height:1.2;}
+  .feedback small{display:block;font-weight:600;opacity:.9;margin-top:2px;}
+
+  .footer-row{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap;}
+  .progress-dots{display:flex;gap:6px;}
+  .dot{width:11px;height:11px;border-radius:50%;background:var(--line);}
+  .dot.on{background:var(--sun);}
+  .dot.ok{background:var(--ok);}
+  .dot.ko{background:var(--no);}
+
+  .done-banner{
+    text-align:center;padding:26px 16px;
+  }
+  .done-banner .em{font-size:3.4rem;}
+  .done-banner h3{font-family:'Fredoka',sans-serif;font-size:1.6rem;margin:6px 0 4px;}
+  .done-banner p{color:var(--ink-soft);margin:0 0 14px;}
+
+  .tip{
+    background:#fff8e6;border:1px solid #f5e2a8;color:#7a5c00;border-radius:12px;
+    padding:10px 14px;font-size:.9rem;margin-top:14px;
+  }
+  footer.page{text-align:center;color:var(--ink-soft);font-size:.85rem;margin-top:30px;}
+
+  @media (max-width:560px){
+    .memo{grid-template-columns:repeat(2,1fr);}
+    .choices{grid-template-columns:1fr;}
+    .prompt .big-de{font-size:1.6rem;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Deutsch · 6ème · Das Wetter</p>
+    <h1><span class="sun">Wie</span> ist das Wetter?</h1>
+    <p class="sub">Quel temps fait-il ? — Entraîne-toi à reconnaître, écouter, dire et écrire la météo.</p>
+  </header>
+
+  <nav id="nav" role="tablist" aria-label="Activités"></nav>
+
+  <!-- 0 · DÉCOUVERTE -->
+  <section class="panel" id="panel-0" role="tabpanel">
+    <div class="card">
+      <div class="intro">
+        <h2>Découvre les mots</h2>
+        <span class="goal">Mémo</span>
+        <p>Écoute chaque expression et observe l'image. Clique sur 🔊 autant de fois que tu veux avant de commencer les exercices.</p>
+      </div>
+      <div class="memo" id="memo"></div>
+      <div class="tip">💡 Astuce : en allemand, presque toutes ces phrases commencent par <b>Es ist…</b>, sauf <b>Es regnet</b>.</div>
+    </div>
+  </section>
+
+  <!-- 1 · JE LIS -->
+  <section class="panel" id="panel-1" role="tabpanel">
+    <div class="card">
+      <div class="intro">
+        <h2>Je lis</h2>
+        <span class="goal">Reconnaître à l'écrit</span>
+        <p>Lis la phrase en allemand, puis clique sur l'image qui correspond.</p>
+      </div>
+      <div class="q" id="q1"></div>
+    </div>
+  </section>
+
+  <!-- 2 · J'ÉCOUTE -->
+  <section class="panel" id="panel-2" role="tabpanel">
+    <div class="card">
+      <div class="intro">
+        <h2>J'écoute</h2>
+        <span class="goal">Reconnaître à l'oral</span>
+        <p>Écoute l'expression, puis clique sur l'image qui correspond. Tu peux réécouter.</p>
+      </div>
+      <div class="q" id="q2"></div>
+    </div>
+  </section>
+
+  <!-- 3 · JE DIS -->
+  <section class="panel" id="panel-3" role="tabpanel">
+    <div class="card">
+      <div class="intro">
+        <h2>Je dis</h2>
+        <span class="goal">Être capable de dire</span>
+        <p>Regarde l'image, écoute le modèle, puis dis la phrase en allemand.</p>
+      </div>
+      <div class="q" id="q3"></div>
+    </div>
+  </section>
+
+  <!-- 4 · J'ÉCRIS -->
+  <section class="panel" id="panel-4" role="tabpanel">
+    <div class="card">
+      <div class="intro">
+        <h2>J'écris</h2>
+        <span class="goal">Être capable d'écrire</span>
+        <p>Regarde l'image et écris la phrase en allemand. Tu peux écouter et demander un indice.</p>
+      </div>
+      <div class="q" id="q4"></div>
+    </div>
+  </section>
+
+  <footer class="page">Wie ist das Wetter? · fiche d'entraînement interactive · audio et micro selon ton navigateur.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Données ----------
+  const ITEMS = [
+    {id:'sonnig', de:'Es ist sonnig', key:'sonnig', fr:'Il y a du soleil', emoji:'☀️'},
+    {id:'windig', de:'Es ist windig', key:'windig', fr:'Il y a du vent',   emoji:'🌬️'},
+    {id:'regnet', de:'Es regnet',     key:'regnet', fr:'Il pleut',         emoji:'🌧️'},
+    {id:'grau',   de:'Es ist grau',   key:'grau',   fr:'Le temps est gris',emoji:'☁️'},
+    {id:'kalt',   de:'Es ist kalt',   key:'kalt',   fr:'Il fait froid',    emoji:'❄️'},
+    {id:'warm',   de:'Es ist warm',   key:'warm',   fr:'Il fait chaud',    emoji:'🌡️'}
+  ];
+
+  // ---------- Utilitaires ----------
+  const $ = s => document.querySelector(s);
+  const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+  const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.!?,;:]/g,'').replace(/\s+/g,' ').trim();
+  function lev(a,b){
+    a=norm(a); b=norm(b);
+    const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);
+    for(let j=0;j<=n;j++)d[0][j]=j;
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    return d[m][n];
+  }
+
+  // ---------- Synthèse vocale (allemand) ----------
+  let deVoice=null;
+  function pickVoice(){
+    const v=speechSynthesis.getVoices();
+    deVoice = v.find(x=>/de[-_]/i.test(x.lang)&&/google|deutsch|german/i.test(x.name))
+           || v.find(x=>/de[-_]/i.test(x.lang)) || null;
+  }
+  if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+  function speak(text){
+    if(!('speechSynthesis' in window))return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; u.rate=0.88; u.pitch=1;
+    if(deVoice)u.voice=deVoice;
+    speechSynthesis.speak(u);
+  }
+
+  // ---------- Reconnaissance vocale (allemand, si dispo) ----------
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micOK = !!SR;
+
+  // ---------- Navigation ----------
+  const TABS=[
+    {i:0,label:'Découvre',icon:'📖'},
+    {i:1,label:'Je lis',icon:'👀'},
+    {i:2,label:"J'écoute",icon:'👂'},
+    {i:3,label:'Je dis',icon:'🗣️'},
+    {i:4,label:"J'écris",icon:'✍️'}
+  ];
+  const nav=$('#nav');
+  TABS.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tab'; b.setAttribute('role','tab'); b.dataset.i=t.i;
+    b.innerHTML='<span class="num">'+t.i+'</span>'+t.icon+' '+t.label;
+    b.addEventListener('click',()=>select(t.i));
+    nav.appendChild(b);
+  });
+  function select(i){
+    document.querySelectorAll('.tab').forEach(el=>el.setAttribute('aria-selected',el.dataset.i==i));
+    document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));
+    $('#panel-'+i).classList.add('active');
+    speechSynthesis && speechSynthesis.cancel();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function markDone(i){ document.querySelector('.tab[data-i="'+i+'"]').classList.add('done'); }
+
+  // ---------- 0 · Découverte ----------
+  const memo=$('#memo');
+  ITEMS.forEach(it=>{
+    const d=document.createElement('div'); d.className='item';
+    d.innerHTML='<div class="emoji">'+it.emoji+'</div>'+
+      '<div class="de">'+it.de+'</div>'+
+      '<button class="listen">🔊 Écouter</button>';
+    d.querySelector('.listen').addEventListener('click',()=>speak(it.de));
+    memo.appendChild(d);
+  });
+
+  // ---------- Fabrique de rétroaction ----------
+  function fb(box,type,msg,extra){
+    const ic = type==='good'?'✅':type==='bad'?'🔁':'ℹ️';
+    box.className='feedback show '+type;
+    box.innerHTML='<span class="ic">'+ic+'</span><span>'+msg+(extra?'<small>'+extra+'</small>':'')+'</span>';
+  }
+
+  // ---------- Moteur d'exercice à choix (lire / écouter) ----------
+  function buildChoiceExercise(mount, mode){
+    // mode: 'read' -> énoncé = texte allemand, choix = images
+    //       'listen' -> énoncé = audio, choix = images
+    const order = shuffle(ITEMS);
+    let idx=0, good=0, answered=false;
+
+    mount.innerHTML =
+      '<div class="prompt"></div>'+
+      '<div class="choices"></div>'+
+      '<div class="feedback"></div>'+
+      '<div class="footer-row">'+
+        '<div class="progress-dots"></div>'+
+        '<div><span class="score">Score : <b>0</b>/'+ITEMS.length+'</span> '+
+        '<button class="btn ghost next" style="display:none">Suivant ➜</button></div>'+
+      '</div>';
+
+    const promptEl=mount.querySelector('.prompt');
+    const choicesEl=mount.querySelector('.choices');
+    const fbEl=mount.querySelector('.feedback');
+    const scoreEl=mount.querySelector('.score b');
+    const nextBtn=mount.querySelector('.next');
+    const dotsEl=mount.querySelector('.progress-dots');
+    order.forEach(()=>{const s=document.createElement('span');s.className='dot';dotsEl.appendChild(s);});
+
+    function render(){
+      answered=false;
+      fbEl.className='feedback'; fbEl.innerHTML='';
+      nextBtn.style.display='none';
+      dotsEl.children[idx].classList.add('on');
+      const target=order[idx];
+
+      if(mode==='read'){
+        promptEl.innerHTML='<div class="big-de">'+target.de+'</div><div class="big-fr">Clique sur la bonne image</div>';
+      }else{
+        promptEl.innerHTML='<button class="audio-big">🔊 Écouter la phrase</button><div class="big-fr">Clique sur la bonne image</div>';
+        const ab=promptEl.querySelector('.audio-big');
+        ab.addEventListener('click',()=>speak(target.de));
+        setTimeout(()=>speak(target.de),350);
+      }
+
+      const opts=shuffle([target,...shuffle(ITEMS.filter(x=>x.id!==target.id)).slice(0,3)]);
+      choicesEl.innerHTML='';
+      opts.forEach(o=>{
+        const b=document.createElement('button');
+        b.className='choice';
+        b.innerHTML='<span class="em">'+o.emoji+'</span>';
+        b.setAttribute('aria-label',o.de);
+        b.addEventListener('click',()=>choose(b,o,target));
+        choicesEl.appendChild(b);
+      });
+    }
+
+    function choose(btn,chosen,target){
+      if(answered)return; answered=true;
+      const buttons=[...choicesEl.querySelectorAll('.choice')];
+      buttons.forEach(b=>b.disabled=true);
+      if(chosen.id===target.id){
+        btn.classList.add('correct'); good++; scoreEl.textContent=good;
+        dotsEl.children[idx].classList.add('ok');
+        fb(fbEl,'good','Richtig ! '+target.emoji+' « '+target.de+' ».');
+        speak(target.de);
+      }else{
+        btn.classList.add('wrong');
+        buttons.find(b=>b.querySelector('.em').textContent===target.emoji).classList.add('correct');
+        dotsEl.children[idx].classList.add('ko');
+        fb(fbEl,'bad','Presque… La bonne réponse est '+target.emoji+' « '+target.de+' ».',
+           'Réécoute : clique sur l\'image verte.');
+      }
+      nextBtn.style.display=idx<order.length-1?'inline-flex':'none';
+      if(idx===order.length-1)setTimeout(()=>finish(),700);
+    }
+
+    function finish(){
+      const label = good===order.length ? 'Sehr gut ! Tout juste 🎉'
+                  : good>=order.length-2 ? 'Gut gemacht ! Presque parfait.'
+                  : 'C\'est un bon début — recommence pour progresser.';
+      mount.innerHTML='<div class="done-banner"><div class="em">'+(good===order.length?'🏆':'🌤️')+'</div>'+
+        '<h3>'+good+' / '+order.length+'</h3><p>'+label+'</p>'+
+        '<button class="btn primary again">↻ Recommencer</button></div>';
+      mount.querySelector('.again').addEventListener('click',()=>buildChoiceExercise(mount,mode));
+      const tabIdx = mode==='read'?1:2;
+      if(good>=order.length-1)markDone(tabIdx);
+    }
+
+    nextBtn.addEventListener('click',()=>{ idx++; render(); });
+    render();
+  }
+
+  // ---------- 3 · Je dis ----------
+  function buildSpeakExercise(mount){
+    const order=shuffle(ITEMS);
+    let idx=0, good=0;
+
+    mount.innerHTML=
+      '<div class="prompt"></div>'+
+      '<div style="text-align:center"></div>'+
+      '<div class="feedback"></div>'+
+      '<div class="footer-row">'+
+        '<div class="progress-dots"></div>'+
+        '<div><span class="score">Réussi : <b>0</b>/'+ITEMS.length+'</span> '+
+        '<button class="btn ghost next" style="display:none">Suivant ➜</button></div>'+
+      '</div>';
+
+    const promptEl=mount.querySelector('.prompt');
+    const actionEl=mount.children[1];
+    const fbEl=mount.querySelector('.feedback');
+    const scoreEl=mount.querySelector('.score b');
+    const nextBtn=mount.querySelector('.next');
+    const dotsEl=mount.querySelector('.progress-dots');
+    order.forEach(()=>{const s=document.createElement('span');s.className='dot';dotsEl.appendChild(s);});
+
+    function advance(){ nextBtn.style.display=idx<order.length-1?'inline-flex':'none'; if(idx===order.length-1)setTimeout(finish,600); }
+
+    function render(){
+      fbEl.className='feedback'; fbEl.innerHTML=''; nextBtn.style.display='none';
+      dotsEl.children[idx].classList.add('on');
+      const t=order[idx];
+      promptEl.innerHTML='<div class="big-emoji">'+t.emoji+'</div>'+
+        '<button class="audio-big">🔊 Écouter le modèle</button>';
+      promptEl.querySelector('.audio-big').addEventListener('click',()=>speak(t.de));
+
+      if(micOK){
+        actionEl.innerHTML='<button class="mic-btn">🎤 Parler</button>';
+        actionEl.querySelector('.mic-btn').addEventListener('click',function(){ listen(this,t); });
+      }else{
+        actionEl.innerHTML='<div class="self-check">'+
+          '<button class="btn ok" style="background:var(--ok);color:#fff">😀 J\'ai réussi</button>'+
+          '<button class="btn ghost">🔁 À revoir</button></div>';
+        const [okB,noB]=actionEl.querySelectorAll('button');
+        okB.addEventListener('click',()=>{ good++; scoreEl.textContent=good; dotsEl.children[idx].classList.add('ok');
+          fb(fbEl,'good','Super ! Redis-la encore une fois pour bien la retenir : « '+t.de+' ».'); advance(); });
+        noB.addEventListener('click',()=>{ dotsEl.children[idx].classList.add('ko');
+          fb(fbEl,'info','Pas de souci. Écoute encore le modèle et répète : « '+t.de+' ».'); advance(); });
+      }
+    }
+
+    function listen(btn,t){
+      const rec=new SR(); rec.lang='de-DE'; rec.interimResults=false; rec.maxAlternatives=3;
+      btn.classList.add('listening'); btn.textContent='🎙️ Je t\'écoute…';
+      fb(fbEl,'info','Parle maintenant, bien distinctement.');
+      let handled=false;
+      rec.onresult=e=>{
+        handled=true;
+        const alts=[...e.results[0]].map(r=>norm(r.transcript));
+        const okMatch = alts.some(a => a===norm(t.de) || a.includes(t.key) || lev(a,t.de)<=2 || lev(a,t.key)<=1);
+        btn.classList.remove('listening'); btn.textContent='🎤 Réessayer';
+        if(okMatch){ good++; scoreEl.textContent=good; dotsEl.children[idx].classList.add('ok');
+          fb(fbEl,'good','Bravo, bien prononcé ! « '+t.de+' ».','J\'ai entendu : « '+(alts[0]||'')+' »'); }
+        else{ dotsEl.children[idx].classList.add('ko');
+          fb(fbEl,'bad','Ce n\'est pas encore ça. Réécoute le modèle et réessaie : « '+t.de+' ».','J\'ai entendu : « '+(alts[0]||'…')+' »'); }
+        advance();
+      };
+      rec.onerror=ev=>{
+        btn.classList.remove('listening'); btn.textContent='🎤 Parler';
+        if(ev.error==='not-allowed'||ev.error==='service-not-allowed')
+          fb(fbEl,'info','Le micro est bloqué. Autorise le micro dans ton navigateur, ou dis la phrase à voix haute et vérifie avec le modèle 🔊.');
+        else if(ev.error==='no-speech')
+          fb(fbEl,'info','Je n\'ai rien entendu. Clique sur 🎤 et parle un peu plus fort.');
+      };
+      rec.onend=()=>{ btn.classList.remove('listening'); if(!handled&&btn.textContent.indexOf('écoute')>-1)btn.textContent='🎤 Parler'; };
+      try{ rec.start(); }catch(e){ btn.classList.remove('listening'); btn.textContent='🎤 Parler'; }
+    }
+
+    function finish(){
+      mount.innerHTML='<div class="done-banner"><div class="em">🗣️</div>'+
+        '<h3>'+good+' / '+order.length+'</h3>'+
+        '<p>'+(good>=order.length-1?'Bravo, tu sais dire la météo en allemand !':'Continue à t\'entraîner à voix haute — tu progresses vite.')+'</p>'+
+        '<button class="btn primary again">↻ Recommencer</button></div>';
+      mount.querySelector('.again').addEventListener('click',()=>buildSpeakExercise(mount));
+      if(good>=order.length-1)markDone(3);
+    }
+
+    nextBtn.addEventListener('click',()=>{ idx++; render(); });
+    render();
+
+    if(!micOK){
+      const note=document.createElement('div');
+      note.className='tip';
+      note.innerHTML='🎤 Le micro automatique n\'est pas disponible sur ce navigateur. Écoute le modèle, répète à voix haute, puis indique si tu as réussi. (Le micro fonctionne surtout sur Chrome ou Edge.)';
+      mount.appendChild(note);
+    }
+  }
+
+  // ---------- 4 · J'écris ----------
+  function buildWriteExercise(mount){
+    const order=shuffle(ITEMS);
+    let idx=0, good=0, answered=false, tries=0;
+
+    mount.innerHTML=
+      '<div class="prompt"></div>'+
+      '<div class="type-row">'+
+        '<input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Écris la phrase en allemand…">'+
+        '<button class="btn primary check">Vérifier</button>'+
+      '</div>'+
+      '<div class="hint-line"></div>'+
+      '<div style="text-align:center;margin-top:4px">'+
+        '<button class="btn ghost hint">💡 Indice</button> '+
+        '<button class="btn rain hear">🔊 Écouter</button>'+
+      '</div>'+
+      '<div class="feedback"></div>'+
+      '<div class="footer-row">'+
+        '<div class="progress-dots"></div>'+
+        '<div><span class="score">Score : <b>0</b>/'+ITEMS.length+'</span> '+
+        '<button class="btn ghost next" style="display:none">Suivant ➜</button></div>'+
+      '</div>';
+
+    const promptEl=mount.querySelector('.prompt');
+    const input=mount.querySelector('input');
+    const checkBtn=mount.querySelector('.check');
+    const hintBtn=mount.querySelector('.hint');
+    const hearBtn=mount.querySelector('.hear');
+    const hintLine=mount.querySelector('.hint-line');
+    const fbEl=mount.querySelector('.feedback');
+    const scoreEl=mount.querySelector('.score b');
+    const nextBtn=mount.querySelector('.next');
+    const dotsEl=mount.querySelector('.progress-dots');
+    order.forEach(()=>{const s=document.createElement('span');s.className='dot';dotsEl.appendChild(s);});
+
+    function render(){
+      answered=false; tries=0;
+      fbEl.className='feedback'; fbEl.innerHTML='';
+      hintLine.textContent=''; input.value=''; input.disabled=false;
+      checkBtn.disabled=false; nextBtn.style.display='none';
+      dotsEl.children[idx].classList.add('on');
+      const t=order[idx];
+      promptEl.innerHTML='<div class="big-emoji">'+t.emoji+'</div>';
+      input.focus();
+    }
+
+    function check(){
+      if(answered)return;
+      const t=order[idx];
+      const ans=norm(input.value);
+      if(!ans){ fb(fbEl,'info','Écris ta réponse dans la case avant de vérifier.'); return; }
+
+      if(ans===norm(t.de)){
+        answered=true; good++; scoreEl.textContent=good; dotsEl.children[idx].classList.add('ok');
+        input.disabled=true; checkBtn.disabled=true;
+        fb(fbEl,'good','Richtig geschrieben ! '+t.emoji+' « '+t.de+' ».');
+        speak(t.de); showNext();
+      } else if(ans===norm(t.key)){
+        // a écrit seulement le mot-clé : juste sur le sens, on vise la phrase complète
+        fb(fbEl,'info','Bien vu pour le mot « '+t.key+' » ! Écris maintenant la phrase entière : « '+t.de+' ».');
+        input.value=t.de.slice(0, t.de.length-t.key.length); input.focus();
+      } else {
+        tries++;
+        const d=lev(ans,t.de);
+        if(d<=2){
+          fb(fbEl,'bad','Presque ! Regarde bien l\'orthographe puis corrige.', tries>=2?('Réponse : « '+t.de+' »'):'Il reste une petite erreur.');
+        } else {
+          fb(fbEl,'bad','Pas encore. Écoute 🔊 et aide-toi de l\'indice 💡.', tries>=2?('Réponse : « '+t.de+' »'):'');
+        }
+        if(tries>=2){ answered=true; input.disabled=true; checkBtn.disabled=true; dotsEl.children[idx].classList.add('ko'); showNext(); }
+      }
+    }
+
+    function showNext(){
+      nextBtn.style.display=idx<order.length-1?'inline-flex':'none';
+      if(idx===order.length-1)setTimeout(finish,700);
+    }
+
+    function finish(){
+      mount.innerHTML='<div class="done-banner"><div class="em">'+(good===order.length?'🏆':'✍️')+'</div>'+
+        '<h3>'+good+' / '+order.length+'</h3>'+
+        '<p>'+(good===order.length?'Parfait, sans faute !':good>=order.length-2?'Très bien ! Encore un petit effort sur l\'orthographe.':'Reprends le mémo « Découvre » puis recommence.')+'</p>'+
+        '<button class="btn primary again">↻ Recommencer</button></div>';
+      mount.querySelector('.again').addEventListener('click',()=>buildWriteExercise(mount));
+      if(good>=order.length-1)markDone(4);
+    }
+
+    checkBtn.addEventListener('click',check);
+    input.addEventListener('keydown',e=>{ if(e.key==='Enter')check(); });
+    hearBtn.addEventListener('click',()=>speak(order[idx].de));
+    hintBtn.addEventListener('click',()=>{
+      const t=order[idx];
+      const words=t.de.split(' ').map(w=>w[0]+'…').join(' ');
+      hintLine.textContent='Indice : '+words+'  ('+t.de.split(' ').length+' mots)';
+    });
+    nextBtn.addEventListener('click',()=>{ idx++; render(); });
+    render();
+  }
+
+  // ---------- Lancement ----------
+  buildChoiceExercise($('#q1'),'read');
+  buildChoiceExercise($('#q2'),'listen');
+  buildSpeakExercise($('#q3'));
+  buildWriteExercise($('#q4'));
+  select(0);
+})();
+</script>
+</body>
+</html>
