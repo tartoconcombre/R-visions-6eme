@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4f46e5">
+<title>The Alphabet — Révisions 6ème</title>
+<style>
+  :root{
+    --bg:#f5f3ff; --card:#ffffff; --ink:#1f2340; --ink-soft:#5b5f7a;
+    --line:#e6e3f5; --brand:#4f46e5; --brand-2:#7c6cf0; --brand-ink:#ffffff;
+    --ok:#0d9668; --ok-bg:#e6f7f0; --ko:#e0485a; --ko-bg:#fdecee;
+    --chip:#efeafe; --shadow:0 10px 30px rgba(79,70,229,.10);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14162a; --card:#1e2140; --ink:#eef0ff; --ink-soft:#a9adcf;
+      --line:#2c2f57; --brand:#8b81f5; --brand-2:#a99bff; --brand-ink:#14162a;
+      --chip:#2a2d54; --ok:#3fd39a; --ok-bg:#123a2c; --ko:#ff8a97; --ko-bg:#3a1620;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -200px,var(--brand-2),transparent 60%),var(--bg);
+    color:var(--ink); line-height:1.45; padding:16px; min-height:100vh;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+  header{text-align:center;margin:8px 0 18px}
+  .kicker{margin:0;color:var(--ink-soft);font-weight:600;letter-spacing:.02em;font-size:.95rem}
+  h1{margin:.15em 0 0;font-size:2rem;letter-spacing:-.01em}
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:22px;
+    padding:22px;box-shadow:var(--shadow)
+  }
+  .hidden{display:none !important}
+  .lead{margin:.2em 0 1.1em;color:var(--ink-soft)}
+  .field{margin:0 0 16px}
+  .setup .field{margin:0 0 14px}
+  .field > p{margin:0 0 .4em;font-weight:600;font-size:.85rem;color:var(--ink-soft)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{
+    border:1px solid var(--line);background:var(--chip);color:var(--ink);
+    padding:10px 14px;border-radius:14px;font-size:1rem;font-weight:600;cursor:pointer;
+    transition:transform .06s ease
+  }
+  .chip:active{transform:scale(.97)}
+  .chip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:.4em;
+    width:100%;border:none;border-radius:16px;background:var(--brand);color:var(--brand-ink);
+    font-size:1.15rem;font-weight:700;padding:15px 18px;cursor:pointer;transition:transform .06s ease
+  }
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--chip);color:var(--ink)}
+  .btn.small{width:auto;font-size:1rem;padding:11px 16px;border-radius:14px}
+  .voicebadge{margin-top:14px;font-size:.9rem;color:var(--ink-soft);text-align:center}
+  .dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:#f0b429;vertical-align:middle;margin-right:.35em}
+  .dot.ready{background:var(--ok)}
+  .dot.off{background:var(--ko)}
+
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .badge{background:var(--chip);color:var(--ink);font-weight:700;padding:7px 12px;border-radius:12px;font-size:.95rem}
+  .score{color:var(--ink-soft);font-weight:700}
+  .progress{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;margin-bottom:20px}
+  .progress > i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s ease}
+
+  .stage{text-align:center;padding:8px 0 4px}
+  .letter{
+    font-family:"Segoe UI",system-ui,sans-serif;font-weight:800;line-height:1;
+    font-size:min(34vw,140px);letter-spacing:.02em;
+    background:linear-gradient(180deg,var(--brand),var(--brand-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent
+  }
+  .letter .lower{opacity:.55;font-size:.62em}
+  .listen-icon{font-size:min(28vw,110px);line-height:1}
+  .hint{margin:.4em 0 0;font-size:1.5rem;font-weight:700;color:var(--ink)}
+  .hint small{display:block;font-size:.95rem;font-weight:600;color:var(--ink-soft);margin-top:.15em}
+  .ask{margin:.6em 0 1.1em;color:var(--ink-soft);font-weight:600}
+
+  .answer{margin:6px 0 4px}
+  input#answerInput{
+    width:100%;text-align:center;font-size:2.4rem;font-weight:800;text-transform:uppercase;
+    padding:12px;border:2px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink);
+    outline:none
+  }
+  input#answerInput:focus{border-color:var(--brand)}
+  .row{display:flex;gap:10px;margin-top:14px}
+  .row .btn{flex:1}
+  .feedback{min-height:1.6em;text-align:center;font-weight:800;font-size:1.15rem;margin-top:14px}
+  .feedback.ok{color:var(--ok)}
+  .feedback.ko{color:var(--ko)}
+  .selfcheck{display:flex;gap:10px;margin-top:4px}
+  .selfcheck .btn{flex:1;font-size:1.05rem}
+  .btn.good{background:var(--ok-bg);color:var(--ok)}
+  .btn.again{background:var(--ko-bg);color:var(--ko)}
+  .helpbar{margin-top:18px;text-align:center;font-size:.95rem}
+  .linkish{background:none;border:none;color:var(--brand);font-weight:700;cursor:pointer;font-size:.95rem;padding:4px}
+
+  .result{text-align:center}
+  .result .emoji{font-size:3.4rem}
+  .result .big{font-size:2.2rem;font-weight:800;margin:.1em 0}
+  .result p{color:var(--ink-soft);margin:.2em 0 1.2em}
+
+  .modal{position:fixed;inset:0;background:rgba(20,22,42,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+  .modal.show{display:flex}
+  .modal .box{background:var(--card);border-radius:20px;max-width:520px;width:100%;max-height:82vh;overflow:auto;padding:22px;position:relative}
+  .modal h2{margin:0 0 .2em}
+  .modal .close{position:absolute;top:12px;right:12px;background:var(--chip);border:none;color:var(--ink);width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+  .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:14px}
+  .ref-grid > div{background:var(--chip);border-radius:12px;padding:9px 11px}
+  .ref-grid b{font-size:1.15rem}
+  .ref-grid span{color:var(--ink-soft);font-size:.92rem}
+  footer{text-align:center;color:var(--ink-soft);font-size:.82rem;margin:18px 0 4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">English • 6ème</p>
+    <h1>The Alphabet 🔤</h1>
+  </header>
+
+  <!-- ============ SETUP ============ -->
+  <section id="setup" class="panel setup">
+    <div class="field">
+      <p>Activité</p>
+      <div class="chips" id="modeChips">
+        <button class="chip" data-mode="say"    aria-pressed="true">🗣️ Nommer</button>
+        <button class="chip" data-mode="listen" aria-pressed="false">👂 Écouter</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <p>Lettres</p>
+      <div class="chips" id="countChips">
+        <button class="chip" data-count="10" aria-pressed="true">10</button>
+        <button class="chip" data-count="26" aria-pressed="false">Tout (26)</button>
+        <button class="chip" data-count="0"  aria-pressed="false">Sans fin</button>
+      </div>
+    </div>
+
+    <button class="btn" id="startBtn">C'est parti&nbsp;! ▶</button>
+    <div class="voicebadge"><span class="dot" id="voiceDot"></span><span id="voiceMsg">Vérification de la voix anglaise…</span></div>
+  </section>
+
+  <!-- ============ EXERCISE ============ -->
+  <section id="exercise" class="panel hidden">
+    <div class="topbar">
+      <span class="badge" id="modeBadge">🗣️ Nommer</span>
+      <span class="score" id="scoreLabel">Score : 0</span>
+    </div>
+    <div class="progress"><i id="progressBar"></i></div>
+
+    <div class="stage" id="stage"><!-- filled by JS --></div>
+
+    <!-- SAY mode : self-check -->
+    <div id="sayBlock" class="hidden">
+      <p class="ask" id="sayAsk">Dis le nom de cette lettre à voix haute.</p>
+      <button class="btn small" id="revealBtn" style="margin:0 auto 6px;display:block">🔊 Écouter la réponse</button>
+      <div class="hint hidden" id="sayHint"></div>
+      <div class="selfcheck hidden" id="selfCheck">
+        <button class="btn good"  id="knewBtn">✅ Je savais</button>
+        <button class="btn again" id="missBtn">🔁 À revoir</button>
+      </div>
+    </div>
+
+    <!-- LISTEN mode : type the letter -->
+    <div id="listenBlock" class="hidden">
+      <div class="answer">
+        <input id="answerInput" maxlength="1" autocomplete="off" autocapitalize="characters"
+               autocorrect="off" spellcheck="false" inputmode="latin" aria-label="Écris la lettre entendue">
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="replayBtn">🔁 Réécouter</button>
+        <button class="btn" id="validateBtn">Vérifier</button>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="btn hidden" id="nextBtn" style="margin-top:6px">Suivant ▶</button>
+
+    <div class="helpbar">
+      <button class="linkish" id="showRef">📋 Voir l'alphabet</button>
+      &nbsp;·&nbsp;
+      <button class="linkish" id="quitBtn">Changer d'activité</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="result" class="panel result hidden">
+    <div class="emoji" id="resEmoji">🎉</div>
+    <div class="big" id="resScore">10 / 10</div>
+    <p id="resMsg">Bravo&nbsp;!</p>
+    <div class="row">
+      <button class="btn ghost" id="againBtn">Recommencer</button>
+      <button class="btn" id="menuBtn">Nouvelle activité</button>
+    </div>
+  </section>
+
+  <footer>Alphabet anglais · révisions 6ème</footer>
+</div>
+
+<!-- Reference chart -->
+<div class="modal" id="refModal">
+  <div class="box">
+    <button class="close" id="refClose" aria-label="Fermer">✕</button>
+    <h2>The English alphabet</h2>
+    <p style="margin:0;color:var(--ink-soft)">Le nom de chaque lettre, avec une aide à la prononciation.</p>
+    <div class="ref-grid" id="refGrid"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- Data: letters, how to SPEAK them, French pronunciation hint ---------- */
+  var LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  // What we feed the English voice so it says the LETTER NAME reliably.
+  var SPOKEN = {
+    A:"ay", B:"bee", C:"see", D:"dee", E:"ee", F:"eff", G:"gee", H:"aitch",
+    I:"eye", J:"jay", K:"kay", L:"ell", M:"em", N:"en", O:"oh", P:"pee",
+    Q:"cue", R:"are", S:"ess", T:"tee", U:"you", V:"vee", W:"double you",
+    X:"ex", Y:"why", Z:"zed"
+  };
+  // French-friendly pronunciation hint shown to the pupil.
+  var FR_HINT = {
+    A:"« eï »", B:"« bi »", C:"« ci »", D:"« di »", E:"« i »", F:"« ef »",
+    G:"« dji »", H:"« eïtch »", I:"« aï »", J:"« djeï »", K:"« keï »",
+    L:"« el »", M:"« em »", N:"« en »", O:"« ow »", P:"« pi »", Q:"« kiou »",
+    R:"« ar »", S:"« es »", T:"« ti »", U:"« you »", V:"« vi »",
+    W:"« dabeul-you »", X:"« eks »", Y:"« waï »", Z:"« zèd »"
+  };
+
+  /* ---------- Settings ---------- */
+  var settings = { mode:"say", count:10, accent:"gb" };
+
+  function bindChips(groupId, key, cast){
+    var group = $(groupId);
+    group.addEventListener("click", function(e){
+      var b = e.target.closest(".chip"); if(!b) return;
+      [].forEach.call(group.querySelectorAll(".chip"), function(c){ c.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      settings[key] = cast(b.getAttribute("data-"+key));
+    });
+  }
+  bindChips("modeChips","mode",String);
+  bindChips("countChips","count",Number);
+
+  /* ---------- Speech synthesis (robust voice loading) ---------- */
+  var synth = window.speechSynthesis, enVoice = null, voiceState = "loading";
+
+  function pickVoice(){
+    if(!synth) { voiceState="off"; return; }
+    var voices = synth.getVoices() || [];
+    var pref = settings.accent === "us" ? "en-US" : "en-GB";
+    // 1) exact locale, 2) any English, else null
+    enVoice = voices.filter(function(v){ return v.lang && v.lang.replace("_","-").toLowerCase().indexOf(pref.toLowerCase())===0; })[0]
+           || voices.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf("en")===0; })[0]
+           || null;
+    if(voices.length){ voiceState = enVoice ? "ready" : "noeng"; }
+    updateVoiceBadge();
+  }
+  function updateVoiceBadge(){
+    var dot = $("voiceDot"), msg = $("voiceMsg");
+    dot.className = "dot";
+    if(voiceState==="ready"){ dot.classList.add("ready"); msg.textContent = "Voix anglaise prête ("+ (enVoice.name||enVoice.lang) +")."; }
+    else if(voiceState==="noeng"){ dot.classList.add("off"); msg.textContent = "Pas de voix anglaise trouvée : le son peut être approximatif."; }
+    else if(voiceState==="off"){ dot.classList.add("off"); msg.textContent = "Cet appareil ne lit pas le son. L'activité « Nommer » reste possible sans audio."; }
+    else { msg.textContent = "Vérification de la voix anglaise…"; }
+  }
+  if(synth){
+    pickVoice();
+    if(typeof synth.onvoiceschanged !== "undefined"){ synth.onvoiceschanged = pickVoice; }
+    setTimeout(pickVoice, 400);
+    setTimeout(pickVoice, 1200);
+  } else { updateVoiceBadge(); }
+
+  function sayLetter(letter){
+    if(!synth) return;
+    try{
+      synth.cancel();
+      var text = SPOKEN[letter];
+      if(letter==="Z" && settings.accent==="us") text = "zee";
+      var u = new SpeechSynthesisUtterance(text);
+      if(enVoice) u.voice = enVoice;
+      u.lang = settings.accent==="us" ? "en-US" : "en-GB";
+      u.rate = 0.85; u.pitch = 1;
+      synth.speak(u);
+    }catch(e){}
+  }
+
+  /* ---------- Round state ---------- */
+  var queue = [], idx = 0, ok = 0, total = 0, current = null, answered = false;
+
+  function shuffle(a){
+    a = a.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function buildQueue(){
+    var all = shuffle(LETTERS);
+    if(settings.count===0){ queue = all; total = 0; }          // endless: reshuffled as needed
+    else if(settings.count>=26){ queue = all; total = 26; }
+    else { queue = all.slice(0, settings.count); total = settings.count; }
+    idx = 0; ok = 0;
+  }
+
+  /* ---------- Screens ---------- */
+  function show(sec){ ["setup","exercise","result"].forEach(function(s){ $(s).classList.toggle("hidden", s!==sec); }); }
+
+  function startRound(){
+    buildQueue();
+    $("modeBadge").textContent = settings.mode==="say" ? "🗣️ Nommer" : "👂 Écouter";
+    $("sayBlock").classList.toggle("hidden", settings.mode!=="say");
+    $("listenBlock").classList.toggle("hidden", settings.mode!=="listen");
+    show("exercise");
+    nextQuestion(true);
+  }
+
+  function nextQuestion(first){
+    // pull next letter (reshuffle for endless mode)
+    if(idx >= queue.length){
+      if(settings.count===0){ queue = shuffle(LETTERS); idx = 0; }
+      else { return endRound(); }
+    }
+    current = queue[idx]; idx++;
+    answered = false;
+    $("feedback").textContent = ""; $("feedback").className = "feedback";
+    $("nextBtn").classList.add("hidden");
+    updateScore(); updateProgress();
+
+    if(settings.mode==="say"){
+      $("stage").innerHTML = '<div class="letter">'+current+'<span class="lower">'+current.toLowerCase()+'</span></div>';
+      $("sayHint").classList.add("hidden");
+      $("selfCheck").classList.add("hidden");
+      $("revealBtn").classList.remove("hidden");
+      $("sayAsk").classList.remove("hidden");
+    } else {
+      $("stage").innerHTML = '<div class="listen-icon">👂</div>';
+      var inp = $("answerInput"); inp.value = ""; inp.disabled = false;
+      // audio on a tap keeps iOS happy: first Q rides the "C'est parti" tap, next Q rides "Suivant"
+      sayLetter(current);
+      setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 60);
+    }
+  }
+
+  function updateScore(){ $("scoreLabel").textContent = "Score : " + ok; }
+  function updateProgress(){
+    var pct = settings.count===0 ? ((idx-1)%26)/26*100 : (idx-1)/total*100;
+    $("progressBar").style.width = Math.max(0,Math.min(100,pct)) + "%";
+  }
+
+  /* ---- SAY mode interactions ---- */
+  $("revealBtn").addEventListener("click", function(){
+    sayLetter(current);
+    var h = $("sayHint");
+    h.innerHTML = 'Cette lettre se dit '+FR_HINT[current]+'.<small>Lettre : '+current+' '+current.toLowerCase()+'</small>';
+    h.classList.remove("hidden");
+    $("selfCheck").classList.remove("hidden");
+    $("revealBtn").classList.add("hidden");
+    $("sayAsk").classList.add("hidden");
+  });
+  $("knewBtn").addEventListener("click", function(){ scoreSelf(true); });
+  $("missBtn").addEventListener("click", function(){ scoreSelf(false); });
+  function scoreSelf(good){
+    if(answered) return; answered = true;
+    if(good){ ok++; updateScore(); $("feedback").innerHTML = "Bien joué&nbsp;! 👍"; $("feedback").className="feedback ok"; }
+    else{ $("feedback").innerHTML = "Pas grave, tu la retiendras&nbsp;! C'était "+FR_HINT[current]+"."; $("feedback").className="feedback ko"; }
+    $("selfCheck").classList.add("hidden");
+    advance();
+  }
+
+  /* ---- LISTEN mode interactions ---- */
+  $("replayBtn").addEventListener("click", function(){ sayLetter(current); });
+  $("validateBtn").addEventListener("click", checkListen);
+  $("answerInput").addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); if(!answered) checkListen(); else $("nextBtn").click(); } });
+  function checkListen(){
+    if(answered) return;
+    var val = ($("answerInput").value||"").trim().toUpperCase().slice(0,1);
+    if(!val || val<"A" || val>"Z"){ // gentle nudge, don't consume the turn
+      $("feedback").textContent = "Écris une lettre de A à Z."; $("feedback").className="feedback ko"; return;
+    }
+    answered = true;
+    $("answerInput").disabled = true;
+    if(val===current){ ok++; updateScore(); $("feedback").innerHTML = "Correct&nbsp;! ✅"; $("feedback").className="feedback ok"; }
+    else{ $("feedback").innerHTML = "C'était <b>"+current+"</b> ("+FR_HINT[current]+"), pas "+val+"."; $("feedback").className="feedback ko"; }
+    sayLetter(current);
+    advance();
+  }
+
+  function advance(){
+    // endless mode has no natural end: always show Suivant
+    var last = (settings.count!==0 && idx>=queue.length);
+    $("nextBtn").textContent = last ? "Voir le résultat 🎯" : "Suivant ▶";
+    $("nextBtn").classList.remove("hidden");
+  }
+  $("nextBtn").addEventListener("click", function(){ nextQuestion(false); });
+
+  /* ---------- End & score persistence ---------- */
+  function fileKey(){
+    var f = (location.pathname.split("/").pop() || "").trim();
+    if(!f || f.indexOf(".")<0) f = "alphabet-anglais.html"; // fallback when opened locally
+    return "meilleur:" + f;
+  }
+  function endRound(){
+    var done = total, pct = done ? Math.round(ok/done*100) : 0;
+    $("resScore").textContent = ok + " / " + done;
+    var emoji, msg;
+    if(pct>=90){ emoji="🏆"; msg="Excellent&nbsp;! Tu connais ton alphabet."; }
+    else if(pct>=70){ emoji="🎉"; msg="Très bien&nbsp;! Encore quelques lettres à revoir."; }
+    else if(pct>=50){ emoji="💪"; msg="Bon travail&nbsp;! Recommence pour progresser."; }
+    else{ emoji="🌱"; msg="C'est en s'entraînant qu'on y arrive. On recommence&nbsp;?"; }
+    $("resEmoji").textContent = emoji; $("resMsg").innerHTML = msg;
+    // report best score to the revision portal (same localStorage the menu reads)
+    try{
+      var k = fileKey(), prev = parseInt(localStorage.getItem(k)||"0",10);
+      if(pct>prev) localStorage.setItem(k, String(pct));
+    }catch(e){}
+    show("result");
+  }
+
+  /* ---------- Buttons ---------- */
+  $("startBtn").addEventListener("click", function(){
+    // one utterance inside this tap "unlocks" audio on iOS/Safari
+    if(synth){ try{ synth.cancel(); synth.speak(new SpeechSynthesisUtterance(" ")); }catch(e){} }
+    pickVoice();
+    startRound();
+  });
+  $("quitBtn").addEventListener("click", function(){ if(synth) synth.cancel(); show("setup"); });
+  $("againBtn").addEventListener("click", startRound);
+  $("menuBtn").addEventListener("click", function(){ show("setup"); });
+
+  /* ---------- Reference chart ---------- */
+  (function buildRef(){
+    var g = $("refGrid"), html = "";
+    LETTERS.forEach(function(L){
+      html += '<div><b>'+L+' '+L.toLowerCase()+'</b><br><span>'+FR_HINT[L]+'</span></div>';
+    });
+    g.innerHTML = html;
+  })();
+  $("showRef").addEventListener("click", function(){ $("refModal").classList.add("show"); });
+  $("refClose").addEventListener("click", function(){ $("refModal").classList.remove("show"); });
+  $("refModal").addEventListener("click", function(e){ if(e.target===this) this.classList.remove("show"); });
+
+})();
+</script>
+</body>
+</html>
