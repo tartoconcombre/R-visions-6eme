@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Die Farben – Les couleurs en allemand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf8;
+    --ink:#2c2b29;
+    --muted:#7c7a74;
+    --line:#e7e2d6;
+    --card:#ffffff;
+    --good:#3aa655;
+    --bad:#e0533d;
+    --accent:#6a4cc4;
+    --pad-top: env(safe-area-inset-top, 0px);
+    --pad-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing:border-box;
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html,body{margin:0}
+  body{
+    font-family:"Fredoka", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding: var(--pad-top) 16px calc(var(--pad-bottom) + 32px);
+    line-height:1.45;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:640px;margin:0 auto}
+
+  header{padding:22px 0 10px;text-align:center}
+  .palette{display:flex;justify-content:center;gap:6px;margin-bottom:8px}
+  .palette span{width:20px;height:20px;border-radius:50% 45% 55% 48%;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+  h1{font-size:2rem;font-weight:700;margin:.1em 0 .05em;letter-spacing:.3px}
+  h1 .fr{display:block;font-size:1rem;font-weight:500;color:var(--muted);letter-spacing:0}
+  .hint{font-size:.85rem;color:var(--muted);margin:6px auto 0;max-width:34ch}
+
+  nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:20px 0 8px}
+  .tab{
+    border:2px solid var(--line);background:var(--card);color:var(--ink);
+    font-family:inherit;font-size:.9rem;font-weight:600;
+    padding:12px 4px;border-radius:16px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    transition:transform .08s ease, border-color .15s ease, background .15s ease;
+  }
+  .tab .ico{font-size:1.3rem;line-height:1}
+  .tab[aria-selected="true"]{border-color:var(--accent);background:#f3efff;color:var(--accent)}
+  .tab:active{transform:translateY(1px)}
+
+  .panel{display:none;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:20px 18px 24px;margin-top:12px}
+  .panel.active{display:block}
+  .panel h2{font-size:1.15rem;margin:0 0 2px}
+  .panel .task{color:var(--muted);font-size:.92rem;margin:0 0 16px}
+
+  .progress{height:10px;background:#efece2;border-radius:99px;overflow:hidden;margin:0 0 18px}
+  .progress > i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s ease}
+  .meta{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);margin:-8px 0 14px}
+
+  /* colour blob */
+  .blob{
+    width:130px;height:130px;margin:4px auto 6px;border-radius:46% 54% 52% 48%/50% 45% 55% 50%;
+    box-shadow:0 6px 14px rgba(0,0,0,.12);border:2px solid rgba(0,0,0,.06);
+  }
+  .blob.small{width:88px;height:88px}
+  .prompt-word{text-align:center;font-size:2.1rem;font-weight:700;margin:10px 0 4px;letter-spacing:.5px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+  .choice{
+    border:3px solid transparent;border-radius:18px;padding:10px;cursor:pointer;background:#faf8f2;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-family:inherit;font-size:1rem;font-weight:600;color:var(--ink);
+    transition:transform .08s ease, border-color .12s ease;
+  }
+  .choice .swatch{width:100%;height:56px;border-radius:12px;border:2px solid rgba(0,0,0,.08)}
+  .choice .lbl{font-size:1.15rem}
+  .choice:active{transform:scale(.98)}
+  .choice.correct{border-color:var(--good);background:#eef8f0}
+  .choice.wrong{border-color:var(--bad);background:#fbeeeb;animation:shake .35s}
+  .choice:disabled{cursor:default;opacity:.75}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .btn{
+    font-family:inherit;font-weight:600;font-size:1rem;border:none;border-radius:14px;
+    padding:13px 18px;cursor:pointer;background:var(--accent);color:#fff;
+    display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    transition:transform .08s ease, filter .12s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.big{width:100%;font-size:1.15rem;padding:16px}
+  .btn.ghost{background:#f1eee6;color:var(--ink)}
+  .btn.line{background:#fff;color:var(--accent);border:2px solid var(--accent)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .row .btn{flex:1;min-width:130px}
+
+  .feedback{text-align:center;font-weight:600;min-height:1.5em;margin-top:14px;font-size:1.05rem}
+  .feedback.ok{color:var(--good)}
+  .feedback.no{color:var(--bad)}
+
+  /* write */
+  .keys{display:flex;gap:8px;justify-content:center;margin:10px 0 4px;flex-wrap:wrap}
+  .keys button{font-family:inherit;font-size:1.1rem;font-weight:600;border:2px solid var(--line);background:#faf8f2;border-radius:10px;width:44px;height:44px;cursor:pointer}
+  .keys button:active{background:#efece2}
+  input.answer{
+    width:100%;font-family:inherit;font-size:1.4rem;text-align:center;padding:12px;
+    border:2px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);
+  }
+  input.answer:focus{outline:none;border-color:var(--accent)}
+
+  .done{text-align:center;padding:14px 4px}
+  .done .big{font-size:2.6rem}
+  .done p{margin:6px 0 16px;font-weight:600}
+
+  footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:22px}
+  @media (max-width:380px){
+    .tab{font-size:.78rem}
+    h1{font-size:1.7rem}
+    .row .btn{min-width:110px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="palette" aria-hidden="true"></div>
+    <h1>Die Farben<span class="fr">Les couleurs en allemand</span></h1>
+    <p class="hint">Écoute, dis, lis et écris les 10 couleurs. Mets le son 🔊 (le micro marche mieux avec Chrome).</p>
+  </header>
+
+  <nav role="tablist" aria-label="Activités">
+    <button class="tab" role="tab" aria-selected="true" data-tab="listen"><span class="ico">👂</span>Écouter</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="say"><span class="ico">🗣️</span>Dire</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="read"><span class="ico">📖</span>Lire</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="write"><span class="ico">✏️</span>Écrire</button>
+  </nav>
+
+  <!-- ÉCOUTER -->
+  <section class="panel active" id="listen">
+    <h2>👂 Écouter</h2>
+    <p class="task">Écoute la couleur, puis clique sur la bonne case.</p>
+    <div class="meta"><span id="listen-count">1 / 10</span><span id="listen-score">Score : 0</span></div>
+    <div class="progress"><i id="listen-bar"></i></div>
+    <button class="btn big" id="listen-play">🔊 Écouter la couleur</button>
+    <div class="grid" id="listen-grid"></div>
+    <div class="feedback" id="listen-fb"></div>
+  </section>
+
+  <!-- DIRE -->
+  <section class="panel" id="say">
+    <h2>🗣️ Dire</h2>
+    <p class="task">Regarde la couleur et dis son nom en allemand à voix haute.</p>
+    <div class="meta"><span id="say-count">1 / 10</span><span></span></div>
+    <div class="progress"><i id="say-bar"></i></div>
+    <div class="blob" id="say-blob"></div>
+    <div class="row">
+      <button class="btn" id="say-rec">🎤 M'enregistrer</button>
+      <button class="btn ghost" id="say-model">👂 Le modèle</button>
+    </div>
+    <div class="row">
+      <button class="btn line" id="say-reveal">👀 La réponse</button>
+      <button class="btn ghost" id="say-next">Suivant →</button>
+    </div>
+    <div class="feedback" id="say-fb"></div>
+  </section>
+
+  <!-- LIRE -->
+  <section class="panel" id="read">
+    <h2>📖 Lire</h2>
+    <p class="task">Lis le mot allemand et clique sur la bonne couleur.</p>
+    <div class="meta"><span id="read-count">1 / 10</span><span id="read-score">Score : 0</span></div>
+    <div class="progress"><i id="read-bar"></i></div>
+    <div class="prompt-word" id="read-word">—</div>
+    <div class="grid" id="read-grid"></div>
+    <div class="feedback" id="read-fb"></div>
+  </section>
+
+  <!-- ÉCRIRE -->
+  <section class="panel" id="write">
+    <h2>✏️ Écrire</h2>
+    <p class="task">Regarde la couleur et écris son nom en allemand.</p>
+    <div class="meta"><span id="write-count">1 / 10</span><span id="write-score">Score : 0</span></div>
+    <div class="progress"><i id="write-bar"></i></div>
+    <div class="blob small" id="write-blob"></div>
+    <div class="keys">
+      <button data-ch="ä">ä</button><button data-ch="ö">ö</button>
+      <button data-ch="ü">ü</button><button data-ch="ß">ß</button>
+    </div>
+    <input class="answer" id="write-input" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="…">
+    <div class="row">
+      <button class="btn" id="write-check">✓ Vérifier</button>
+      <button class="btn ghost" id="write-next" style="display:none">Suivant →</button>
+    </div>
+    <div class="feedback" id="write-fb"></div>
+  </section>
+
+  <footer>Mes révisions · Allemand · 6e</footer>
+</div>
+
+<script>
+/* ---------- Données ---------- */
+const COLORS = [
+  {de:'rot',     fr:'rouge',  hex:'#e4211c', alts:['rot']},
+  {de:'blau',    fr:'bleu',   hex:'#1565c0', alts:['blau']},
+  {de:'gelb',    fr:'jaune',  hex:'#fdd835', alts:['gelb']},
+  {de:'orange',  fr:'orange', hex:'#f57c00', alts:['orange']},
+  {de:'rosa',    fr:'rose',   hex:'#f06292', alts:['rosa']},
+  {de:'grün',    fr:'vert',   hex:'#43a047', alts:['grün','gruen','grun']},
+  {de:'braun',   fr:'marron', hex:'#6d4c1b', alts:['braun']},
+  {de:'grau',    fr:'gris',   hex:'#9e9e9e', alts:['grau']},
+  {de:'weiß',    fr:'blanc',  hex:'#ffffff', alts:['weiß','weiss']},
+  {de:'violett', fr:'violet', hex:'#7b1fa2', alts:['violett']},
+];
+
+/* ---------- Outils ---------- */
+const $ = s => document.querySelector(s);
+const shuffle = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+function norm(s){
+  return (s||'').toLowerCase().trim()
+    .replace(/ß/g,'ss').replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue')
+    .replace(/[^a-z]/g,'');
+}
+function accepts(color, input){
+  const set = new Set([norm(color.de), ...color.alts.map(norm)]);
+  return set.has(norm(input));
+}
+const cheersOK = ['Super !','Bravo !','Genau ! 🎉','Parfait !','Sehr gut !','Génial !'];
+const cheersNo = ['Presque…','Réessaie !','Pas encore.','Regarde bien.'];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+/* ---------- Voix (écoute) ---------- */
+let deVoice = null;
+function loadVoice(){
+  const v = speechSynthesis.getVoices();
+  deVoice = v.find(x=>/de[-_]DE/i.test(x.lang)) || v.find(x=>/^de/i.test(x.lang)) || null;
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = loadVoice; loadVoice(); }
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; if(deVoice) u.voice=deVoice; u.rate=.88;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---------- Onglets ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected','false'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.setAttribute('aria-selected','true');
+    $('#'+t.dataset.tab).classList.add('active');
+    if('speechSynthesis' in window) speechSynthesis.cancel();
+  });
+});
+/* palette déco dans l'en-tête */
+$('.palette').innerHTML = COLORS.slice(0,7).map(c=>`<span style="background:${c.hex}"></span>`).join('');
+
+/* ======================================================= ÉCOUTER */
+(function(){
+  let order=[], idx=0, score=0, locked=false;
+  const grid=$('#listen-grid'), fb=$('#listen-fb');
+  function start(){ order=shuffle([...COLORS]); idx=0; score=0; render(); }
+  function render(){
+    locked=false; fb.textContent=''; fb.className='feedback';
+    $('#listen-count').textContent=(idx+1)+' / '+order.length;
+    $('#listen-score').textContent='Score : '+score;
+    $('#listen-bar').style.width=(idx/order.length*100)+'%';
+    if(idx>=order.length){ return finish(); }
+    const target=order[idx];
+    const others=shuffle(COLORS.filter(c=>c.de!==target.de)).slice(0,3);
+    const opts=shuffle([target,...others]);
+    grid.innerHTML='';
+    opts.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='choice';
+      b.innerHTML=`<div class="swatch" style="background:${c.hex}"></div>`;
+      b.onclick=()=>choose(b,c,target);
+      grid.appendChild(b);
+    });
+    setTimeout(()=>speak(target.de),250);
+  }
+  function choose(btn,c,target){
+    if(locked) return;
+    if(c.de===target.de){
+      locked=true; btn.classList.add('correct'); score++;
+      fb.textContent=pick(cheersOK)+' → '+target.de; fb.className='feedback ok';
+      setTimeout(()=>{idx++; render();},1100);
+    }else{
+      btn.classList.add('wrong'); btn.disabled=true;
+      fb.textContent=pick(cheersNo); fb.className='feedback no';
+    }
+  }
+  function finish(){
+    $('#listen-bar').style.width='100%';
+    grid.innerHTML=`<div class="done" style="grid-column:1/-1"><div class="big">🎉</div>
+      <p>Fini ! ${score} / ${order.length}</p>
+      <button class="btn" id="listen-again">↺ Recommencer</button></div>`;
+    fb.textContent='';
+    $('#listen-again').onclick=start;
+  }
+  $('#listen-play').onclick=()=>{ if(idx<order.length) speak(order[idx].de); };
+  start();
+})();
+
+/* ======================================================= DIRE */
+(function(){
+  let order=[], idx=0, revealed=false;
+  const blob=$('#say-blob'), fb=$('#say-fb');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ $('#say-rec').style.display='none'; }
+  function start(){ order=shuffle([...COLORS]); idx=0; render(); }
+  function render(){
+    revealed=false; fb.textContent=''; fb.className='feedback';
+    $('#say-count').textContent=(idx+1)+' / '+order.length;
+    $('#say-bar').style.width=(idx/order.length*100)+'%';
+    if(idx>=order.length){ return finish(); }
+    blob.style.display='block';
+    blob.style.background=order[idx].hex;
+    ['say-rec','say-model','say-reveal','say-next'].forEach(id=>$('#'+id).style.display='');
+  }
+  function finish(){
+    blob.style.display='none';
+    ['say-rec','say-model','say-reveal','say-next'].forEach(id=>$('#'+id).style.display='none');
+    $('#say-bar').style.width='100%';
+    fb.innerHTML=`<div class="done"><div class="big">👏</div><p>Bien joué ! Tu as vu les 10 couleurs.</p>
+      <button class="btn" id="say-again">↺ Recommencer</button></div>`;
+    $('#say-again').onclick=start;
+  }
+  $('#say-model').onclick=()=>{ if(idx<order.length) speak(order[idx].de); };
+  $('#say-reveal').onclick=()=>{
+    if(idx>=order.length) return;
+    revealed=true;
+    fb.textContent='C\'est : '+order[idx].de; fb.className='feedback ok';
+  };
+  $('#say-next').onclick=()=>{ idx++; render(); };
+  $('#say-rec').onclick=()=>{
+    if(!SR || idx>=order.length) return;
+    const target=order[idx];
+    const rec=new SR(); rec.lang='de-DE'; rec.maxAlternatives=3;
+    fb.textContent='🎤 Parle…'; fb.className='feedback';
+    rec.onresult=e=>{
+      const heard=[...e.results[0]].map(r=>r.transcript);
+      const ok=heard.some(h=>accepts(target,h));
+      if(ok){ fb.textContent=pick(cheersOK)+' ('+heard[0].trim()+')'; fb.className='feedback ok'; }
+      else{ fb.textContent='J\'ai entendu « '+heard[0].trim()+' ». Le mot est : '+target.de; fb.className='feedback no'; }
+    };
+    rec.onerror=e=>{ fb.textContent='Micro indisponible — utilise « Le modèle » puis « La réponse ».'; fb.className='feedback no'; };
+    try{ rec.start(); }catch(e){}
+  };
+  start();
+})();
+
+/* ======================================================= LIRE */
+(function(){
+  let order=[], idx=0, score=0, locked=false;
+  const grid=$('#read-grid'), fb=$('#read-fb');
+  function start(){ order=shuffle([...COLORS]); idx=0; score=0; render(); }
+  function render(){
+    locked=false; fb.textContent=''; fb.className='feedback';
+    $('#read-count').textContent=(idx+1)+' / '+order.length;
+    $('#read-score').textContent='Score : '+score;
+    $('#read-bar').style.width=(idx/order.length*100)+'%';
+    if(idx>=order.length){ return finish(); }
+    const target=order[idx];
+    $('#read-word').textContent=target.de;
+    const others=shuffle(COLORS.filter(c=>c.de!==target.de)).slice(0,3);
+    const opts=shuffle([target,...others]);
+    grid.innerHTML='';
+    opts.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='choice';
+      b.innerHTML=`<div class="swatch" style="background:${c.hex}"></div>`;
+      b.onclick=()=>choose(b,c,target);
+      grid.appendChild(b);
+    });
+  }
+  function choose(btn,c,target){
+    if(locked) return;
+    if(c.de===target.de){
+      locked=true; btn.classList.add('correct'); score++;
+      fb.textContent=pick(cheersOK); fb.className='feedback ok';
+      speak(target.de);
+      setTimeout(()=>{idx++; render();},1000);
+    }else{
+      btn.classList.add('wrong'); btn.disabled=true;
+      fb.textContent=pick(cheersNo); fb.className='feedback no';
+    }
+  }
+  function finish(){
+    $('#read-word').textContent='🎉';
+    $('#read-bar').style.width='100%';
+    grid.innerHTML=`<div class="done" style="grid-column:1/-1">
+      <p>Fini ! ${score} / ${order.length}</p>
+      <button class="btn" id="read-again">↺ Recommencer</button></div>`;
+    fb.textContent='';
+    $('#read-again').onclick=start;
+  }
+  start();
+})();
+
+/* ======================================================= ÉCRIRE */
+(function(){
+  let order=[], idx=0, score=0, done=false;
+  const blob=$('#write-blob'), input=$('#write-input'), fb=$('#write-fb');
+  const checkBtn=$('#write-check'), nextBtn=$('#write-next');
+  function start(){ order=shuffle([...COLORS]); idx=0; score=0; render(); }
+  function render(){
+    done=false; fb.textContent=''; fb.className='feedback';
+    input.value=''; input.disabled=false;
+    checkBtn.style.display=''; nextBtn.style.display='none';
+    $('#write-count').textContent=(idx+1)+' / '+order.length;
+    $('#write-score').textContent='Score : '+score;
+    $('#write-bar').style.width=(idx/order.length*100)+'%';
+    if(idx>=order.length){ return finish(); }
+    blob.style.display='block';
+    blob.style.background=order[idx].hex;
+    input.focus();
+  }
+  function check(){
+    if(done || idx>=order.length) return;
+    const target=order[idx];
+    if(!input.value.trim()) return;
+    done=true; input.disabled=true;
+    checkBtn.style.display='none'; nextBtn.style.display='';
+    if(accepts(target,input.value)){
+      score++; fb.textContent=pick(cheersOK)+' → '+target.de; fb.className='feedback ok';
+    }else{
+      fb.textContent='On écrit : '+target.de; fb.className='feedback no';
+    }
+    speak(target.de);
+  }
+  function finish(){
+    blob.style.display='none'; input.style.display='none';
+    document.querySelector('#write .keys').style.display='none';
+    checkBtn.style.display='none'; nextBtn.style.display='none';
+    $('#write-bar').style.width='100%';
+    fb.innerHTML=`<div class="done"><div class="big">🏆</div><p>Fini ! ${score} / ${order.length}</p>
+      <button class="btn" id="write-again">↺ Recommencer</button></div>`;
+    $('#write-again').onclick=()=>{
+      input.style.display=''; document.querySelector('#write .keys').style.display='';
+      start();
+    };
+  }
+  document.querySelectorAll('#write .keys button').forEach(k=>{
+    k.onclick=()=>{ input.value+=k.dataset.ch; input.focus(); };
+  });
+  checkBtn.onclick=check;
+  nextBtn.onclick=()=>{ idx++; render(); };
+  input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ done?(idx++,render()):check(); } });
+  start();
+})();
+</script>
+</body>
+</html>
