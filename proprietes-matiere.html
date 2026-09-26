@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#16a34a">
+<title>Les propriétés de la matière</title>
+<style>
+  :root{
+    --encre:#14231c; --doux:#5b6b63; --papier:#f3f6f4; --blanc:#fff; --trait:#dfe7e2;
+    --vert:#16a34a; --vert-f:#166534;
+    --solide:#2563eb; --liquide:#0891b2; --gaz:#9333ea;
+    --bon:#15803d; --bon-bg:#dcfce7; --faux:#b91c1c; --faux-bg:#fee2e2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--papier);color:var(--encre);line-height:1.45}
+  .page{max-width:560px;margin:0 auto;padding:16px 16px 48px}
+  .hidden{display:none!important}
+  a.retour{display:inline-block;color:var(--vert-f);text-decoration:none;font-weight:600;margin-bottom:10px}
+  h1{font-size:1.55rem;line-height:1.15;margin:4px 0 2px}
+  h2{font-size:1.1rem;margin:22px 0 8px}
+  .sous{color:var(--doux);margin:0 0 12px}
+  .schema{background:var(--blanc);border-radius:18px;padding:10px 8px 4px;border:1px solid var(--trait)}
+  .schema svg{display:block;width:100%;height:auto}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+  .chip{border:2px solid var(--trait);background:var(--blanc);color:var(--encre);border-radius:999px;
+    padding:8px 14px;font:inherit;font-size:.92rem;font-weight:600;cursor:pointer}
+  .chip.on{border-color:var(--vert);background:var(--vert);color:#fff}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:15px 16px;font:inherit;
+    font-size:1.05rem;font-weight:700;cursor:pointer;background:var(--vert);color:#fff;margin-top:10px}
+  .btn.sec{background:var(--blanc);color:var(--vert-f);border:2px solid var(--vert)}
+  .btn.ter{background:transparent;color:var(--vert-f);text-decoration:underline;font-weight:600}
+  .btn:disabled{opacity:.4;cursor:default}
+  .btn small{display:block;font-weight:500;font-size:.85rem;opacity:.85}
+  .record{margin-top:12px;color:var(--doux);font-size:.92rem;text-align:center}
+  button:focus-visible,input:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+
+  /* Quiz */
+  .haut{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .haut .compte{font-weight:700;font-size:.95rem}
+  .haut .quit{margin-left:auto;background:none;border:none;color:var(--doux);font:inherit;cursor:pointer}
+  .barre{height:8px;background:var(--trait);border-radius:999px;overflow:hidden;margin-bottom:16px}
+  .barre span{display:block;height:100%;background:var(--vert);transition:width .3s}
+  .theme{display:inline-block;font-size:.8rem;font-weight:700;border-radius:6px;padding:3px 8px;
+    background:#e7efe9;color:var(--vert-f);margin-bottom:8px}
+  .question{font-size:1.2rem;font-weight:650;margin:0 0 14px}
+  .fig{background:var(--blanc);border-radius:16px;border:1px solid var(--trait);padding:6px;margin-bottom:12px}
+  .fig svg{display:block;width:100%;height:auto}
+  .opt{display:block;width:100%;text-align:left;background:var(--blanc);border:2px solid var(--trait);
+    border-radius:14px;padding:13px 15px;font:inherit;font-size:1.02rem;margin-bottom:9px;cursor:pointer;color:var(--encre)}
+  .opt.choisi{border-color:var(--encre)}
+  .opt.bon{border-color:var(--bon);background:var(--bon-bg)}
+  .opt.faux{border-color:var(--faux);background:var(--faux-bg)}
+  .opt:disabled{cursor:default}
+  input.saisie{width:100%;font:inherit;font-size:1.15rem;padding:13px 14px;border-radius:14px;
+    border:2px solid var(--trait);background:var(--blanc);color:var(--encre)}
+  input.saisie.bon{border-color:var(--bon);background:var(--bon-bg)}
+  input.saisie.faux{border-color:var(--faux);background:var(--faux-bg)}
+  .fb{margin-top:12px;border-radius:14px;padding:12px 14px;font-size:.98rem}
+  .fb.bon{background:var(--bon-bg);color:#14532d}
+  .fb.faux{background:var(--faux-bg);color:#7f1d1d}
+  .fb.neutre{background:#e7efe9;color:var(--vert-f)}
+  .fb b{display:block;margin-bottom:2px}
+
+  /* Fin */
+  .score{font-size:3rem;font-weight:800;text-align:center;margin:10px 0 0;color:var(--vert-f)}
+  .msg{text-align:center;margin:4px 0 0}
+  ul.erreurs{list-style:none;padding:0;margin:0}
+  ul.erreurs li{background:var(--blanc);border-left:4px solid var(--faux);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+  ul.erreurs li span{display:block;color:var(--doux);font-size:.92rem;margin-top:3px}
+
+  /* Leçon */
+  .lecon p, .lecon li{font-size:1rem}
+  .lecon ul{padding-left:20px;margin:6px 0}
+  .etat{font-weight:700}
+  .s{color:var(--solide)} .l{color:var(--liquide)} .g{color:var(--gaz)}
+  .attention{background:#fef3c7;border-radius:12px;padding:10px 12px;margin:10px 0}
+  @media (prefers-reduced-motion:reduce){ .barre span{transition:none} }
+</style>
+<style>
+  /* Niveaux */
+  .niveaux{display:grid;gap:8px;margin:4px 0 6px}
+  .niveau{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:var(--blanc);
+    border:2px solid var(--trait);border-radius:16px;padding:12px 14px;font:inherit;color:var(--encre);cursor:pointer}
+  .niveau .num{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+    font-weight:800;background:#e7efe9;color:var(--vert-f)}
+  .niveau .txt{flex:1}
+  .niveau .txt b{display:block;font-size:1.02rem}
+  .niveau .txt span{display:block;color:var(--doux);font-size:.88rem}
+  .niveau .best{flex:0 0 auto;font-size:.82rem;font-weight:700;color:var(--vert-f)}
+  .niveau.on{border-color:var(--vert);background:#f0fdf4}
+  .niveau.on .num{background:var(--vert);color:#fff}
+  .banque{margin-top:10px;font-size:.88rem;color:var(--doux)}
+  .banque span{display:inline-block;background:#e7efe9;color:var(--vert-f);border-radius:8px;padding:3px 9px;margin:4px 4px 0 0;font-weight:600}
+</style>
+
+</head>
+<body>
+<div class="page">
+  <section id="accueil">
+    <a class="retour" href="index.html">‹ Mes révisions</a>
+    <h1>Les propriétés de la matière</h1>
+    <p class="sous">Physique-chimie · chapitre 1</p>
+    <div class="schema" id="schema-accueil"></div>
+
+    <h2>Choisis ton niveau</h2>
+    <div class="niveaux" id="niveaux"></div>
+
+    <h2>Que veux-tu réviser ?</h2>
+    <div class="chips" id="chips"></div>
+    <button class="btn" id="go-entrainement">S'entraîner<small>10 questions, avec la correction à chaque fois</small></button>
+    <button class="btn sec" id="go-controle">Faire le contrôle<small>14 questions sur tout le chapitre, correction à la fin</small></button>
+    <button class="btn ter" id="go-lecon">Relire la leçon en bref</button>
+    <p class="record" id="record"></p>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="haut"><span class="compte" id="compte"></span><button class="quit" id="quitter">Arrêter</button></div>
+    <div class="barre"><span id="barre"></span></div>
+    <span class="theme" id="q-theme"></span>
+    <p class="question" id="q-texte"></p>
+    <div id="q-zone"></div>
+    <div id="q-fb"></div>
+    <button class="btn" id="q-suivant" disabled>Suivant</button>
+  </section>
+
+  <section id="fin" class="hidden">
+    <h1 style="text-align:center">Terminé</h1>
+    <p class="score" id="f-score"></p>
+    <p class="msg" id="f-msg"></p>
+    <p class="record" id="f-record"></p>
+    <div id="f-erreurs"></div>
+    <button class="btn" id="f-encore">Recommencer (nouvelles questions)</button>
+    <button class="btn sec" id="f-menu">Retour au menu</button>
+  </section>
+
+  <!-- ============ LEÇON EN BREF ============ -->
+  <section id="lecon" class="hidden lecon">
+    <button class="btn ter" style="text-align:left;padding-left:0" id="l-retour">‹ Retour</button>
+    <h1>La leçon en bref</h1>
+
+    <h2>1. Le devenir de la matière</h2>
+    <p>Les matériaux qui nous entourent sont soit <b>directement disponibles dans la nature</b> (bois, pierre, sable), soit <b>transformés ou fabriqués par l'homme</b> (papier, verre, plastique, métaux).</p>
+    <p>Ils se décomposent plus ou moins vite : de <b>quelques jours à des millions d'années</b>. Pour protéger l'environnement, on réduit l'utilisation de certains matériaux et on <b>trie ses déchets</b>.</p>
+
+    <h2>2. Les propriétés de la matière</h2>
+    <p>On utilise les propriétés des matériaux pour les trier et les recycler :</p>
+    <ul>
+      <li>Les <b>métaux</b> ont une bonne <b>conductivité électrique</b> : ils laissent passer le courant.</li>
+      <li>Les objets en <b>fer</b> sont attirés par un <b>aimant</b>, mais pas ceux en aluminium.</li>
+      <li>Le verre a une meilleure <b>conductivité thermique</b> (il laisse mieux passer la chaleur) que le papier ou le carton.</li>
+    </ul>
+
+    <h2>3. États et changements d'état</h2>
+    <p>Une matière peut exister sous 3 états selon sa température : <span class="etat s">solide</span>, <span class="etat l">liquide</span>, <span class="etat g">gazeux</span>.</p>
+    <ul>
+      <li>Eau <span class="etat s">solide</span> (en dessous de 0 °C) : neige, iceberg, glaçon.</li>
+      <li>Eau <span class="etat l">liquide</span> (entre 0 °C et 100 °C) : mer, pluie, nuage, brouillard.</li>
+      <li>Eau <span class="etat g">gazeuse</span> (au-dessus de 100 °C, quand elle bout) : vapeur d'eau.</li>
+    </ul>
+    <div class="attention">⚠ La vapeur d'eau est <b>invisible</b> ! La « fumée » blanche au-dessus d'une casserole, ce sont de minuscules gouttes d'eau liquide, comme dans un nuage.</div>
+    <p>Quand une matière passe d'un état à un autre, c'est un <b>changement d'état</b> :</p>
+    <div class="schema" id="schema-lecon"></div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+
+/* ====== Outils ====== */
+function $(id){ return document.getElementById(id); }
+function melange(t){ t=t.slice(); for(var i=t.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var x=t[i]; t[i]=t[j]; t[j]=x; } return t; }
+function hasard(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function pioche(t){ return t[Math.floor(Math.random()*t.length)]; }
+var ARTICLES=/^(de la |de l'|la |le |l'|les |un |une |des |du |a l'etat |l'etat |etat |c'est la |c'est le |c'est l')/;
+function sansArticle(s){ var p; do{ p=s; s=s.replace(ARTICLES,""); }while(s!==p); return s; }
+function normaliser(s){
+  s=(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[’`]/g,"'")
+    .replace(/[.!?;:,]+/g," ").replace(/\s+/g," ").trim();
+  s=sansArticle(s);
+  return s.replace(/s$/,"");
+}
+function brut(s){ return sansArticle((s||"").toLowerCase().replace(/[’`]/g,"'").replace(/\s+/g," ").trim()); }
+function nombreDe(s){
+  var t=normaliser(s);
+  if(/^zero/.test(t)) return 0;
+  if(/^cent/.test(t)) return 100;
+  var m=t.replace(",",".").match(/-?\d+/);
+  return m ? parseInt(m[0],10) : null;
+}
+function texteBrut(html){ var d=document.createElement("div"); d.innerHTML=html; return d.textContent; }
+
+/* ====== Scores (un meilleur score par niveau ; la page d'accueil lit "meilleur:") ====== */
+var FICHIER = location.pathname.split("/").pop() || "index.html";
+function lireJSON(cle){ try{ return JSON.parse(localStorage.getItem(cle)); }catch(e){ return null; } }
+function meilleurNiveau(n){ return lireJSON("meilleur-niveau" + n + ":" + FICHIER); }
+function mieuxQue(bon,total,prev){ return !prev || (bon/total)>(prev.bon/prev.total) || ((bon/total)===(prev.bon/prev.total) && bon>prev.bon); }
+function enregistrerMeilleurScore(niveau, bon, total){
+  try{
+    var cle="meilleur-niveau"+niveau+":"+FICHIER, prev=lireJSON(cle);
+    if(mieuxQue(bon,total,prev)) localStorage.setItem(cle, JSON.stringify({bon:bon,total:total}));
+    /* Pour le portail : on affiche le meilleur score du niveau le plus haut tenté */
+    var g=lireJSON("meilleur:"+FICHIER);
+    if(!g || !g.niveau || niveau>g.niveau || (niveau===g.niveau && mieuxQue(bon,total,g)))
+      localStorage.setItem("meilleur:"+FICHIER, JSON.stringify({bon:bon,total:total,niveau:niveau}));
+    return meilleurNiveau(niveau);
+  }catch(e){ return null; }
+}
+
+/* ====== Schéma des changements d'état ====== */
+var FLECHES = {
+  fusion:        {d:"M 80 58 Q 110 12 140 58",    tx:110, ty:22},
+  solidification:{d:"M 140 102 Q 110 148 80 102", tx:110, ty:146},
+  vaporisation:  {d:"M 200 58 Q 230 12 260 58",   tx:230, ty:22},
+  liquefaction:  {d:"M 260 102 Q 230 148 200 102",tx:230, ty:146}
+};
+var NOMS = {fusion:"fusion", solidification:"solidification", vaporisation:"vaporisation", liquefaction:"liquéfaction"};
+function schema(mode, cible){
+  var h='<svg viewBox="0 0 340 160" role="img" aria-label="Schéma des changements d\'état">'+
+    '<defs>'+
+    '<marker id="mg'+mode+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#94a3b8"/></marker>'+
+    '<marker id="mv'+mode+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ea580c"/></marker>'+
+    '<marker id="mn'+mode+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#166534"/></marker>'+
+    '</defs>';
+  [["Solide",20,"#2563eb"],["Liquide",140,"#0891b2"],["Gazeux",260,"#9333ea"]].forEach(function(b){
+    h+='<rect x="'+b[1]+'" y="58" width="60" height="44" rx="12" fill="'+b[2]+'"/>'+
+       '<text x="'+(b[1]+30)+'" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">'+b[0]+'</text>';
+  });
+  Object.keys(FLECHES).forEach(function(k){
+    var f=FLECHES[k], actif=(k===cible);
+    var coul = mode==="lecon" ? "#166534" : (actif ? "#ea580c" : "#94a3b8");
+    var mk = mode==="lecon" ? "mn" : (actif ? "mv" : "mg");
+    h+='<path d="'+f.d+'" fill="none" stroke="'+coul+'" stroke-width="'+(actif?4:2.5)+'" marker-end="url(#'+mk+mode+')"/>';
+    var lab = mode==="lecon" ? NOMS[k] : (actif ? "?" : "");
+    if(lab) h+='<text x="'+f.tx+'" y="'+f.ty+'" text-anchor="middle" font-size="'+(actif?18:12)+'" font-weight="700" fill="'+(actif?"#ea580c":"#166534")+'" font-family="system-ui,sans-serif">'+lab+'</text>';
+  });
+  return h+'</svg>';
+}
+
+/* ====== Fabrique de questions ======
+   attendu : la bonne réponse (affichée)
+   autres  : les mauvaises réponses proposées au niveau 1 (et montrées dans l'aide du niveau 2)
+   x.qs    : texte différent pour les niveaux où l'on écrit
+   x.rep   : réponses acceptées quand on écrit (sinon : attendu)
+   x.num   : réponse numérique
+   x.banque: mots d'aide du niveau 2 (sinon : attendu + autres)
+   x.qcmSeul / x.saisieSeule : question réservée à un type
+*/
+function Q(th, q, attendu, autres, expl, x){
+  x=x||{};
+  return {th:th, q:q, qs:x.qs||q, attendu:attendu, autres:autres||[], expl:expl, fig:x.fig||"",
+    rep:(x.rep||[attendu]).map(normaliser), num:(typeof x.num==="number")?x.num:null,
+    banque:x.banque||null, qcmSeul:!!x.qcmSeul, saisieSeule:!!x.saisieSeule,
+    orthographe: x.orthographe!==false && !x.rep && typeof x.num!=="number"};
+}
+
+var THEMES = {
+  etat:{nom:"Nom de l'état"},
+  temp:{nom:"Températures"},
+  ex:{nom:"Exemples"},
+  chgt:{nom:"Changements d'état"},
+  inifin:{nom:"État initial / final"},
+  prop:{nom:"Propriétés"},
+  devenir:{nom:"Devenir de la matière"}
+};
+var ETATS=["solide","liquide","gazeux"];
+function autresEtats(e){ return ETATS.filter(function(x){ return x!==e; }); }
+var ETAT_REP={solide:["solide"], liquide:["liquide"], gazeux:["gazeux","gazeuse","gaz"]};
+
+var EXEMPLES=[
+  ["la mer","liquide",""],["la pluie","liquide",""],
+  ["un nuage","liquide"," Un nuage est fait de minuscules gouttes d'eau liquide."],
+  ["le brouillard","liquide"," Le brouillard est un nuage au ras du sol : des gouttes d'eau liquide."],
+  ["une flaque","liquide",""],["la neige","solide",""],["un iceberg","solide",""],
+  ["un glaçon","solide",""],["la grêle","solide",""],["la vapeur d'eau","gazeux"," Elle est invisible !"]
+];
+function maj(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function genEtat(){
+  var L=[];
+  EXEMPLES.forEach(function(e){
+    L.push(Q("etat","<b>"+maj(e[0])+"</b> : dans quel état est l'eau ?", e[1], autresEtats(e[1]),
+      maj(e[0])+" : l'eau est à l'état "+e[1]+"."+e[2], {rep:ETAT_REP[e[1]], banque:ETATS, orthographe:false}));
+  });
+  L.push(Q("etat","Une matière peut exister sous 3 états : solide, liquide et …","gazeux",["fondu","transparent"],
+    "Les 3 états de la matière : solide, liquide, gazeux.",{rep:["gazeux"]}));
+  return L;
+}
+
+function genTemp(){
+  var L=[];
+  [hasard(-25,-2), hasard(5,95), hasard(105,140), hasard(-10,-1), hasard(20,80)].forEach(function(t){
+    var e = t<0?"solide":(t<100?"liquide":"gazeux");
+    var ex = e==="solide" ? "En dessous de 0 °C, l'eau est solide." : e==="liquide" ? "Entre 0 °C et 100 °C, l'eau est liquide." : "Au-dessus de 100 °C, l'eau est gazeuse.";
+    L.push(Q("temp","De l'eau pure est à <b>"+t+" °C</b>. Dans quel état est-elle ?", e, autresEtats(e), ex,
+      {rep:ETAT_REP[e], banque:ETATS, orthographe:false}));
+  });
+  L.push(Q("temp","En dessous de quelle température l'eau est-elle solide ?","0 °C",["100 °C","50 °C"],
+    "En dessous de 0 °C, l'eau est solide (glace).",{num:0, qs:"En dessous de quelle température (en °C) l'eau est-elle solide ?"}));
+  L.push(Q("temp","Au-dessus de quelle température l'eau est-elle gazeuse ?","100 °C",["0 °C","50 °C"],
+    "Au-dessus de 100 °C, l'eau est gazeuse : elle bout.",{num:100, qs:"Au-dessus de quelle température (en °C) l'eau est-elle gazeuse ?"}));
+  L.push(Q("temp","L'eau est liquide entre 0 °C et …","100 °C",["50 °C","37 °C"],
+    "L'eau est liquide entre 0 °C et 100 °C.",{num:100, qs:"L'eau est liquide entre 0 °C et … °C (écris le nombre)"}));
+  L.push(Q("temp","L'eau est liquide entre … et 100 °C.","0 °C",["10 °C","-100 °C"],
+    "L'eau est liquide entre 0 °C et 100 °C.",{num:0, qs:"L'eau est liquide entre … °C et 100 °C (écris le nombre)"}));
+  L.push(Q("temp","À quelle température la glace fond-elle ?","0 °C",["100 °C","20 °C"],
+    "La glace fond à 0 °C.",{num:0, qs:"À quelle température (en °C) la glace fond-elle ?"}));
+  L.push(Q("temp","À quelle température l'eau bout-elle ?","100 °C",["0 °C","60 °C"],
+    "L'eau bout à 100 °C : elle devient vapeur d'eau.",{num:100, qs:"À quelle température (en °C) l'eau bout-elle ?"}));
+  return L;
+}
+
+function genEx(){
+  var L=[], parEtat={solide:[],liquide:[],gazeux:[]};
+  EXEMPLES.forEach(function(e){ parEtat[e[1]].push(e[0]); });
+  /* Niveau 1 : reconnaître un exemple */
+  ["solide","liquide","solide","liquide"].forEach(function(e){
+    var bon=pioche(parEtat[e]);
+    var faux=melange(EXEMPLES.filter(function(x){ return x[1]!==e; }).map(function(x){ return x[0]; })).slice(0,2);
+    L.push(Q("ex","Lequel est un exemple d'eau à l'état <b>"+e+"</b> ?", maj(bon), faux.map(maj),
+      maj(bon)+" : l'eau est à l'état "+e+".",{qcmSeul:true}));
+  });
+  L.push(Q("ex","Lequel est un exemple d'eau à l'état <b>gazeux</b> ?","La vapeur d'eau",["Un nuage","Le brouillard"],
+    "Seule la vapeur d'eau est gazeuse. Un nuage et le brouillard sont faits de gouttes d'eau liquide.",{qcmSeul:true}));
+  L.push(Q("ex","Lequel n'est PAS un exemple d'eau liquide ?","La neige",["La pluie","La mer"],
+    "La neige est de l'eau solide.",{qcmSeul:true}));
+  /* Niveaux 2 et 3 : écrire un exemple */
+  var aide=["neige","pluie","vapeur d'eau","mer","iceberg","nuage"];
+  L.push(Q("ex","","neige, iceberg, glaçon, grêle…",[],"Exemples d'eau solide : neige, iceberg, glaçon, grêle.",
+    {saisieSeule:true, qs:"Écris un exemple d'eau à l'état <b>solide</b>.", banque:aide,
+     rep:["neige","iceberg","glacon","glace","grele","givre","glacier","banquise","flocon"]}));
+  L.push(Q("ex","","mer, pluie, nuage, brouillard…",[],"Exemples d'eau liquide : mer, pluie, nuage, brouillard.",
+    {saisieSeule:true, qs:"Écris un exemple d'eau à l'état <b>liquide</b>.", banque:aide,
+     rep:["mer","pluie","nuage","brouillard","flaque","riviere","ocean","lac","eau du robinet","rosee","goutte","buee","fleuve"]}));
+  L.push(Q("ex","","vapeur d'eau",[],"L'eau à l'état gazeux s'appelle la vapeur d'eau. On ne la voit pas !",
+    {saisieSeule:true, qs:"Comment s'appelle l'eau à l'état <b>gazeux</b> ?", banque:aide, rep:["vapeur d'eau","vapeur"]}));
+  L.push(Q("ex","","neige, iceberg, glaçon…",[],"Exemples d'eau solide : neige, iceberg, glaçon, grêle.",
+    {saisieSeule:true, qs:"Il fait −5 °C dehors. Écris une chose faite d'eau que tu pourrais voir.", banque:aide,
+     rep:["neige","iceberg","glacon","glace","grele","givre","glacier","banquise","flocon"]}));
+  return L;
+}
+
+var CH=[
+  {k:"fusion",n:"fusion",de:"solide",vers:"liquide"},
+  {k:"solidification",n:"solidification",de:"liquide",vers:"solide"},
+  {k:"vaporisation",n:"vaporisation",de:"liquide",vers:"gazeux"},
+  {k:"liquefaction",n:"liquéfaction",de:"gazeux",vers:"liquide"}
+];
+var NOMS_CH=CH.map(function(c){ return c.n; });
+function autresCh(n){ return NOMS_CH.filter(function(x){ return x!==n; }); }
+
+function genChgt(){
+  var L=[];
+  CH.forEach(function(c){
+    L.push(Q("chgt","Passer de l'état <b>"+c.de+"</b> à l'état <b>"+c.vers+"</b>, c'est la…", c.n, autresCh(c.n),
+      c.de+" → "+c.vers+" : la "+c.n+"."));
+    L.push(Q("chgt","Comment s'appelle le changement d'état montré par la flèche orange ?", c.n, autresCh(c.n),
+      "Passer de l'état "+c.de+" à l'état "+c.vers+", c'est la "+c.n+".",{fig:schema("quiz",c.k)}));
+  });
+  [["Un glaçon fond dans un verre.",0],["Du beurre fond dans une poêle chaude.",0],
+   ["De l'eau mise au congélateur devient de la glace.",1],["Du chocolat fondu refroidit et durcit.",1],
+   ["Une flaque sèche au soleil.",2],["Le linge mouillé sèche sur le fil.",2],
+   ["Des gouttes apparaissent sur le couvercle d'une casserole.",3],["Le miroir de la salle de bain se couvre de buée.",3]
+  ].forEach(function(s){
+    var c=CH[s[1]];
+    L.push(Q("chgt",s[0]+" Quel est ce changement d'état ?", c.n, autresCh(c.n),
+      "C'est la "+c.n+" : "+c.de+" → "+c.vers+"."));
+  });
+  return L;
+}
+
+function genIniFin(){
+  var L=[];
+  CH.forEach(function(c){
+    L.push(Q("inifin","Pendant la <b>"+c.n+"</b>, quel est l'état <b>initial</b> (au départ) ?", c.de, autresEtats(c.de),
+      "La "+c.n+" : "+c.de+" → "+c.vers+". On part de l'état "+c.de+".",{rep:ETAT_REP[c.de], banque:ETATS, orthographe:false}));
+    L.push(Q("inifin","Pendant la <b>"+c.n+"</b>, quel est l'état <b>final</b> (à l'arrivée) ?", c.vers, autresEtats(c.vers),
+      "La "+c.n+" : "+c.de+" → "+c.vers+". On arrive à l'état "+c.vers+".",{rep:ETAT_REP[c.vers], banque:ETATS, orthographe:false}));
+  });
+  [["Un glaçon fond.","final","liquide","Fusion : solide → liquide."],
+   ["Une flaque sèche au soleil.","final","gazeux","Vaporisation : liquide → gazeux. L'eau devient de la vapeur invisible."],
+   ["De la buée se forme sur un miroir.","initial","gazeux","Liquéfaction : gazeux → liquide. La vapeur d'eau de l'air devient des gouttes."],
+   ["De l'eau gèle dans le congélateur.","initial","liquide","Solidification : liquide → solide."]
+  ].forEach(function(s){
+    L.push(Q("inifin",s[0]+" Quel est l'état <b>"+s[1]+"</b> de l'eau ?", s[2], autresEtats(s[2]), s[3],
+      {rep:ETAT_REP[s[2]], banque:ETATS, orthographe:false}));
+  });
+  return L;
+}
+
+function genProp(){
+  var L=[];
+  L.push(Q("prop","Les métaux ont une bonne conductivité … : ils laissent passer le courant.","électrique",["thermique","magnétique"],
+    "Laisser passer le courant, c'est la conductivité électrique."));
+  L.push(Q("prop","Le verre a une meilleure conductivité … que le papier ou le carton.","thermique",["électrique","magnétique"],
+    "Thermique = la chaleur. Le verre laisse mieux passer la chaleur que le papier."));
+  L.push(Q("prop","Les objets en fer sont attirés par un …","aimant",["thermomètre","courant"],
+    "Les objets en fer sont attirés par un aimant."));
+  L.push(Q("prop","Quel métal de la leçon est attiré par un aimant ?","fer",["aluminium","verre"],
+    "Le fer est attiré par un aimant, l'aluminium non."));
+  L.push(Q("prop","Quel métal de la leçon n'est PAS attiré par un aimant ?","aluminium",["fer","bois"],
+    "L'aluminium est un métal, mais il n'est pas attiré par un aimant."));
+  L.push(Q("prop","On utilise les propriétés de la matière pour trier les matériaux et les …","recycler",["brûler","cacher"],
+    "On trie les matériaux grâce à leurs propriétés pour les recycler.",{rep:["recycler","recycle"]}));
+  [["fer",1],["cuivre",1],["verre",0],["plastique",0],["bois",0]].forEach(function(m){
+    L.push(Q("prop","Un objet en <b>"+m[0]+"</b> laisse-t-il passer le courant électrique ?", m[1]?"Oui":"Non", [m[1]?"Non":"Oui"],
+      m[1] ? "Oui : c'est un métal, et les métaux ont une bonne conductivité électrique." : "Non : ce n'est pas un métal.",{qcmSeul:true}));
+  });
+  return L;
+}
+
+function genDevenir(){
+  var L=[];
+  L.push(Q("devenir","Les matériaux sont soit directement disponibles dans la …, soit transformés ou fabriqués par l'homme.","nature",["mer","ville"],
+    "Directement disponibles dans la nature, ou transformés / fabriqués par l'homme."));
+  L.push(Q("devenir","Les durées de décomposition vont de quelques jours à des … d'années.","millions",["dizaines","centaines"],
+    "De quelques jours à des millions d'années.",{rep:["millions","million"]}));
+  L.push(Q("devenir","Pour diminuer notre impact sur l'environnement, il faut … nos déchets.","trier",["mélanger","brûler"],
+    "On trie ses déchets pour qu'ils soient recyclés.",{rep:["trier","trie"]}));
+  L.push(Q("devenir","Le papier est fabriqué à partir du …","bois",["sable","pétrole"],"Le papier est fabriqué à partir du bois."));
+  L.push(Q("devenir","Le verre est fabriqué à partir du …","sable",["bois","fer"],"Le verre est fabriqué à partir du sable."));
+  [["Le bois",0],["La pierre",0],["Le plastique",1],["Le papier",1]].forEach(function(m){
+    var O=["Disponible directement dans la nature","Transformé ou fabriqué par l'homme"];
+    L.push(Q("devenir","<b>"+m[0]+"</b> est un matériau…", O[m[1]], [O[1-m[1]]],
+      m[0]+" : "+O[m[1]].toLowerCase()+".",{qcmSeul:true}));
+  });
+  return L;
+}
+
+var GEN={etat:genEtat, temp:genTemp, ex:genEx, chgt:genChgt, inifin:genIniFin, prop:genProp, devenir:genDevenir};
+
+function utilisable(q, niveau){ return niveau===1 ? !q.saisieSeule : !q.qcmSeul; }
+function tirer(liste, n){
+  /* évite deux questions au texte identique dans une même série */
+  var vus={}, r=[];
+  melange(liste).forEach(function(q){ var t=q.q+"|"+q.qs; if(r.length<n && !vus[t]){ vus[t]=1; r.push(q); } });
+  return r;
+}
+function construireSerie(mode, niveau, themes){
+  function pool(k){ return GEN[k]().filter(function(q){ return utilisable(q,niveau); }); }
+  if(mode==="controle"){
+    var s=[]; Object.keys(GEN).forEach(function(k){ s=s.concat(tirer(pool(k),2)); });
+    return melange(s);
+  }
+  var p=[]; themes.forEach(function(k){ p=p.concat(pool(k)); });
+  return tirer(p,10);
+}
+
+/* ====== Interface ====== */
+var NIVEAUX={
+  1:{nom:"Je reconnais", aide:"Je choisis la bonne réponse"},
+  2:{nom:"J'écris avec aide", aide:"J'écris le mot, une liste de mots m'aide"},
+  3:{nom:"J'écris seul", aide:"J'écris le mot, sans aide"}
+};
+var etat={mode:"entrainement", niveau:1, serie:[], i:0, score:0, repondu:false, erreurs:[]};
+var choix={}; Object.keys(THEMES).forEach(function(k){ choix[k]=true; });
+
+function montrer(id){ ["accueil","quiz","fin","lecon"].forEach(function(s){ $(s).classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+
+function majAccueil(){
+  var h="";
+  [1,2,3].forEach(function(n){
+    var b=meilleurNiveau(n);
+    h+='<button class="niveau'+(etat.niveau===n?' on':'')+'" data-n="'+n+'"><span class="num">'+n+'</span>'+
+       '<span class="txt"><b>'+NIVEAUX[n].nom+'</b><span>'+NIVEAUX[n].aide+'</span></span>'+
+       (b?'<span class="best">'+b.bon+' / '+b.total+'</span>':'')+'</button>';
+  });
+  $("niveaux").innerHTML=h;
+  $("niveaux").querySelectorAll(".niveau").forEach(function(b){
+    b.onclick=function(){ etat.niveau=parseInt(b.getAttribute("data-n"),10); majAccueil(); };
+  });
+  var tous=Object.keys(choix).every(function(k){ return choix[k]; });
+  h='<button class="chip'+(tous?' on':'')+'" data-k="tout">Tout</button>';
+  Object.keys(THEMES).forEach(function(k){ h+='<button class="chip'+(choix[k]&&!tous?' on':'')+'" data-k="'+k+'">'+THEMES[k].nom+'</button>'; });
+  $("chips").innerHTML=h;
+  $("chips").querySelectorAll(".chip").forEach(function(b){
+    b.onclick=function(){
+      var k=b.getAttribute("data-k");
+      if(k==="tout") Object.keys(choix).forEach(function(x){ choix[x]=true; });
+      else if(tous) Object.keys(choix).forEach(function(x){ choix[x]=(x===k); });
+      else { choix[k]=!choix[k]; if(!Object.keys(choix).some(function(x){ return choix[x]; })) choix[k]=true; }
+      majAccueil();
+    };
+  });
+  $("record").textContent = etat.niveau<3 ? "Quand tu as un bon score au niveau "+etat.niveau+", essaie le niveau "+(etat.niveau+1)+"." : "Niveau le plus difficile : tu écris tout seul.";
+}
+
+function demarrer(mode){
+  etat.mode=mode;
+  etat.serie=construireSerie(mode, etat.niveau, Object.keys(choix).filter(function(k){ return choix[k]; }));
+  etat.i=0; etat.score=0; etat.erreurs=[];
+  montrer("quiz"); question();
+}
+
+function question(){
+  var q=etat.serie[etat.i], n=etat.serie.length, niv=etat.niveau;
+  etat.repondu=false;
+  $("compte").textContent="Niveau "+niv+" · question "+(etat.i+1)+" / "+n;
+  $("barre").style.width=(etat.i/n*100)+"%";
+  $("q-theme").textContent=THEMES[q.th].nom;
+  $("q-texte").innerHTML = niv===1 ? q.q : q.qs;
+  $("q-fb").innerHTML="";
+  $("q-suivant").disabled=true;
+  $("q-suivant").textContent = etat.i===n-1 ? "Voir mon score" : "Suivant";
+  var z=$("q-zone"), h=q.fig?'<div class="fig">'+q.fig+'</div>':'';
+  if(niv===1){
+    var opts=melange([q.attendu].concat(q.autres));
+    opts.forEach(function(o){ h+='<button class="opt">'+o+'</button>'; });
+    z.innerHTML=h;
+    z.querySelectorAll(".opt").forEach(function(b){
+      b.onclick=function(){ if(!etat.repondu) corrigerQcm(q, b); };
+    });
+  } else {
+    h+='<input class="saisie" id="q-in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" '+
+       (q.num!==null?'inputmode="numeric" ':'')+'placeholder="'+(q.num!==null?'Écris le nombre':'Écris ta réponse')+'">';
+    if(niv===2){
+      var mots=q.banque || [q.attendu].concat(q.autres);
+      h+='<div class="banque">Mots possibles : '+melange(mots).map(function(m){ return '<span>'+m+'</span>'; }).join("")+'</div>';
+    }
+    h+='<button class="btn" id="q-val">Valider</button>';
+    z.innerHTML=h;
+    var inp=$("q-in");
+    $("q-val").onclick=function(){ if(!etat.repondu && inp.value.trim()) corrigerSaisie(q, inp.value); };
+    inp.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); $("q-val").click(); } });
+    setTimeout(function(){ inp.focus(); },50);
+  }
+}
+
+function bilan(q, ok, expl){
+  etat.repondu=true;
+  if(ok) etat.score++;
+  else etat.erreurs.push({q:texteBrut(etat.niveau===1?q.q:q.qs), c:"Réponse : "+q.attendu+". "+texteBrut(q.expl)});
+  var fb=$("q-fb");
+  if(etat.mode==="controle") fb.innerHTML='<div class="fb neutre">Réponse enregistrée. La correction sera à la fin.</div>';
+  else fb.innerHTML='<div class="fb '+(ok?'bon':'faux')+'"><b>'+(ok?'Bravo !':'Pas tout à fait. Réponse : '+q.attendu)+'</b>'+expl+'</div>';
+  $("q-suivant").disabled=false;
+  $("q-suivant").focus();
+}
+
+function corrigerQcm(q, bouton){
+  var ok = bouton.textContent===texteBrut(q.attendu);
+  $("q-zone").querySelectorAll(".opt").forEach(function(b){
+    b.disabled=true;
+    if(etat.mode==="controle"){ if(b===bouton) b.classList.add("choisi"); }
+    else if(b.textContent===texteBrut(q.attendu)) b.classList.add("bon");
+    else if(b===bouton) b.classList.add("faux");
+  });
+  bilan(q, ok, q.expl);
+}
+
+function corrigerSaisie(q, val){
+  var ok = q.num!==null ? nombreDe(val)===q.num : q.rep.indexOf(normaliser(val))!==-1;
+  var inp=$("q-in"); inp.disabled=true; $("q-val").disabled=true;
+  if(etat.mode!=="controle") inp.classList.add(ok?"bon":"faux");
+  var expl=q.expl;
+  /* bonne réponse mais accents ou orthographe approximatifs : on montre l'écriture exacte */
+  if(ok && q.orthographe && brut(val).replace(/[.!]+$/,"")!==q.attendu.toLowerCase())
+    expl += " Attention à l'orthographe : ça s'écrit <b>"+q.attendu+"</b>.";
+  bilan(q, ok, expl);
+}
+
+function terminer(){
+  var n=etat.serie.length, s=etat.score, r=s/n;
+  $("barre").style.width="100%";
+  $("f-score").textContent=s+" / "+n;
+  var suite = r>=.8 && etat.niveau<3 ? " Tu peux passer au niveau "+(etat.niveau+1)+"." : "";
+  $("f-msg").textContent = (r===1 ? "Sans faute, bravo !" : r>=.75 ? "Très bien, encore un petit effort." :
+    r>=.5 ? "C'est en bonne voie. Relis les corrections puis recommence." : "Relis la leçon en bref, puis recommence : les questions changeront.")+suite;
+  if(etat.mode==="controle"){
+    var b=enregistrerMeilleurScore(etat.niveau,s,n);
+    $("f-record").textContent = b ? "Meilleur score au contrôle, niveau "+etat.niveau+" : "+b.bon+" / "+b.total : "";
+  } else $("f-record").textContent="";
+  $("f-erreurs").innerHTML = etat.erreurs.length ? '<h2>À revoir</h2><ul class="erreurs">'+etat.erreurs.map(function(x){
+      return '<li>'+x.q+'<span>'+x.c+'</span></li>'; }).join("")+'</ul>' : "";
+  montrer("fin");
+}
+
+$("schema-accueil").innerHTML=schema("lecon");
+$("schema-lecon").innerHTML=schema("lecon");
+$("go-entrainement").onclick=function(){ demarrer("entrainement"); };
+$("go-controle").onclick=function(){ demarrer("controle"); };
+$("go-lecon").onclick=function(){ montrer("lecon"); };
+$("l-retour").onclick=function(){ montrer("accueil"); };
+$("q-suivant").onclick=function(){ etat.i++; if(etat.i>=etat.serie.length) terminer(); else { question(); window.scrollTo(0,0); } };
+$("quitter").onclick=function(){ majAccueil(); montrer("accueil"); };
+$("f-encore").onclick=function(){ demarrer(etat.mode); };
+$("f-menu").onclick=function(){ majAccueil(); montrer("accueil"); };
+majAccueil();
+})();
+</script>
+
+</body>
+</html>
