@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#dc2626">
+<title>Droites, demi-droites et segments</title>
+<style>
+:root{--bg:#f3f5fa;--paper:#fff;--ink:#1e3a8a;--graph:#2f3a4a;--red:#dc2626;--muted:#64748b;--line:#dfe4ee;--vert:#86f59a;--rose:#ffa3d8;--bleu:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:#1e293b}
+.page{max-width:640px;margin:0 auto;min-height:100vh;background:var(--paper);border-left:3px solid #f5b5b5;padding:14px 16px 40px 18px}
+.haut{display:flex;justify-content:space-between;align-items:center}
+.retour{color:var(--red);text-decoration:none;font-weight:600;font-size:.95rem;background:none;border:none;font-family:inherit;cursor:pointer;padding:4px 0}
+h1{font-size:1.45rem;margin:10px 0 2px;color:var(--ink);line-height:1.2}
+.sous{color:var(--muted);margin:0 0 18px;font-size:.95rem}
+.hidden{display:none!important}
+.nt{font-family:"Cambria Math","STIX Two Math","Times New Roman",Georgia,serif;font-size:1.12em;letter-spacing:.03em;white-space:nowrap;font-weight:600}
+.modes{display:grid;gap:10px}
+.mode{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid var(--line);background:#fff;border-radius:14px;padding:14px 16px;font:inherit;cursor:pointer;color:inherit}
+.mode:active{transform:translateY(1px)}
+.mode b{display:block;font-size:1.05rem;color:var(--ink);margin-bottom:2px}
+.mode span{color:var(--muted);font-size:.9rem}
+.mode .nb{font-size:.85rem;color:var(--muted);white-space:nowrap;text-align:right}
+.mode.fort{border-color:var(--red)}
+.mode.fort b{color:var(--red)}
+details.memo{margin-top:22px;border-top:2px dashed var(--line);padding-top:14px}
+summary{cursor:pointer;font-weight:700;color:var(--ink);padding:4px 0}
+.memo table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.93rem}
+.memo td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:middle}
+.memo td:first-child{width:118px}
+.memo svg{width:112px;height:auto;display:block}
+.barre{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;color:var(--muted);margin:6px 0}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.prog span{display:block;height:100%;background:var(--red);transition:width .3s}
+.enonce{font-size:1.1rem;line-height:1.45;margin:4px 0 12px;font-weight:600}
+.grand{font-size:1.7rem;text-align:center;margin:4px 0 14px}
+.figbox svg{width:100%;height:auto;display:block;border:1px solid #cfd8ea;border-radius:10px;margin-bottom:12px;touch-action:manipulation;
+ background-color:#fff;
+ background-image:linear-gradient(90deg,rgba(170,110,210,.22) 1px,transparent 1px),linear-gradient(rgba(90,140,220,.30) 1px,transparent 1px),linear-gradient(rgba(90,140,220,.12) 1px,transparent 1px);
+ background-size:32px 32px,32px 32px,8px 8px}
+.figbox svg.tap{cursor:crosshair}
+.trait,.marque{stroke:var(--graph);stroke-width:1.6;fill:none;stroke-linecap:round}
+.lbl{font:600 15px -apple-system,system-ui,sans-serif;fill:var(--graph)}
+.trace{stroke:var(--bleu);stroke-width:2.4;stroke-linecap:round;fill:none}
+.sol{stroke:#16a34a;stroke-width:6;stroke-opacity:.45;stroke-linecap:round;fill:none}
+.pointille{stroke:#16a34a;stroke-width:1.8;stroke-dasharray:6 5;fill:none}
+.pt-sel{fill:rgba(220,38,38,.15);stroke:var(--red);stroke-width:1.6}
+.eleve{stroke:var(--bleu);stroke-width:2.2;fill:none;stroke-linecap:round}
+.lbl-eleve{font:700 15px -apple-system,system-ui,sans-serif;fill:var(--bleu)}
+.opts{display:grid;gap:9px}
+.opts.deux{grid-template-columns:1fr 1fr}
+.opt{border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;font:inherit;font-size:1.02rem;text-align:left;cursor:pointer;color:inherit;line-height:1.35}
+.opts.deux .opt{text-align:center}
+.opt small{display:block;color:var(--muted);font-size:.8rem}
+.opt svg{width:100%;height:auto;display:block}
+.opt.bon{background:var(--vert);border-color:#22c55e;border-radius:4px 14px 6px 12px}
+.opt.faux{background:var(--rose);border-color:#ec4899;border-radius:4px 14px 6px 12px}
+.opt:disabled{cursor:default;color:inherit}
+.opt.eteint{opacity:.5}
+.outils{display:flex;gap:8px;margin-bottom:8px}
+.outil{flex:1;border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font:inherit;font-size:.88rem;cursor:pointer;color:inherit;text-align:center}
+.outil .nt{display:block;font-size:1.2rem}
+.outil.actif{border-color:var(--bleu);background:#e8efff;color:var(--ink);font-weight:700}
+.outil:disabled{opacity:.5}
+.aide{font-size:.92rem;color:var(--muted);min-height:1.3em;margin:0 0 8px}
+.aide.alerte{color:var(--red);font-weight:600}
+.saisie{border:2px solid var(--line);border-radius:10px;min-height:56px;font-size:1.8rem;display:flex;align-items:center;justify-content:center;margin-bottom:10px;background:#fff}
+.saisie .vide{color:#b6c0d0;font-size:1rem;font-family:inherit;font-weight:400}
+.saisie.bon{background:var(--vert);border-color:#22c55e}
+.saisie.faux{background:var(--rose);border-color:#ec4899}
+.touches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.touche{padding:11px 0;font-size:1.5rem;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;color:inherit}
+.touche:disabled{opacity:.5}
+.actions{display:flex;gap:10px;margin-top:12px}
+.btn{flex:1;border:none;border-radius:12px;padding:14px;font:inherit;font-weight:700;font-size:1rem;cursor:pointer;background:var(--red);color:#fff}
+.btn.sec{background:#e9edf5;color:#1e293b}
+.btn:disabled{opacity:.4;cursor:default}
+.fb{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:1rem;line-height:1.45}
+.fb.ok{background:#eafbec;border-left:5px solid #22c55e}
+.fb.ko{background:#fff0f7;border-left:5px solid #ec4899}
+.fb > b:first-child{display:block;margin-bottom:4px}
+.score{font-size:3.2rem;font-weight:800;color:var(--ink);text-align:center;margin:14px 0 0}
+.msg{text-align:center;color:var(--muted);margin:4px 0 12px}
+.record{text-align:center;font-weight:700;color:var(--red);margin-bottom:14px}
+h2{font-size:1.05rem;color:var(--ink);margin:18px 0 6px}
+.erreurs{list-style:none;padding:0;margin:0 0 10px}
+.erreurs li{border-bottom:1px solid var(--line);padding:10px 2px;font-size:.95rem;line-height:1.45}
+.erreurs li .cor{display:block;color:#166534;margin-top:3px}
+button:focus-visible{outline:3px solid var(--bleu);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<section id="accueil">
+  <div class="haut"><a class="retour" href="index.html">‹ Mes révisions</a></div>
+  <h1>Droites, demi-droites et segments</h1>
+  <p class="sous">Les questions changent à chaque fois : lis bien les lettres !</p>
+  <div class="modes">
+    <button class="mode" data-mode="vocab"><div><b>Vocabulaire</b><span>Origine, extrémités, sécantes, alignés…</span></div><div class="nb">8 questions</div></button>
+    <button class="mode" data-mode="notation"><div><b>Notations et codage</b><span>( ), [ ), [ ], ∈, ∉ et la bonne façon de marquer un point</span></div><div class="nb">10 questions</div></button>
+    <button class="mode" data-mode="trace"><div><b>Tracés</b><span>Trace et place des points sur la figure</span></div><div class="nb">6 questions</div></button>
+    <button class="mode fort" data-mode="controle"><div><b>Contrôle</b><span>Un peu de tout, sans aide. Ton meilleur score est gardé.</span></div><div class="nb" id="rec-accueil">12 questions</div></button>
+  </div>
+
+  <details class="memo">
+    <summary>Revoir la leçon en bref</summary>
+    <table>
+      <tr><td id="m1"></td><td>La <b>droite</b> <span class="nt">(AB)</span> est infinie des deux côtés. On la note avec des parenthèses. <span class="nt">(AB)</span> = <span class="nt">(BA)</span>.</td></tr>
+      <tr><td id="m2"></td><td>La <b>demi-droite</b> <span class="nt">[AB)</span> a pour <b>origine</b> A et passe par B. Le crochet est du côté de l'origine.</td></tr>
+      <tr><td id="m3"></td><td>Le <b>segment</b> <span class="nt">[AB]</span> a deux <b>extrémités</b> : A et B. <span class="nt">[AB]</span> = <span class="nt">[BA]</span>.</td></tr>
+      <tr><td><span class="nt">AB = 4 cm</span></td><td>Sans parenthèses ni crochets, <span class="nt">AB</span> est la <b>longueur</b> (la distance entre A et B).</td></tr>
+      <tr><td><span class="nt">∈ &nbsp;∉</span></td><td>∈ veut dire « appartient à », ∉ veut dire « n'appartient pas à ».</td></tr>
+      <tr><td>Alignés, sécantes</td><td>Trois points sont <b>alignés</b> s'ils sont sur une même droite. Deux droites <b>sécantes</b> se coupent en un <b>point d'intersection</b>.</td></tr>
+    </table>
+  </details>
+</section>
+
+<section id="quiz" class="hidden">
+  <div class="haut"><button class="retour" id="quitter">‹ Quitter</button><span id="q-theme" class="sous" style="margin:0"></span></div>
+  <div class="barre"><span id="q-num"></span><span id="q-pts"></span></div>
+  <div class="prog"><span id="q-prog"></span></div>
+  <div class="enonce" id="q-enonce"></div>
+  <div id="q-corps"></div>
+  <div id="q-fb" class="fb hidden"></div>
+  <div class="actions"><button class="btn hidden" id="q-suivant">Question suivante</button></div>
+</section>
+
+<section id="fin" class="hidden">
+  <div class="haut"><a class="retour" href="index.html">‹ Mes révisions</a></div>
+  <div class="score" id="f-score"></div>
+  <p class="msg" id="f-msg"></p>
+  <div class="record" id="f-record"></div>
+  <div class="actions"><button class="btn" id="f-encore">Recommencer</button><button class="btn sec" id="f-menu">Changer d'exercice</button></div>
+  <div id="f-erreurs"></div>
+</section>
+
+</div>
+<script>
+"use strict";
+/* ================== Outils ================== */
+var W = 340, H = 230;
+function rnd(a,b){ return a + Math.random()*(b-a); }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+var LETTRES = "ABCDEFGHJKLMNPRSTUVXYZ".split("");
+function lettres(n, exclure){ exclure=exclure||[]; return shuffle(LETTRES.filter(function(l){ return exclure.indexOf(l)<0; })).slice(0,n); }
+function nt(s){ return '<span class="nt">'+s+'</span>'; }
+
+function add(a,b){ return {x:a.x+b.x, y:a.y+b.y}; }
+function sub(a,b){ return {x:a.x-b.x, y:a.y-b.y}; }
+function mul(a,k){ return {x:a.x*k, y:a.y*k}; }
+function lng(a){ return Math.sqrt(a.x*a.x+a.y*a.y); }
+function unit(a){ var l=lng(a); return {x:a.x/l, y:a.y/l}; }
+function dist(a,b){ return lng(sub(a,b)); }
+function normale(d){ var n={x:-d.y, y:d.x}; if(n.y>0 || (n.y===0 && n.x<0)) n=mul(n,-1); return n; }
+function f(n){ return n.toFixed(1); }
+
+/* ================== Dessin SVG ================== */
+function S(inner, cls, vb){ vb=vb||[W,H]; return '<svg class="'+(cls||'')+'" viewBox="0 0 '+vb[0]+' '+vb[1]+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>'; }
+function L(p,q,c){ return '<line x1="'+f(p.x)+'" y1="'+f(p.y)+'" x2="'+f(q.x)+'" y2="'+f(q.y)+'" class="'+(c||'trait')+'"/>'; }
+function objet(k,P,Q,c){
+  var d=unit(sub(Q,P));
+  if(k==='droite') return L(add(P,mul(d,-1000)), add(Q,mul(d,1000)), c);
+  if(k==='demi')   return L(P, add(Q,mul(d,1000)), c);
+  return L(P,Q,c);
+}
+function croix(p,c){ var s=5; return '<path d="M'+f(p.x-s)+' '+f(p.y-s)+'L'+f(p.x+s)+' '+f(p.y+s)+'M'+f(p.x-s)+' '+f(p.y+s)+'L'+f(p.x+s)+' '+f(p.y-s)+'" class="'+(c||'marque')+'"/>'; }
+function trait(p,d){ var n=normale(d); return L(add(p,mul(n,6)), add(p,mul(n,-6)), 'marque'); }
+function etiq(p,t,c){ return '<text x="'+f(p.x+7)+'" y="'+f(p.y-8)+'" class="'+(c||'lbl')+'">'+t+'</text>'; }
+function etiqCentre(p,t){ return '<text x="'+f(p.x)+'" y="'+f(p.y)+'" class="lbl" text-anchor="middle" dominant-baseline="middle">'+t+'</text>'; }
+function etiqLigne(p,d,t){ return etiqCentre(add(p,mul(normale(d),17)), t); }
+function surLigne(pts,d,noms){ var h=''; pts.forEach(function(p,i){ h+=trait(p,d)+etiqLigne(p,d,noms[i]); }); return h; }
+function isole(p,t){ return croix(p)+etiq(p,t); }
+
+/* deux points X, Y sur une direction aléatoire */
+function paire(cx,cy,hmin,hmax,amax){
+  var C={x:rnd(cx[0],cx[1]), y:rnd(cy[0],cy[1])};
+  var a=rnd(-amax,amax), d={x:Math.cos(a), y:Math.sin(a)};
+  if(Math.random()<.5) d=mul(d,-1);
+  var h=rnd(hmin,hmax);
+  return {X:add(C,mul(d,-h)), Y:add(C,mul(d,h)), d:d, C:C};
+}
+
+/* ================== Textes communs ================== */
+function nomNotation(k,X,Y){ return {droite:'('+X+Y+')', demi:'['+X+Y+')', segment:'['+X+Y+']', long:X+Y}[k]; }
+function expl(k,X,Y){
+  if(k==='droite') return 'La ligne continue des deux côtés, sans s\'arrêter : c\'est une <b>droite</b>. On la note avec des parenthèses : '+nt('('+X+Y+')')+' (ou '+nt('('+Y+X+')')+').';
+  if(k==='demi') return 'La ligne commence en '+X+' et continue après '+Y+' : c\'est une <b>demi-droite d\'origine '+X+'</b>. On la note '+nt('['+X+Y+')')+' : le crochet est du côté de l\'origine.';
+  if(k==='segment') return 'La ligne s\'arrête en '+X+' et en '+Y+' : c\'est un <b>segment</b>, noté '+nt('['+X+Y+']')+' (ou '+nt('['+Y+X+']')+').';
+  return 'Sans parenthèses ni crochets, '+nt(X+Y)+' désigne une <b>longueur</b> : la distance entre '+X+' et '+Y+' (par exemple '+nt(X+Y+' = 4 cm')+').';
+}
+function enMots(k,X,Y){
+  if(k==='droite') return 'la droite qui passe par '+X+' et '+Y;
+  if(k==='demi') return 'la demi-droite d\'origine '+X+' qui passe par '+Y;
+  if(k==='segment') return 'le segment d\'extrémités '+X+' et '+Y;
+  return 'la longueur du segment '+nt('['+X+Y+']')+', c\'est-à-dire la distance entre '+X+' et '+Y;
+}
+function qcm(o){ o.type='qcm'; return o; }
+function opts(liste){ return shuffle(liste); }
+
+/* ================== VOCABULAIRE ================== */
+var DEFS = [
+  {t:"Une droite", d:"une ligne rectiligne infinie, sans début ni fin"},
+  {t:"Une demi-droite", d:"une portion de droite limitée d'un seul côté par un point"},
+  {t:"Un segment", d:"une portion de droite limitée par deux points"},
+  {t:"L'origine", d:"le point qui limite une demi-droite"},
+  {t:"Les extrémités", d:"les deux points qui limitent un segment"},
+  {t:"Des points alignés", d:"des points qui appartiennent à une même droite"},
+  {t:"Des droites sécantes", d:"deux droites qui se coupent en un point"},
+  {t:"Le point d'intersection", d:"le point où deux droites sécantes se coupent"}
+];
+function autres(liste, bon, n){ return shuffle(liste.filter(function(x){ return x!==bon; })).slice(0,n); }
+
+function vocDef(){
+  var b=pick(DEFS), faux=autres(DEFS,b,3);
+  return qcm({theme:"Vocabulaire", enonce:"Comment appelle-t-on "+b.d+" ?",
+    options:opts([{html:b.t,ok:true}].concat(faux.map(function(x){ return {html:x.t}; }))),
+    explain:b.t+" : c'est "+b.d+"."});
+}
+function vocTerm(){
+  var b=pick(DEFS), faux=autres(DEFS,b,3);
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+  return qcm({theme:"Vocabulaire", enonce:"Choisis la bonne définition.", grand:"<b>"+b.t+"</b>",
+    options:opts([{html:cap(b.d),ok:true}].concat(faux.map(function(x){ return {html:cap(x.d)}; }))),
+    explain:b.t+" : c'est "+b.d+"."});
+}
+function vocVF(){
+  var p=lettres(2), X=p[0], Y=p[1];
+  var liste=[
+    ["On peut mesurer la longueur du segment "+nt('['+X+Y+']')+".", true, "Un segment s'arrête à ses deux extrémités : on peut le mesurer."],
+    ["On peut mesurer la longueur de la droite "+nt('('+X+Y+')')+".", false, "Une droite est infinie : on ne peut pas la mesurer."],
+    ["On peut mesurer la longueur de la demi-droite "+nt('['+X+Y+')')+".", false, "Une demi-droite est infinie d'un côté : on ne peut pas la mesurer."],
+    [nt('('+X+Y+')')+" et "+nt('('+Y+X+')')+" désignent la même droite.", true, "Pour une droite, l'ordre des lettres n'a pas d'importance."],
+    [nt('['+X+Y+']')+" et "+nt('['+Y+X+']')+" désignent le même segment.", true, "Pour un segment, l'ordre des lettres n'a pas d'importance."],
+    [nt('['+X+Y+')')+" et "+nt('['+Y+X+')')+" désignent la même demi-droite.", false, nt('['+X+Y+')')+" a pour origine "+X+", alors que "+nt('['+Y+X+')')+" a pour origine "+Y+" : elles partent dans des sens opposés."],
+    ["Une demi-droite a deux extrémités.", false, "Une demi-droite est limitée d'un seul côté, par son origine."],
+    ["On nomme un point avec une lettre majuscule.", true, "Un point se nomme avec une lettre en capitale : A, B, "+X+"…"],
+    [nt(X+Y)+" désigne la longueur du segment "+nt('['+X+Y+']')+".", true, "Sans parenthèses ni crochets, c'est une longueur."],
+    ["Deux droites sécantes se coupent en deux points.", false, "Deux droites sécantes se coupent en un seul point : le point d'intersection."],
+    ["Le point "+X+" appartient à la demi-droite "+nt('['+X+Y+')')+".", true, X+" est l'origine de la demi-droite : il en fait partie."],
+    ["Un segment est limité d'un seul côté.", false, "Un segment est limité des deux côtés, par ses deux extrémités."],
+    ["Le segment "+nt('['+X+Y+']')+" est une portion de la droite "+nt('('+X+Y+')')+".", true, "Un segment est une portion de droite limitée par deux points."],
+    ["Trois points sont alignés s'ils appartiennent à une même droite.", true, "C'est la définition de points alignés."],
+    ["Une droite a une origine.", false, "Une droite n'a ni origine ni extrémités : elle est infinie des deux côtés."]
+  ];
+  var s=pick(liste);
+  return qcm({theme:"Vocabulaire", enonce:"Vrai ou faux ?", grand:'<span style="font-size:1.15rem">'+s[0]+'</span>', cols:'deux',
+    options:[{html:"Vrai",ok:s[1]},{html:"Faux",ok:!s[1]}],
+    explain:(s[1]?"C'est vrai. ":"C'est faux. ")+s[2]});
+}
+function vocOrigine(){
+  var p=lettres(2), X=p[0], Y=p[1];
+  var cas=pick([
+    {q:"Quelle est l'origine de la demi-droite "+nt('['+X+Y+')')+" ?", bon:0, e:"L'origine est la lettre écrite à côté du crochet : "+X+"."},
+    {q:"Quelle est l'origine de la demi-droite "+nt('['+Y+X+')')+" ?", bon:1, e:"L'origine est la lettre écrite à côté du crochet : "+Y+"."},
+    {q:"Quelles sont les extrémités du segment "+nt('['+X+Y+']')+" ?", bon:2, e:"Un segment a deux extrémités : ici "+X+" et "+Y+"."},
+    {q:"Quelles sont les extrémités de la droite "+nt('('+X+Y+')')+" ?", bon:3, e:"Une droite est infinie : elle n'a pas d'extrémités. "+X+" et "+Y+" sont juste deux points par lesquels elle passe."}
+  ]);
+  var libs=[X, Y, X+" et "+Y, "Aucune"];
+  return qcm({theme:"Vocabulaire", enonce:cas.q,
+    options:opts(libs.map(function(l,i){ return {html:l, ok:i===cas.bon}; })), explain:cas.e});
+}
+
+/* ================== NOTATIONS ET CODAGE ================== */
+function notNomFig(){
+  var p=lettres(2), X=p[0], Y=p[1];
+  var g=paire([140,200],[95,135],55,85,.6);
+  var k=pick(['droite','demi','segment']);
+  var fig=S(objet(k,g.X,g.Y)+surLigne([g.X,g.Y],g.d,[X,Y]));
+  var liste=[['('+X+Y+')','droite'],['['+X+Y+')','demi'],['['+Y+X+')','x'],['['+X+Y+']','segment'],[X+Y,'long']];
+  return qcm({theme:"Notations", enonce:"Comment se nomme la figure tracée ?", fig:fig, cols:'deux',
+    options:opts(liste.map(function(o){ return {html:nt(o[0]), ok:o[1]===k}; })), explain:expl(k,X,Y)});
+}
+function mini(k,g,X,Y){
+  var P=g.X, Q=g.Y, a=X, b=Y, kk=k;
+  if(k==='demiR'){ P=g.Y; Q=g.X; kk='demi'; }
+  var inner=objet(kk,P,Q)+trait(g.X,g.d)+trait(g.Y,g.d)+etiqCentre(add(g.X,mul(normale(g.d),15)),a)+etiqCentre(add(g.Y,mul(normale(g.d),15)),b);
+  return S(inner,'',[160,92]);
+}
+function notFigChoix(){
+  var p=lettres(2), X=p[0], Y=p[1];
+  var g=paire([74,86],[50,58],28,36,.4);
+  var cible=pick(['droite','demi','demiR','segment']);
+  var notation={droite:'('+X+Y+')', demi:'['+X+Y+')', demiR:'['+Y+X+')', segment:'['+X+Y+']'}[cible];
+  var e = cible==='demiR' ? expl('demi',Y,X) : expl(cible,X,Y);
+  return qcm({theme:"Notations", enonce:"Quelle figure représente "+nt(notation)+" ?", cols:'deux',
+    options:opts(['droite','demi','demiR','segment'].map(function(k){ return {html:mini(k,g,X,Y), ok:k===cible}; })),
+    explain:e});
+}
+function notSens(){
+  var p=lettres(2), X=p[0], Y=p[1];
+  var kinds=['droite','demi','demiR','segment','long'];
+  var cible=pick(kinds);
+  function txt(k){ return k==='demiR' ? enMots('demi',Y,X) : enMots(k,X,Y); }
+  var notation={droite:'('+X+Y+')', demi:'['+X+Y+')', demiR:'['+Y+X+')', segment:'['+X+Y+']', long:X+Y}[cible];
+  var faux=shuffle(kinds.filter(function(k){ return k!==cible; })).slice(0,3);
+  return qcm({theme:"Notations", enonce:"Que désigne cette notation ?", grand:nt(notation),
+    options:opts([{html:txt(cible),ok:true}].concat(faux.map(function(k){ return {html:txt(k)}; }))),
+    explain: cible==='demiR' ? expl('demi',Y,X) : expl(cible,X,Y)});
+}
+function notEcrire(){
+  var p=lettres(3), X=p[0], Y=p[1], Z=p[2];
+  var k=pick(['droite','demi','segment','long']);
+  var avecFig = k!=='long' && Math.random()<.45;
+  var q={type:'clavier', theme:"Notations", touches:['(',')','[',']'].concat(shuffle([X,Y,Z])),
+    reponses:{droite:['('+X+Y+')','('+Y+X+')'], demi:['['+X+Y+')'], segment:['['+X+Y+']','['+Y+X+']'], long:[X+Y,Y+X]}[k],
+    explain:expl(k,X,Y)};
+  if(avecFig){
+    var g=paire([140,200],[95,135],55,85,.6);
+    q.fig=S(objet(k,g.X,g.Y)+surLigne([g.X,g.Y],g.d,[X,Y]));
+    q.enonce="Écris le nom de la figure tracée.";
+  } else {
+    q.enonce="Écris la notation de "+enMots(k,X,Y)+".";
+  }
+  return q;
+}
+function notAppartient(){
+  var p=lettres(4), noms=p.slice(0,3), Wn=p[3];
+  var C={x:rnd(155,185), y:rnd(105,125)}, a=rnd(-.45,.45), d={x:Math.cos(a), y:Math.sin(a)};
+  var ts=shuffle([rnd(-100,-65), rnd(-18,18), rnd(62,100)]);
+  var pts=ts.map(function(t){ return add(C,mul(d,t)); });
+  var n=normale(d), Wp, g=0;
+  do { Wp=add(add(C,mul(d,rnd(-75,75))), mul(n,(Math.random()<.5?1:-1)*rnd(42,62))); g++; }
+  while(g<200 && (Wp.x<25||Wp.x>310||Wp.y<28||Wp.y>210));
+  var fig=S(objet('droite',pts[0],pts[1])+surLigne(pts,d,noms)+isole(Wp,Wn));
+  var sujet = Math.random()<.18 ? Wn : pick(noms);
+  var ij=shuffle([0,1,2]).slice(0,2), P=noms[ij[0]], Q=noms[ij[1]], tP=ts[ij[0]], tQ=ts[ij[1]];
+  var k=pick(['droite','segment','demi']);
+  var notation=nomNotation(k,P,Q), vrai, e;
+  if(sujet===Wn){ vrai=false; e=Wn+" n'est pas sur la droite : il n'appartient à rien de ce qui est tracé sur elle."; }
+  else {
+    var tS=ts[noms.indexOf(sujet)];
+    if(k==='droite'){ vrai=true; e=sujet+" est sur la droite "+nt(notation)+" : les trois points sont alignés."; }
+    else if(k==='segment'){
+      vrai = tS>=Math.min(tP,tQ)-.01 && tS<=Math.max(tP,tQ)+.01;
+      if(sujet===P||sujet===Q) e=sujet+" est une extrémité du segment "+nt(notation)+", donc il lui appartient.";
+      else e = vrai ? sujet+" est entre "+P+" et "+Q+" : il est sur le segment." : sujet+" n'est pas entre "+P+" et "+Q+" : il est en dehors du segment.";
+    } else {
+      vrai = (tS-tP)*(tQ-tP) >= -.01;
+      if(sujet===P) e=sujet+" est l'origine de la demi-droite "+nt(notation)+" : il en fait partie.";
+      else e = vrai ? "La demi-droite "+nt(notation)+" part de "+P+" en direction de "+Q+" : "+sujet+" est bien de ce côté." : "La demi-droite "+nt(notation)+" part de "+P+" en direction de "+Q+" : "+sujet+" est de l'autre côté de "+P+".";
+    }
+  }
+  return qcm({theme:"Notations", enonce:"Complète avec ∈ ou ∉.", fig:fig, grand:nt(sujet+' … '+notation), cols:'deux',
+    options:[{html:'<span class="nt" style="font-size:1.6rem">∈</span><small>appartient à</small>', ok:vrai},
+             {html:'<span class="nt" style="font-size:1.6rem">∉</span><small>n\'appartient pas à</small>', ok:!vrai}],
+    explain:e});
+}
+function notCodage(){
+  var Pn=pick(['P','M','K','E','R']);
+  var sit=pick(['seul','droite','inter','figure']);
+  var ok=Math.random()<.5, inner='', enonce="Le point "+Pn+" est-il bien représenté ?", e;
+  if(sit==='seul'){
+    var P={x:rnd(110,230), y:rnd(90,150)};
+    if(ok){ inner=isole(P,Pn); e="Un point seul se marque par une petite croix, avec sa lettre écrite à côté."; }
+    else if(Math.random()<.5){ inner=etiqCentre(P,Pn); e="Il manque la croix : sans marque, on ne sait pas exactement où est le point."; }
+    else { inner=croix(P)+etiqCentre(P,Pn); e="La lettre est écrite sur la croix : elle doit être à côté."; }
+  } else if(sit==='droite'){
+    var g=paire([150,190],[100,130],70,110,.6), P2=g.C, n=normale(g.d);
+    inner=objet('droite',g.X,g.Y);
+    if(ok){ inner+=trait(P2,g.d)+etiqLigne(P2,g.d,Pn); e="Sur une droite, on marque le point par un petit trait qui coupe la droite."; }
+    else if(Math.random()<.5){ inner+=croix(P2)+etiqLigne(P2,g.d,Pn); e="Sur une droite, on ne met pas de croix : un petit trait qui coupe la droite suffit."; }
+    else { inner+=etiqLigne(P2,g.d,Pn); e="Il n'y a aucune marque : on ne sait pas où est le point sur la droite. Il faut un petit trait."; }
+  } else if(sit==='inter'){
+    var I={x:rnd(140,200), y:rnd(110,140)}, a1=rnd(.25,.45), a2=-rnd(.25,.45);
+    var d1={x:Math.cos(a1),y:Math.sin(a1)}, d2={x:Math.cos(a2),y:Math.sin(a2)};
+    inner=L(add(I,mul(d1,-150)),add(I,mul(d1,150)))+L(add(I,mul(d2,-150)),add(I,mul(d2,150)));
+    var lab=etiqCentre({x:I.x,y:I.y-16},Pn);
+    if(ok){ inner+=lab; e="À l'intersection de deux droites, le croisement repère déjà le point : on n'ajoute aucune marque."; }
+    else if(Math.random()<.5){ inner+=croix(I)+lab; e="Pas de croix à l'intersection : le croisement des deux droites suffit."; }
+    else { inner+=L({x:I.x,y:I.y-7},{x:I.x,y:I.y+7},'marque')+lab; e="Pas de trait à l'intersection : le croisement des deux droites suffit."; }
+  } else {
+    enonce="Les sommets de ce triangle sont-ils bien représentés ?";
+    var nm=lettres(3), A={x:rnd(150,210),y:rnd(45,70)}, B={x:rnd(60,110),y:rnd(165,190)}, Cc={x:rnd(230,280),y:rnd(160,190)};
+    var G={x:(A.x+B.x+Cc.x)/3, y:(A.y+B.y+Cc.y)/3};
+    inner=L(A,B)+L(B,Cc)+L(Cc,A);
+    [A,B,Cc].forEach(function(s,i){ var o=unit(sub(s,G)); inner+=etiqCentre(add(s,mul(o,16)),nm[i]); if(!ok) inner+=croix(s); });
+    e = ok ? "Les sommets d'une figure se voient déjà : on écrit seulement les lettres, sans croix." : "On ne met pas de croix sur les sommets d'une figure : ils se voient déjà. On écrit seulement les lettres.";
+  }
+  return qcm({theme:"Codage", enonce:enonce, fig:S(inner), cols:'deux',
+    options:[{html:"Oui",ok:ok},{html:"Non",ok:!ok}], explain:(ok?"Oui. ":"Non. ")+e});
+}
+function notAlignes(){
+  var nm=lettres(3);
+  var C={x:rnd(155,185), y:rnd(105,125)}, a=rnd(-.5,.5), d={x:Math.cos(a), y:Math.sin(a)}, n=normale(d);
+  var al=Math.random()<.5;
+  var ts=[rnd(-105,-70), rnd(-25,25), rnd(70,105)];
+  var pts=ts.map(function(t){ return add(C,mul(d,t)); });
+  if(!al) pts[1]=add(pts[1], mul(n,(Math.random()<.5?1:-1)*rnd(16,24)));
+  var ordre=shuffle([0,1,2]);
+  var inner=''; pts.forEach(function(p,i){ inner+=isole(p,nm[ordre[i]]); });
+  var sol=L(add(pts[0],mul(d,-400)),add(pts[2],mul(d,400)),'pointille')+inner;
+  var liste=nm.slice().sort().join(', ').replace(/, ([^,]*)$/,' et $1');
+  return qcm({theme:"Points alignés", enonce:"Les points "+liste+" sont-ils alignés ?", fig:S(inner), solFig:S(sol), cols:'deux',
+    options:[{html:"Oui",ok:al},{html:"Non",ok:!al}],
+    explain: al ? "Oui : une même droite passe par les trois points (en vert). Pour vérifier, pose ta règle sur deux points." :
+                  "Non : la droite qui passe par deux des points (en vert) ne passe pas par le troisième. Pour vérifier, pose ta règle sur deux points."});
+}
+
+/* ================== TRACÉS ================== */
+function nuage(n){
+  for(var essai=0; essai<300; essai++){
+    var pts=[], g=0;
+    while(pts.length<n && g<400){ g++;
+      var p={x:rnd(35,290), y:rnd(38,205)};
+      if(pts.every(function(q){ return dist(p,q)>85; })) pts.push(p);
+    }
+    if(pts.length<n) continue;
+    var ok=true;
+    for(var i=0;i<n;i++) for(var j=0;j<n;j++) for(var k=0;k<n;k++){
+      if(i===j||j===k||i===k) continue;
+      var d=unit(sub(pts[j],pts[i])), v=sub(pts[k],pts[i]);
+      if(Math.abs(d.x*v.y-d.y*v.x)<26) ok=false;
+    }
+    if(ok) return pts;
+  }
+  return [{x:70,y:60},{x:260,y:80},{x:150,y:190},{x:280,y:190}].slice(0,n);
+}
+function trTracer(){
+  var n=Math.random()<.5?3:4, noms=lettres(n), pts=nuage(n), P={};
+  noms.forEach(function(l,i){ P[l]=pts[i]; });
+  var nb = Math.random()<.55 ? 2 : 1, demandes=[], paires=[];
+  while(demandes.length<nb){
+    var c=shuffle(noms).slice(0,2), key=c.slice().sort().join('');
+    if(paires.indexOf(key)>=0) continue;
+    paires.push(key);
+    demandes.push({k:pick(['droite','demi','segment']), a:c[0], b:c[1]});
+  }
+  var parts=demandes.map(function(o){ return Math.random()<.6 ? nt(nomNotation(o.k,o.a,o.b)) : enMots(o.k,o.a,o.b); });
+  return {type:'tracer', theme:"Tracés", enonce:"Trace "+parts.join(", puis ")+".", pts:P, demandes:demandes,
+    explain:"Rappel : "+nt('( )')+" droite, "+nt('[ )')+" demi-droite (on commence par l'origine), "+nt('[ ]')+" segment."};
+}
+function trPlacer(){
+  var v=pick(['seg','apresY','avantX','hors','inter']);
+  if(v==='inter'){
+    var I={x:rnd(120,220), y:rnd(85,145)}, a1=rnd(-1.1,1.1), a2=a1+(Math.random()<.5?1:-1)*rnd(.75,1.3);
+    var d1={x:Math.cos(a1),y:Math.sin(a1)}, d2={x:Math.cos(a2),y:Math.sin(a2)};
+    function place(d,t){
+      var n=normale(d), c=[];
+      [1,-1].forEach(function(s){ [110,85,65].forEach(function(k){ c.push(add(add(I,mul(d,s*k)),mul(n,16))); }); });
+      for(var i=0;i<c.length;i++) if(c[i].x>22&&c[i].x<W-28&&c[i].y>16&&c[i].y<H-10) return etiqCentre(c[i],t);
+      return etiqCentre(c[0],t);
+    }
+    var base=L(add(I,mul(d1,-500)),add(I,mul(d1,500)))+L(add(I,mul(d2,-500)),add(I,mul(d2,500)))+place(d1,'(d)')+place(d2,'(d′)');
+    return {type:'placer', theme:"Tracés", lettre:'I', enonce:"Place le point d'intersection I des droites (d) et (d′).", base:base,
+      test:function(M){ return dist(M,I)<=15 ? {ok:true} : {ok:false, msg:"Ton point n'est pas au croisement des deux droites."}; },
+      sol:'<circle cx="'+f(I.x)+'" cy="'+f(I.y)+'" r="9" class="sol"/>',
+      explain:"Le point d'intersection est le point où les deux droites sécantes se coupent."};
+  }
+  var nm=lettres(2,['M']), X=nm[0], Y=nm[1];
+  var g=paire([150,190],[100,130],45,62,.55), d=g.d;
+  var base=objet('droite',g.X,g.Y)+surLigne([g.X,g.Y],d,[X,Y]);
+  function mesure(M){
+    var v=sub(M,g.X), dl=Math.abs(d.x*v.y-d.y*v.x), t=(v.x*d.x+v.y*d.y)/dist(g.X,g.Y);
+    return {dl:dl, t:t, dX:dist(M,g.X), dY:dist(M,g.Y)};
+  }
+  var hors="Ton point n'est pas sur la droite "+nt('('+X+Y+')')+".";
+  if(v==='seg') return {type:'placer', theme:"Tracés", lettre:'M', base:base,
+    enonce: Math.random()<.5 ? "Place un point M tel que "+nt('M ∈ ['+X+Y+']')+"." : "Place un point M sur le segment "+nt('['+X+Y+']')+".",
+    test:function(M){ var m=mesure(M);
+      if(m.dl>10) return {ok:false,msg:hors};
+      if(m.dX<8||m.dY<8) return {ok:false,msg:"Place M entre "+X+" et "+Y+", pas sur "+X+" ou "+Y+"."};
+      if(m.t<0||m.t>1) return {ok:false,msg:"Ton point est sur la droite, mais pas entre "+X+" et "+Y+"."};
+      return {ok:true}; },
+    sol:L(g.X,g.Y,'sol'), explain:"Le segment "+nt('['+X+Y+']')+" est la partie de la droite comprise entre "+X+" et "+Y+" (en vert)."};
+  if(v==='apresY') return {type:'placer', theme:"Tracés", lettre:'M', base:base,
+    enonce:"Place un point M tel que "+nt('M ∈ ['+X+Y+')')+" et "+nt('M ∉ ['+X+Y+']')+".",
+    test:function(M){ var m=mesure(M);
+      if(m.dl>10) return {ok:false,msg:hors};
+      if(m.t<0) return {ok:false,msg:"Ton point est de l'autre côté de "+X+" : la demi-droite "+nt('['+X+Y+')')+" part de "+X+" vers "+Y+"."};
+      if(m.t<=1||m.dY<8) return {ok:false,msg:"Ton point est sur le segment "+nt('['+X+Y+']')+" : il doit être après "+Y+"."};
+      return {ok:true}; },
+    sol:L(g.Y,add(g.Y,mul(d,1000)),'sol'), explain:"Il faut être sur la demi-droite "+nt('['+X+Y+')')+" sans être entre "+X+" et "+Y+" : donc au-delà de "+Y+" (en vert)."};
+  if(v==='avantX') return {type:'placer', theme:"Tracés", lettre:'M', base:base,
+    enonce:"Place un point M tel que "+nt('M ∈ ('+X+Y+')')+" et "+nt('M ∉ ['+X+Y+')')+".",
+    test:function(M){ var m=mesure(M);
+      if(m.dl>10) return {ok:false,msg:hors};
+      if(m.t>=0||m.dX<8) return {ok:false,msg:"Ton point est sur la demi-droite "+nt('['+X+Y+')')+". Il faut aller de l'autre côté de "+X+"."};
+      return {ok:true}; },
+    sol:L(g.X,add(g.X,mul(d,-1000)),'sol'), explain:"La demi-droite "+nt('['+X+Y+')')+" part de "+X+" vers "+Y+". Pour être sur la droite sans être sur cette demi-droite, il faut être de l'autre côté de "+X+" (en vert)."};
+  return {type:'placer', theme:"Tracés", lettre:'M', base:base,
+    enonce:"Place un point M tel que "+nt('M ∉ ('+X+Y+')')+".",
+    test:function(M){ var m=mesure(M); return m.dl>14 ? {ok:true} : {ok:false,msg:"Ton point est sur la droite "+nt('('+X+Y+')')+" (ou presque) : il doit être en dehors."}; },
+    sol:'', explain:"∉ veut dire « n'appartient pas à » : M peut être n'importe où, sauf sur la droite."};
+}
+
+/* ================== Séries ================== */
+var POOLS = {
+  vocab:[vocDef,vocTerm,vocVF,vocVF,vocOrigine],
+  notation:[notNomFig,notFigChoix,notSens,notEcrire,notAppartient,notAppartient,notCodage,notCodage,notAlignes],
+  trace:[trTracer,trTracer,trPlacer,trPlacer]
+};
+var MODES = {
+  vocab:{titre:"Vocabulaire", n:8}, notation:{titre:"Notations et codage", n:10},
+  trace:{titre:"Tracés", n:6}, controle:{titre:"Contrôle", n:12}
+};
+function tirer(pool,n){
+  var out=[], sac=[], der=null;
+  while(out.length<n){
+    if(!sac.length) sac=shuffle(pool);
+    var g=sac.pop();
+    if(g===der && sac.length){ sac.unshift(g); g=sac.pop(); }
+    out.push(g); der=g;
+  }
+  return out;
+}
+function serie(mode){
+  if(mode==='controle') return shuffle(tirer(POOLS.vocab,3).concat(tirer(POOLS.notation,5),tirer(POOLS.trace,4)));
+  return tirer(POOLS[mode], MODES[mode].n);
+}
+
+/* ================== Meilleur score (lu par la page d'accueil) ================== */
+function cleScore(){ return "meilleur:" + (location.pathname.split("/").pop() || "index.html"); }
+function meilleurConnu(){ try{ return JSON.parse(localStorage.getItem(cleScore())); }catch(e){ return null; } }
+function enregistrerMeilleurScore(bon,total){
+  try{
+    var prev=meilleurConnu();
+    var mieux=!prev || (bon/total)>(prev.bon/prev.total) || ((bon/total)===(prev.bon/prev.total) && bon>prev.bon);
+    if(mieux) localStorage.setItem(cleScore(), JSON.stringify({bon:bon,total:total}));
+  }catch(e){}
+  return meilleurConnu();
+}
+
+/* ================== Interface ================== */
+if(typeof document!=='undefined'){ (function(){
+var $=function(id){ return document.getElementById(id); };
+var etat={};
+var BRAVO=["Juste !","Bravo !","Exact !","Bien vu !","Parfait !"];
+
+function montrer(id){ ['accueil','quiz','fin'].forEach(function(s){ $(s).classList.toggle('hidden', s!==id); }); window.scrollTo(0,0); }
+function majAccueil(){
+  var r=meilleurConnu();
+  $('rec-accueil').innerHTML = r ? '12 questions<br><b style="color:#dc2626">Record : '+r.bon+' / '+r.total+'</b>' : '12 questions';
+  var gA={X:{x:18,y:60},Y:{x:78,y:38}}, d=unit(sub(gA.Y,gA.X));
+  function m(k){ return S(objet(k,gA.X,gA.Y)+trait(gA.X,d)+trait(gA.Y,d)+etiqCentre(add(gA.X,mul(normale(d),14)),'A')+etiqCentre(add(gA.Y,mul(normale(d),14)),'B'),'',[112,76]); }
+  $('m1').innerHTML=m('droite'); $('m2').innerHTML=m('demi'); $('m3').innerHTML=m('segment');
+}
+
+function demarrer(mode){
+  etat={mode:mode, serie:serie(mode), i:0, score:0, erreurs:[]};
+  $('q-theme').textContent=MODES[mode].titre;
+  montrer('quiz'); question();
+}
+function question(){
+  var q=etat.serie[etat.i](); etat.q=q; etat.repondu=false;
+  var n=etat.serie.length;
+  $('q-num').textContent="Question "+(etat.i+1)+" / "+n;
+  $('q-pts').textContent=etat.score+" point"+(etat.score>1?"s":"");
+  $('q-prog').style.width=(etat.i/n*100)+"%";
+  $('q-enonce').innerHTML=q.enonce;
+  $('q-fb').className='fb hidden';
+  $('q-suivant').classList.add('hidden');
+  var c=$('q-corps');
+  if(q.type==='qcm') rendreQCM(q,c);
+  else if(q.type==='clavier') rendreClavier(q,c);
+  else if(q.type==='tracer') rendreTracer(q,c);
+  else rendrePlacer(q,c);
+}
+function repondre(ok, detail){
+  etat.repondu=true;
+  var q=etat.q;
+  if(ok) etat.score++;
+  else etat.erreurs.push({q:q.enonce+(q.grand?' '+q.grand:''), c:(detail?detail+' ':'')+q.explain});
+  var fb=$('q-fb');
+  fb.className='fb '+(ok?'ok':'ko');
+  fb.innerHTML='<b>'+(ok?pick(BRAVO):'Pas tout à fait.')+'</b>'+(detail?detail+'<br>':'')+q.explain;
+  $('q-pts').textContent=etat.score+" point"+(etat.score>1?"s":"");
+  var b=$('q-suivant');
+  b.textContent = etat.i===etat.serie.length-1 ? "Voir mon résultat" : "Question suivante";
+  b.classList.remove('hidden');
+  b.focus({preventScroll:true});
+  fb.scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+
+function rendreQCM(q,c){
+  var h='';
+  if(q.fig) h+='<div class="figbox">'+q.fig+'</div>';
+  if(q.grand) h+='<div class="grand">'+q.grand+'</div>';
+  h+='<div class="opts '+(q.cols||'')+'">'+q.options.map(function(o,i){ return '<button class="opt" data-i="'+i+'">'+o.html+'</button>'; }).join('')+'</div>';
+  c.innerHTML=h;
+  var bs=c.querySelectorAll('.opt');
+  bs.forEach(function(b){ b.onclick=function(){
+    if(etat.repondu) return;
+    var o=q.options[+b.dataset.i];
+    bs.forEach(function(bb,j){ bb.disabled=true; if(q.options[j].ok) bb.classList.add('bon'); else if(bb!==b) bb.classList.add('eteint'); });
+    if(!o.ok) b.classList.add('faux');
+    if(q.solFig) c.querySelector('.figbox').innerHTML=q.solFig;
+    repondre(!!o.ok);
+  }; });
+}
+
+function rendreClavier(q,c){
+  var val='';
+  var h=(q.fig?'<div class="figbox">'+q.fig+'</div>':'')+'<div class="saisie" id="k-aff"></div><div class="touches">';
+  q.touches.forEach(function(t){ h+='<button class="touche nt" data-t="'+t+'">'+t+'</button>'; });
+  h+='<button class="touche" data-t="⌫" aria-label="Effacer">⌫</button></div><div class="actions"><button class="btn" id="k-val" disabled>Valider</button></div>';
+  c.innerHTML=h;
+  var aff=$('k-aff'), bv=$('k-val');
+  function maj(){ aff.innerHTML = val ? '<span class="nt">'+val+'</span>' : '<span class="vide">Utilise les touches ci-dessous</span>'; bv.disabled=!val; }
+  maj();
+  c.querySelectorAll('.touche').forEach(function(b){ b.onclick=function(){
+    if(etat.repondu) return;
+    var t=b.dataset.t;
+    if(t==='⌫') val=val.slice(0,-1); else if(val.length<6) val+=t;
+    maj();
+  }; });
+  bv.onclick=function(){
+    if(etat.repondu||!val) return;
+    var ok=q.reponses.indexOf(val)>=0;
+    aff.classList.add(ok?'bon':'faux');
+    c.querySelectorAll('.touche').forEach(function(b){ b.disabled=true; });
+    bv.disabled=true;
+    repondre(ok, ok?'':'Tu as écrit '+nt(val)+'. La bonne réponse : '+q.reponses.map(nt).join(' ou ')+'.');
+  };
+}
+
+function coord(svg,e){
+  var pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+  var m=svg.getScreenCTM(); return m ? pt.matrixTransform(m.inverse()) : {x:-999,y:-999};
+}
+var OUTILS=[{k:'droite',nom:'Droite',sym:'( )'},{k:'demi',nom:'Demi-droite',sym:'[ )'},{k:'segment',nom:'Segment',sym:'[ ]'}];
+var NOMK={droite:'une droite', demi:'une demi-droite', segment:'un segment'};
+
+function rendreTracer(q,c){
+  var st={outil:null, premier:null, objets:[]};
+  c.innerHTML='<div class="outils">'+OUTILS.map(function(o){ return '<button class="outil" data-k="'+o.k+'">'+o.nom+'<span class="nt">'+o.sym+'</span></button>'; }).join('')+
+    '</div><p class="aide" id="t-aide">Choisis un outil, puis touche les points.</p><div class="figbox">'+S('','tap')+'</div>'+
+    '<div class="actions"><button class="btn sec" id="t-eff">Effacer le dernier</button><button class="btn" id="t-val">Valider</button></div>';
+  var svg=c.querySelector('svg'), aide=$('t-aide');
+  function dire(t,alerte){ aide.innerHTML=t; aide.classList.toggle('alerte',!!alerte); }
+  function dessiner(sol){
+    var h=sol||'';
+    st.objets.forEach(function(o){ h+=objet(o.k,q.pts[o.a],q.pts[o.b],'trace'); });
+    if(st.premier){ var p=q.pts[st.premier]; h+='<circle cx="'+f(p.x)+'" cy="'+f(p.y)+'" r="12" class="pt-sel"/>'; }
+    Object.keys(q.pts).forEach(function(l){ h+=isole(q.pts[l],l); });
+    svg.innerHTML=h;
+  }
+  function aideOutil(){
+    if(!st.outil) return dire("Choisis un outil, puis touche les points.");
+    if(st.premier) return dire("Touche le 2<sup>e</sup> point.");
+    dire({droite:"Droite : touche deux points.", demi:"Demi-droite : touche d'abord l'origine, puis le point par lequel elle passe.", segment:"Segment : touche les deux extrémités."}[st.outil]);
+  }
+  c.querySelectorAll('.outil').forEach(function(b){ b.onclick=function(){
+    if(etat.repondu) return;
+    st.outil=b.dataset.k; st.premier=null;
+    c.querySelectorAll('.outil').forEach(function(x){ x.classList.toggle('actif', x===b); });
+    aideOutil(); dessiner();
+  }; });
+  svg.addEventListener('click', function(e){
+    if(etat.repondu) return;
+    if(!st.outil) return dire("Choisis d'abord un outil : droite, demi-droite ou segment.", true);
+    var M=coord(svg,e), best=null, bd=32;
+    Object.keys(q.pts).forEach(function(l){ var dd=dist(M,q.pts[l]); if(dd<bd){ bd=dd; best=l; } });
+    if(!best) return dire("Touche bien sur un point (une croix).", true);
+    if(!st.premier){ st.premier=best; }
+    else if(st.premier===best){ st.premier=null; }
+    else { st.objets.push({k:st.outil, a:st.premier, b:best}); st.premier=null; }
+    aideOutil(); dessiner();
+  });
+  $('t-eff').onclick=function(){ if(etat.repondu) return; st.objets.pop(); st.premier=null; aideOutil(); dessiner(); };
+  function cle(o){ return o.k==='demi' ? 'demi:'+o.a+o.b : o.k+':'+[o.a,o.b].sort().join(''); }
+  function paireCle(o){ return [o.a,o.b].sort().join(''); }
+  $('t-val').onclick=function(){
+    if(etat.repondu) return;
+    if(!st.objets.length) return dire("Trace au moins une figure avant de valider.", true);
+    var D={}; st.objets.forEach(function(o){ D[cle(o)]=o; });
+    var R={}; q.demandes.forEach(function(o){ R[cle(o)]=o; });
+    var msgs=[], vus={};
+    q.demandes.forEach(function(r){
+      if(D[cle(r)]){ vus[cle(r)]=1; return; }
+      var inv = r.k==='demi' && D['demi:'+r.b+r.a];
+      if(inv){ vus['demi:'+r.b+r.a]=1; msgs.push("Ta demi-droite part de "+r.b+" : "+nt('['+r.a+r.b+')')+" a pour origine "+r.a+", la lettre à côté du crochet."); return; }
+      var autre=st.objets.filter(function(o){ return paireCle(o)===paireCle(r) && !vus[cle(o)]; })[0];
+      if(autre){ vus[cle(autre)]=1; msgs.push("Pour "+nt(nomNotation(r.k,r.a,r.b))+", il fallait "+NOMK[r.k]+" et tu as tracé "+NOMK[autre.k]+"."); return; }
+      msgs.push("Il manque "+nt(nomNotation(r.k,r.a,r.b))+".");
+    });
+    Object.keys(D).forEach(function(k){ if(!R[k] && !vus[k]){ var o=D[k]; msgs.push("Tu as tracé "+nt(nomNotation(o.k,o.a,o.b))+" en trop."); } });
+    var ok=!msgs.length;
+    st.premier=null;
+    var sol=''; if(!ok) q.demandes.forEach(function(o){ sol+=objet(o.k,q.pts[o.a],q.pts[o.b],'sol'); });
+    dessiner(sol);
+    c.querySelectorAll('.outil').forEach(function(b){ b.disabled=true; });
+    $('t-eff').disabled=true; $('t-val').disabled=true;
+    dire(ok?'':'La bonne réponse est surlignée en vert.');
+    repondre(ok, msgs.join('<br>'));
+  };
+  dessiner();
+}
+
+function rendrePlacer(q,c){
+  var M=null;
+  c.innerHTML='<p class="aide" id="p-aide">Touche la figure pour placer le point '+q.lettre+'. Tu peux le déplacer en touchant ailleurs.</p><div class="figbox">'+S('','tap')+'</div>'+
+    '<div class="actions"><button class="btn" id="p-val" disabled>Valider</button></div>';
+  var svg=c.querySelector('svg');
+  function dessiner(sol){
+    var h=(sol||'')+q.base;
+    if(M) h+=croix(M,'eleve')+etiq(M,q.lettre,'lbl-eleve');
+    svg.innerHTML=h;
+  }
+  svg.addEventListener('click', function(e){ if(etat.repondu) return; M=coord(svg,e); $('p-val').disabled=false; dessiner(); });
+  $('p-val').onclick=function(){
+    if(etat.repondu||!M) return;
+    var r=q.test(M);
+    dessiner(r.ok?'':q.sol);
+    $('p-val').disabled=true;
+    $('p-aide').textContent = r.ok ? '' : (q.sol ? 'La bonne zone est surlignée en vert.' : '');
+    repondre(r.ok, r.msg||'');
+  };
+  dessiner();
+}
+
+function terminer(){
+  var n=etat.serie.length, s=etat.score, r=s/n;
+  $('f-score').textContent=s+" / "+n;
+  $('f-msg').textContent = r===1 ? "Sans faute, bravo !" : r>=.75 ? "Très bien, encore un petit effort." : r>=.5 ? "C'est en bonne voie. Relis les corrections puis recommence." : "Relis la leçon en bref, puis recommence : les questions changeront.";
+  if(etat.mode==='controle'){ var b=enregistrerMeilleurScore(s,n); $('f-record').textContent = b ? "Meilleur score au contrôle : "+b.bon+" / "+b.total : ""; }
+  else $('f-record').textContent="";
+  var e=$('f-erreurs');
+  if(etat.erreurs.length){
+    e.innerHTML='<h2>À revoir</h2><ul class="erreurs">'+etat.erreurs.map(function(x){ return '<li>'+x.q+'<div class="cor">'+x.c+'</div></li>'; }).join('')+'</ul>';
+  } else e.innerHTML='';
+  montrer('fin');
+}
+
+document.querySelectorAll('.mode').forEach(function(b){ b.onclick=function(){ demarrer(b.dataset.mode); }; });
+$('q-suivant').onclick=function(){ etat.i++; if(etat.i>=etat.serie.length) terminer(); else { question(); window.scrollTo(0,0); } };
+$('quitter').onclick=function(){ majAccueil(); montrer('accueil'); };
+$('f-encore').onclick=function(){ demarrer(etat.mode); };
+$('f-menu').onclick=function(){ majAccueil(); montrer('accueil'); };
+majAccueil();
+})(); }
+</script>
+</body>
+</html>
