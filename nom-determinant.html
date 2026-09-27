@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e11d48">
+<title>Le nom et le déterminant</title>
+<style>
+  :root{
+    --rouge:#e11d48; --rouge-f:#9f1239; --rouge-c:#fff1f2;
+    --det:#2563eb; --det-c:#eff6ff;
+    --encre:#1e293b; --gris:#64748b; --ligne:#e2e8f0; --fond:#f8fafc;
+    --vert:#16a34a; --vert-c:#dcfce7; --faux:#dc2626; --faux-c:#fee2e2;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:-apple-system,system-ui,"Segoe UI",sans-serif;background:var(--fond);color:var(--encre);
+    padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);-webkit-tap-highlight-color:transparent}
+  .page{max-width:560px;margin:0 auto;padding:14px 16px 40px}
+  .retour{display:inline-block;color:var(--gris);text-decoration:none;font-size:.92rem;padding:6px 0}
+  button{font:inherit;cursor:pointer}
+  button:focus-visible,a:focus-visible{outline:3px solid var(--det);outline-offset:2px}
+  .ecran{display:none}.ecran.on{display:block}
+
+  /* En-tête : un groupe nominal décortiqué, sur fond de cahier Seyès */
+  .tete{margin:8px 0 18px;padding:18px 16px 16px;border-radius:18px;background:#fff;
+    background-image:repeating-linear-gradient(#fff 0 23px,#dbeafe 23px 24px);
+    border-left:4px solid #fca5a5;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .tete h1{margin:0 0 12px;font-size:1.45rem;line-height:1.2}
+  .gn{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .gn span{display:flex;flex-direction:column;align-items:center;font-size:1.35rem;font-weight:700}
+  .gn small{font-size:.72rem;font-weight:600;margin-top:4px}
+  .gn .d{color:var(--det)} .gn .n{color:var(--rouge)}
+  .gn .d::before,.gn .n::before{content:"";display:block;order:2;width:100%;height:3px;border-radius:2px;margin-top:2px}
+  .gn .d::before{background:var(--det)} .gn .n::before{background:var(--rouge)}
+  .gn small{order:3}
+  #record{margin:12px 0 0;color:var(--gris);font-size:.9rem;min-height:1em}
+
+  .modes{display:grid;gap:10px}
+  .mode{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border:1px solid var(--ligne);
+    background:#fff;border-radius:14px;padding:13px 16px;color:var(--encre)}
+  .mode b{font-size:1.02rem}
+  .mode span{color:var(--gris);font-size:.87rem;margin-top:2px}
+  .mode.ctrl{background:var(--rouge);border-color:var(--rouge);color:#fff}
+  .mode.ctrl span{color:#ffe4e6}
+
+  /* Leçon */
+  .bloc{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--ligne)}
+  .bloc h2{margin:0 0 8px;font-size:1.1rem;color:var(--rouge-f)}
+  .bloc p,.bloc li{line-height:1.5}
+  .bloc ul{margin:0;padding-left:20px}
+  .paire{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+  .paire div{background:var(--rouge-c);border-radius:10px;padding:8px 10px;font-size:.92rem}
+  .paire b{display:block}
+  .paire.det div{background:var(--det-c)} .paire.det b{color:var(--det)}
+  .tab-det{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:6px}
+  .tab-det th{background:var(--det-c);color:var(--det);text-align:left;padding:7px 8px;font-size:.85rem}
+  .tab-det td{border-top:1px solid var(--ligne);padding:7px 8px;vertical-align:top}
+  .scroll{overflow-x:auto}
+  .astuce{background:#fefce8;border-left:4px solid #eab308;border-radius:8px;padding:8px 12px;font-size:.92rem;margin-top:8px}
+
+  /* Question */
+  .haut{display:flex;justify-content:space-between;align-items:center;color:var(--gris);font-size:.88rem;margin:6px 0}
+  .barre{height:6px;background:var(--ligne);border-radius:99px;overflow:hidden;margin-bottom:16px}
+  .barre span{display:block;height:100%;background:var(--rouge);transition:width .25s}
+  .theme{display:inline-block;font-size:.8rem;font-weight:600;color:var(--rouge-f);background:var(--rouge-c);padding:3px 10px;border-radius:99px}
+  .enonce{font-size:1.15rem;font-weight:600;line-height:1.4;margin:10px 0 14px}
+  .mot{display:block;text-align:center;font-size:2rem;font-weight:800;margin:4px 0 16px;color:var(--rouge-f)}
+  .phrase-q{font-size:1.1rem;background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;margin-bottom:14px;line-height:1.6}
+  .trou{display:inline-block;min-width:64px;border-bottom:2px dashed var(--rouge);text-align:center;color:var(--rouge-f);font-weight:700}
+  .options{display:grid;gap:9px}
+  .options.deux{grid-template-columns:1fr 1fr}
+  .opt{background:#fff;border:2px solid var(--ligne);border-radius:12px;padding:13px 12px;font-size:1.02rem;color:var(--encre);text-align:center}
+  .opt.ok{background:var(--vert-c);border-color:var(--vert)}
+  .opt.ko{background:var(--faux-c);border-color:var(--faux)}
+  .opt:disabled{cursor:default}
+
+  .phrase{background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:14px 12px;line-height:2.4;font-size:1.12rem}
+  .tok{display:inline-block;border:2px solid transparent;border-radius:8px;padding:0 5px;margin:0 1px;background:#f1f5f9}
+  .tok.p{background:none;padding:0;margin:0 0 0 -2px;border:none}
+  .tok.sel{background:var(--det-c);border-color:var(--det)}
+  .tok.bon{background:var(--vert-c);border-color:var(--vert)}
+  .tok.trop{background:var(--faux-c);border-color:var(--faux);text-decoration:line-through}
+  .tok.oubli{background:#fff;border-color:var(--vert);border-style:dashed}
+  .legende{font-size:.82rem;color:var(--gris);margin-top:8px}
+
+  .retour-q{margin-top:14px;border-radius:12px;padding:12px 14px;display:none;line-height:1.45}
+  .retour-q.on{display:block}
+  .retour-q.bien{background:var(--vert-c)} .retour-q.mal{background:var(--faux-c)}
+  .retour-q b{display:block;margin-bottom:2px}
+  .actions{display:flex;gap:10px;margin-top:16px}
+  .btn{flex:1;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:1rem;background:var(--rouge);color:#fff}
+  .btn.sec{background:#fff;color:var(--encre);border:1px solid var(--ligne);flex:0 0 auto;padding:14px 16px}
+  .btn:disabled{opacity:.4}
+
+  .fin-score{font-size:3rem;font-weight:800;text-align:center;margin:18px 0 4px;color:var(--rouge-f)}
+  .fin-msg{text-align:center;margin:0 0 6px}
+  #f-record{text-align:center;color:var(--gris);font-size:.9rem;margin:0 0 14px}
+  .erreurs{list-style:none;padding:0;margin:0}
+  .erreurs li{background:#fff;border:1px solid var(--ligne);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:.93rem}
+  .erreurs span{display:block;color:var(--vert);font-weight:600;margin-top:3px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ================= ACCUEIL ================= -->
+<section id="accueil" class="ecran on">
+  <a class="retour" href="index.html">‹ Mes révisions</a>
+  <div class="tete">
+    <h1>Le nom et le déterminant</h1>
+    <div class="gn" aria-label="Exemple : ce petit chien">
+      <span class="d">ce<small>déterminant</small></span>
+      <span style="color:var(--gris);font-weight:500">petit<small>&nbsp;</small></span>
+      <span class="n">chien<small>nom noyau</small></span>
+    </div>
+  </div>
+  <div class="modes">
+    <button class="mode" data-mode="lecon"><b>La leçon en bref</b><span>Relire l'essentiel avant de commencer</span></button>
+    <button class="mode" data-mode="nom"><b>Le nom</b><span>Propre ou commun, genre, nombre, animé, concret</span></button>
+    <button class="mode" data-mode="det"><b>Les déterminants</b><span>Articles, démonstratifs, possessifs</span></button>
+    <button class="mode" data-mode="phrase"><b>Dans la phrase</b><span>Retrouver les noms et les déterminants</span></button>
+    <button class="mode" data-mode="cours"><b>Le cours</b><span>Compléter les phrases de la leçon</span></button>
+    <button class="mode ctrl" data-mode="controle"><b>Contrôle</b><span>12 questions mélangées, meilleur score enregistré</span></button>
+  </div>
+  <p id="record"></p>
+</section>
+
+<!-- ================= LEÇON ================= -->
+<section id="lecon" class="ecran">
+  <button class="retour" id="l-retour" style="border:none;background:none">‹ Retour</button>
+  <div class="bloc">
+    <h2>Le nom</h2>
+    <p>Le nom est le <b>noyau</b> du groupe nominal. Il a un <b>genre</b> (masculin ou féminin) et un <b>nombre</b> (singulier ou pluriel).</p>
+    <div class="paire">
+      <div><b>Commun</b>précédé d'un déterminant : <i>une rose</i></div>
+      <div><b>Propre</b>commence par une majuscule : <i>Rose</i></div>
+      <div><b>Animé</b>un être vivant, personne ou animal : <i>une fourmi</i></div>
+      <div><b>Non animé</b>une chose : <i>un fauteuil</i></div>
+      <div><b>Concret</b>perçu par les sens : <i>une table</i></div>
+      <div><b>Abstrait</b>une idée, un sentiment : <i>le courage</i></div>
+    </div>
+  </div>
+  <div class="bloc">
+    <h2>Le déterminant</h2>
+    <p>Le déterminant se place <b>avant le nom</b>. Il fait partie du <b>groupe nominal</b>.</p>
+    <div class="paire det">
+      <div><b>Articles définis</b>le, la, les, l'</div>
+      <div><b>Articles indéfinis</b>un, une, des</div>
+      <div><b>Démonstratifs</b>ce, cet, cette, ces</div>
+      <div><b>Possessifs</b>mon, ma, mes<br>ton, ta, tes<br>son, sa, ses<br>notre, votre, leur<br>nos, vos, leurs</div>
+    </div>
+    <div class="astuce"><b>cet</b> s'emploie devant un nom masculin qui commence par une voyelle ou un h muet : <i>cet arbre, cet homme</i>.<br>Devant un nom féminin qui commence par une voyelle, on dit <b>mon, ton, son</b> : <i>mon amie, son école</i>.</div>
+  </div>
+  <button class="btn" data-go="nom" style="width:100%">S'entraîner sur le nom</button>
+</section>
+
+<!-- ================= QUESTION ================= -->
+<section id="question" class="ecran">
+  <div class="haut"><button class="retour" id="q-quitter" style="border:none;background:none">‹ Quitter</button><span id="q-compteur"></span></div>
+  <div class="barre"><span id="q-barre"></span></div>
+  <span class="theme" id="q-theme"></span>
+  <div id="q-zone"></div>
+  <div class="retour-q" id="q-retour"></div>
+  <div class="actions">
+    <button class="btn" id="q-valider" style="display:none">Valider</button>
+    <button class="btn" id="q-suivant" style="display:none">Suivant</button>
+  </div>
+</section>
+
+<!-- ================= FIN ================= -->
+<section id="fin" class="ecran">
+  <div class="fin-score" id="f-score"></div>
+  <p class="fin-msg" id="f-msg"></p>
+  <p id="f-record"></p>
+  <div id="f-erreurs"></div>
+  <div class="actions">
+    <button class="btn" id="f-encore">Recommencer</button>
+    <button class="btn sec" id="f-menu">Menu</button>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ================== DONNÉES ================== */
+/* null = question non posée pour ce mot (cas discutable) */
+var NOMS = [
+  {m:"fauteuils",  propre:false, genre:"masculin", nombre:"pluriel",  anime:false, concret:true},
+  {m:"courage",    propre:false, genre:"masculin", nombre:"singulier",anime:false, concret:false},
+  {m:"Rose",       propre:true,  genre:"féminin",  nombre:"singulier",anime:true,  concret:null, note:"(le prénom)"},
+  {m:"rose",       propre:false, genre:"féminin",  nombre:"singulier",anime:null,  concret:true, note:"(la fleur)"},
+  {m:"fourmis",    propre:false, genre:"féminin",  nombre:"pluriel",  anime:true,  concret:true},
+  {m:"chien",      propre:false, genre:"masculin", nombre:"singulier",anime:true,  concret:true},
+  {m:"rapidité",   propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:false},
+  {m:"vitesse",    propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:false},
+  {m:"amitié",     propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:false},
+  {m:"colère",     propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:false},
+  {m:"liberté",    propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:false},
+  {m:"tristesse",  propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:false},
+  {m:"table",      propre:false, genre:"féminin",  nombre:"singulier",anime:false, concret:true},
+  {m:"oiseaux",    propre:false, genre:"masculin", nombre:"pluriel",  anime:true,  concret:true},
+  {m:"chevaux",    propre:false, genre:"masculin", nombre:"pluriel",  anime:true,  concret:true},
+  {m:"journaux",   propre:false, genre:"masculin", nombre:"pluriel",  anime:false, concret:true},
+  {m:"ordinateur", propre:false, genre:"masculin", nombre:"singulier",anime:false, concret:true},
+  {m:"boulangère", propre:false, genre:"féminin",  nombre:"singulier",anime:true,  concret:true},
+  {m:"feuilles",   propre:false, genre:"féminin",  nombre:"pluriel",  anime:null,  concret:true},
+  {m:"cahiers",    propre:false, genre:"masculin", nombre:"pluriel",  anime:false, concret:true},
+  {m:"Léo",        propre:true,  genre:"masculin", nombre:"singulier",anime:true,  concret:null},
+  {m:"Inès",       propre:true,  genre:"féminin",  nombre:"singulier",anime:true,  concret:null},
+  {m:"Loire",      propre:true,  genre:"féminin",  nombre:"singulier",anime:false, concret:null},
+  {m:"France",     propre:true,  genre:"féminin",  nombre:"singulier",anime:false, concret:null}
+];
+
+var DETS = [
+  ["le","art. défini"],["la","art. défini"],["les","art. défini"],["l'","art. défini"],
+  ["un","art. indéfini"],["une","art. indéfini"],["des","art. indéfini"],
+  ["ce","démonstratif"],["cet","démonstratif"],["cette","démonstratif"],["ces","démonstratif"],
+  ["mon","possessif"],["ma","possessif"],["mes","possessif"],["ton","possessif"],["ta","possessif"],["tes","possessif"],
+  ["son","possessif"],["sa","possessif"],["ses","possessif"],["notre","possessif"],["votre","possessif"],["leur","possessif"],
+  ["nos","possessif"],["vos","possessif"],["leurs","possessif"]
+];
+var CAT_NOM = {"art. défini":"Article défini","art. indéfini":"Article indéfini","démonstratif":"Déterminant démonstratif","possessif":"Déterminant possessif"};
+var EX_GN = {"le":"le chat","la":"la lune","les":"les enfants","l'":"l'arbre","un":"un stylo","une":"une gomme","des":"des livres",
+  "ce":"ce garçon","cet":"cet oiseau","cette":"cette maison","ces":"ces fleurs","mon":"mon vélo","ma":"ma trousse","mes":"mes amis",
+  "ton":"ton sac","ta":"ta veste","tes":"tes cahiers","son":"son chat","sa":"sa règle","ses":"ses chaussures","notre":"notre classe",
+  "votre":"votre maison","leur":"leur voiture","nos":"nos voisins","vos":"vos parents","leurs":"leurs jouets"};
+
+var DEMO = [
+  ["arbre","cet","masculin, commence par une voyelle"],["oiseau","cet","masculin, commence par une voyelle"],
+  ["homme","cet","masculin, commence par un h muet"],["ordinateur","cet","masculin, commence par une voyelle"],
+  ["livre","ce","masculin singulier, commence par une consonne"],["stylo","ce","masculin singulier, commence par une consonne"],
+  ["garçon","ce","masculin singulier, commence par une consonne"],
+  ["école","cette","féminin singulier"],["histoire","cette","féminin singulier"],["chaise","cette","féminin singulier"],["amie","cette","féminin singulier"],
+  ["fleurs","ces","pluriel"],["enfants","ces","pluriel"],["cahiers","ces","pluriel"]
+];
+
+var POSS = [
+  ["J'ai oublié","trousse","à moi","ma","trousse est féminin singulier et c'est à moi"],
+  ["J'ai retrouvé","amie","à moi","mon","amie est féminin mais commence par une voyelle : on dit mon amie"],
+  ["Tu ranges","cahiers","à toi","tes","cahiers est au pluriel et c'est à toi"],
+  ["Il promène","chien","à lui","son","chien est masculin singulier et c'est à lui"],
+  ["Elle lace","chaussures","à elle","ses","chaussures est au pluriel et c'est à elle"],
+  ["Elle arrive dans","école","à elle","son","école est féminin mais commence par une voyelle : on dit son école"],
+  ["Nous invitons","voisins","à nous","nos","voisins est au pluriel et c'est à nous"],
+  ["Vous repeignez","maison","à vous","votre","maison est au singulier et c'est à vous"],
+  ["Ils réparent","vélo","à eux","leur","vélo est au singulier et c'est à eux"],
+  ["Ils rangent","jouets","à eux","leurs","jouets est au pluriel et c'est à eux"],
+  ["Tu mets","veste","à toi","ta","veste est féminin singulier et c'est à toi"]
+];
+
+/* Phrases : #déterminant  *nom */
+var PHRASES = [
+  "Je viens d' adopter #un *chien .",
+  "#Mon *chien est #un *berger .",
+  "#Ses *poils sont longs et doux .",
+  "#Les *poètes sont inspirés par #les *saisons .",
+  "*Léa promène #son *chien dans #le *parc .",
+  "#Cette *histoire amuse #mes *cousins .",
+  "#Nos *voisins ont planté #des *tomates dans #leur *jardin .",
+  "#L' *oiseau construit #son *nid sur #cet *arbre .",
+  "*Paris est #la *capitale de #la *France .",
+  "#Ce *matin , #ma *sœur a retrouvé #ton *cahier .",
+  "#Leurs *enfants lisent #un *livre sur #les *dinosaures .",
+  "#Votre *courage impressionne #ces *pompiers .",
+  "#Une *fourmi transporte #une *miette sous #la *table ."
+];
+
+var COURS = [
+  {e:"Le nom est le ___ du groupe nominal.", b:"noyau", f:["déterminant","verbe","début"], x:"Le nom est le noyau : c'est le mot principal du groupe nominal."},
+  {e:"Le genre d'un nom, c'est : ___", b:"masculin ou féminin", f:["singulier ou pluriel","propre ou commun","concret ou abstrait"], x:"Genre = masculin ou féminin. Nombre = singulier ou pluriel."},
+  {e:"Le nombre d'un nom, c'est : ___", b:"singulier ou pluriel", f:["masculin ou féminin","animé ou non animé","propre ou commun"], x:"Nombre = singulier ou pluriel."},
+  {e:"Un nom propre commence par une ___.", b:"majuscule", f:["minuscule","voyelle","consonne"], x:"Rose, Léo, Paris, la Loire : les noms propres commencent par une majuscule."},
+  {e:"Le nom commun est précédé par un ___.", b:"déterminant", f:["adjectif","verbe","nom propre"], x:"une rose, le courage, des fourmis : le déterminant vient avant le nom commun."},
+  {e:"Un nom concret désigne ce qu'on peut percevoir par les ___.", b:"sens", f:["idées","sentiments","mots"], x:"On peut le voir, le toucher, l'entendre, le sentir ou le goûter : une table, un chien."},
+  {e:"Un nom abstrait désigne ___.", b:"une idée ou un sentiment", f:["un objet","un animal","une personne"], x:"Le courage, la liberté, la colère : on ne peut pas les toucher."},
+  {e:"Un nom animé désigne ___.", b:"une personne ou un animal", f:["un objet","un sentiment","un lieu"], x:"Un nom animé désigne un être vivant : une personne ou un animal (la boulangère, un chien)."},
+  {e:"Le déterminant se place ___ le nom.", b:"avant", f:["après","loin de","à la place de"], x:"Le déterminant précède le nom : le chien, cette école."},
+  {e:"Le déterminant fait partie du groupe ___.", b:"nominal", f:["verbal","sujet","propre"], x:"Déterminant + nom (+ adjectif) = groupe nominal."},
+  {e:"le, la, les, l' sont des ___.", b:"articles définis", f:["articles indéfinis","déterminants démonstratifs","déterminants possessifs"], x:"le, la, les, l' : articles définis."},
+  {e:"un, une, des sont des ___.", b:"articles indéfinis", f:["articles définis","déterminants démonstratifs","déterminants possessifs"], x:"un, une, des : articles indéfinis."},
+  {e:"ce, cet, cette, ces sont des ___.", b:"déterminants démonstratifs", f:["déterminants possessifs","articles définis","articles indéfinis"], x:"On « montre » ce dont on parle : ce, cet, cette, ces."},
+  {e:"mon, ta, ses, leur sont des ___.", b:"déterminants possessifs", f:["déterminants démonstratifs","articles définis","articles indéfinis"], x:"Ils indiquent à qui appartient la chose : mon, ton, son, notre, votre, leur…"}
+];
+
+var NOYAUX = [
+  ["le","petit","chat","noir"],["une","grande","maison",""],["ces","jolies","fleurs","rouges"],
+  ["mon","vieux","vélo","bleu"],["cet","énorme","éléphant","gris"],["les","longs","poils","bruns"]
+];
+
+/* ================== OUTILS ================== */
+function $(id){ return document.getElementById(id); }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function prendre(a,n){ return melange(a).slice(0,n); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function montrer(id){ document.querySelectorAll('.ecran').forEach(function(e){ e.classList.toggle('on', e.id===id); }); window.scrollTo(0,0); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+/* ====== Enregistrement du meilleur score (lu par la page d'accueil) ====== */
+/* Nom écrit en dur : doit être identique au "lien" dans index.html */
+var FICHIER = "nom-determinant.html";
+var TOTAL_CONTROLE = 12;
+function enregistrerMeilleurScore(bon, total){
+  try{
+    var prev = meilleurConnu();
+    var mieux = !prev || (bon/total) > (prev.bon/prev.total) ||
+                ((bon/total) === (prev.bon/prev.total) && bon > prev.bon);
+    if(mieux) localStorage.setItem("meilleur:" + FICHIER, JSON.stringify({bon:bon, total:total}));
+    return meilleurConnu();
+  }catch(e){ return null; }
+}
+function meilleurConnu(){
+  try{
+    var b = JSON.parse(localStorage.getItem("meilleur:" + FICHIER));
+    /* Un score qui n'est pas sur 12 vient d'un autre exercice : on l'ignore */
+    return (b && b.total === TOTAL_CONTROLE) ? b : null;
+  }catch(e){ return null; }
+}
+
+/* ================== GÉNÉRATEURS ================== */
+function qcm(o){ o.type='qcm'; o.options=melange(o.options); return o; }
+function motAff(n){ return n.m + (n.note ? ' <small style="font-size:.9rem;color:#64748b;font-weight:500">'+n.note+'</small>' : ''); }
+
+function qPropre(){
+  var n=unDe(NOMS);
+  return qcm({theme:"Le nom", enonce:"Ce nom est-il propre ou commun ?", mot:motAff(n), deux:true,
+    options:[{t:"propre",ok:n.propre},{t:"commun",ok:!n.propre}], bonne:n.propre?"propre":"commun",
+    explain: n.propre ? n.m+" commence par une majuscule : c'est un nom propre." : "On peut dire « un(e) / le / la / les "+n.m+" » : c'est un nom commun."});
+}
+function qGenre(){
+  var n=unDe(NOMS);
+  return qcm({theme:"Le genre", enonce:"Quel est le genre de ce nom ?", mot:motAff(n), deux:true,
+    options:[{t:"masculin",ok:n.genre==="masculin"},{t:"féminin",ok:n.genre==="féminin"}], bonne:n.genre,
+    explain:"Astuce : essaie « un » ou « une » devant le nom au singulier. "+n.m+" est "+n.genre+"."});
+}
+function qNombre(){
+  var n=unDe(NOMS);
+  return qcm({theme:"Le nombre", enonce:"Quel est le nombre de ce nom ?", mot:motAff(n), deux:true,
+    options:[{t:"singulier",ok:n.nombre==="singulier"},{t:"pluriel",ok:n.nombre==="pluriel"}], bonne:n.nombre,
+    explain: n.nombre==="pluriel" ? n.m+" désigne plusieurs choses ou êtres : pluriel (regarde la fin du mot)." : n.m+" désigne un seul être ou une seule chose : singulier."});
+}
+function qAnime(){
+  var n=unDe(NOMS.filter(function(x){ return x.anime!==null; }));
+  return qcm({theme:"Animé ou non animé", enonce:"Ce nom est-il animé ou non animé ?", mot:motAff(n), deux:true,
+    options:[{t:"animé",ok:n.anime},{t:"non animé",ok:!n.anime}], bonne:n.anime?"animé":"non animé",
+    explain: n.anime ? n.m+" désigne une personne ou un animal : animé." : n.m+" ne désigne ni une personne ni un animal : non animé."});
+}
+function qConcret(){
+  var n=unDe(NOMS.filter(function(x){ return x.concret!==null; }));
+  return qcm({theme:"Concret ou abstrait", enonce:"Ce nom est-il concret ou abstrait ?", mot:motAff(n), deux:true,
+    options:[{t:"concret",ok:n.concret},{t:"abstrait",ok:!n.concret}], bonne:n.concret?"concret":"abstrait",
+    explain: n.concret ? "On peut voir ou toucher : "+n.m+" est concret." : "On ne peut pas le toucher, c'est une idée ou un sentiment : "+n.m+" est abstrait."});
+}
+function qCategorie(){
+  var d=unDe(DETS), cats=["art. défini","art. indéfini","démonstratif","possessif"];
+  var gn=EX_GN[d[0]];
+  return qcm({theme:"Les déterminants", enonce:"Dans « "+gn+" », quelle est la nature du déterminant <b>"+d[0]+"</b> ?",
+    options:cats.map(function(c){ return {t:CAT_NOM[c], ok:c===d[1]}; }), bonne:CAT_NOM[d[1]],
+    explain:"« "+d[0]+" » est un "+CAT_NOM[d[1]].toLowerCase()+"."});
+}
+function qDemo(){
+  var d=unDe(DEMO);
+  return qcm({theme:"ce, cet, cette ou ces ?", enonce:"Complète avec le bon déterminant démonstratif.", phrase:'<span class="trou">?</span> '+d[0], deux:true,
+    options:["ce","cet","cette","ces"].map(function(x){ return {t:x, ok:x===d[1]}; }), bonne:d[1]+" "+d[0],
+    explain:"On écrit « "+d[1]+" "+d[0]+" » : "+d[0]+" est "+d[2]+"."});
+}
+function qPoss(){
+  var p=unDe(POSS);
+  var choix={"ma":["ma","mon","mes","ta"],"mon":["mon","ma","mes","son"],"tes":["tes","ta","ton","ses"],"son":["son","sa","ses","leur"],
+    "ses":["ses","sa","son","leurs"],"nos":["nos","notre","vos","leurs"],"votre":["votre","vos","notre","leur"],"leur":["leur","leurs","son","ses"],
+    "leurs":["leurs","leur","ses","nos"],"ta":["ta","ton","tes","ma"]}[p[3]];
+  return qcm({theme:"Les possessifs", enonce:"Complète avec le bon déterminant possessif ("+p[2]+").", phrase:p[0]+' <span class="trou">?</span> '+p[1]+'.', deux:true,
+    options:choix.map(function(x){ return {t:x, ok:x===p[3]}; }), bonne:p[0]+" "+p[3]+" "+p[1],
+    explain:"« "+p[3]+" » : "+p[4]+"."});
+}
+function qNoyau(){
+  var g=unDe(NOYAUX), mots=g.filter(Boolean);
+  return qcm({theme:"Le nom noyau", enonce:"Quel est le nom noyau de ce groupe nominal ?", phrase:mots.join(" "), deux:true,
+    options:mots.map(function(m){ return {t:m, ok:m===g[2]}; }), bonne:g[2],
+    explain:"« "+g[0]+" » est le déterminant, « "+g[2]+" » est le nom noyau ; les autres mots le complètent."});
+}
+function qCours(){
+  var c=unDe(COURS);
+  return qcm({theme:"Le cours", enonce:c.e.replace("___",'<span class="trou">?</span>'),
+    options:[{t:c.b,ok:true}].concat(c.f.map(function(x){ return {t:x}; })), bonne:c.e.replace("___",c.b), explain:c.x});
+}
+function qPhrase(cible){
+  var src=unDe(PHRASES);
+  var toks=src.split(" ").map(function(w){
+    var t={k:"", w:w};
+    if(w[0]==="#"){ t.k="d"; t.w=w.slice(1); } else if(w[0]==="*"){ t.k="n"; t.w=w.slice(1); }
+    t.p = /^[.,;!?]$/.test(t.w);
+    return t;
+  });
+  cible = cible || unDe(["n","d"]);
+  return {type:'phrase', theme:"Dans la phrase", cible:cible, toks:toks,
+    enonce: cible==="n" ? "Touche <b>tous les noms</b> de la phrase." : "Touche <b>tous les déterminants</b> de la phrase.",
+    bonne: toks.filter(function(t){ return t.k===cible; }).map(function(t){ return t.w; }).join(", ")};
+}
+
+var GENS = {
+  nom:[qPropre,qGenre,qNombre,qAnime,qConcret,qNoyau],
+  det:[qCategorie,qCategorie,qDemo,qPoss],
+  phrase:[qPhrase],
+  cours:[qCours]
+};
+var LONGUEUR = {nom:10, det:10, phrase:6, cours:10, controle:12};
+
+function serie(mode){
+  var s=[], vus={};
+  function ajoute(gen){
+    for(var essai=0; essai<20; essai++){
+      var q=gen(), cle=q.enonce+(q.mot||"")+(q.phrase||"")+(q.toks?q.toks.map(function(t){return t.w;}).join(""):"");
+      if(!vus[cle]){ vus[cle]=1; s.push(q); return; }
+    }
+    s.push(gen());
+  }
+  if(mode==="controle"){
+    var plan=[qPropre,qGenre,qNombre,qAnime,qConcret,qNoyau,qCategorie,qDemo,qPoss,qCours,
+              function(){return qPhrase("n");},function(){return qPhrase("d");}];
+    plan.forEach(ajoute);
+    return melange(s);
+  }
+  for(var i=0;i<LONGUEUR[mode];i++) ajoute(GENS[mode][i%GENS[mode].length]);
+  return melange(s);
+}
+
+/* ================== DÉROULEMENT ================== */
+var etat={};
+
+function demarrer(mode){
+  if(mode==="lecon"){ montrer('lecon'); return; }
+  etat={mode:mode, serie:serie(mode), i:0, score:0, erreurs:[]};
+  question(); montrer('question');
+}
+
+function question(){
+  var q=etat.serie[etat.i], n=etat.serie.length;
+  $('q-compteur').textContent=(etat.i+1)+" / "+n;
+  $('q-barre').style.width=(etat.i/n*100)+"%";
+  $('q-theme').textContent=q.theme;
+  $('q-retour').className="retour-q"; $('q-retour').innerHTML="";
+  $('q-suivant').style.display="none"; $('q-valider').style.display="none";
+  var h='<p class="enonce">'+q.enonce+'</p>';
+  if(q.mot) h+='<span class="mot">'+q.mot+'</span>';
+  if(q.phrase) h+='<div class="phrase-q">'+q.phrase+'</div>';
+
+  if(q.type==='qcm'){
+    h+='<div class="options'+(q.deux?' deux':'')+'">'+q.options.map(function(o,k){ return '<button class="opt" data-k="'+k+'">'+o.t+'</button>'; }).join('')+'</div>';
+    $('q-zone').innerHTML=h;
+    document.querySelectorAll('.opt').forEach(function(b){
+      b.onclick=function(){
+        var o=q.options[+b.dataset.k];
+        document.querySelectorAll('.opt').forEach(function(x,k){ x.disabled=true; if(q.options[k].ok) x.classList.add('ok'); });
+        if(!o.ok) b.classList.add('ko');
+        repondre(!!o.ok, q.explain, q, q.bonne);
+      };
+    });
+  } else {
+    h+='<div class="phrase" id="ph">'+q.toks.map(function(t,k){
+      if(t.p) return '<span class="tok p">'+esc(t.w)+'</span> ';
+      var sep = /'$/.test(t.w) ? '' : ' ';
+      return '<button class="tok" data-k="'+k+'">'+esc(t.w)+'</button>'+sep;
+    }).join('')+'</div><p class="legende">Touche un mot une deuxième fois pour l\'enlever.</p>';
+    $('q-zone').innerHTML=h;
+    q.sel={};
+    document.querySelectorAll('#ph .tok[data-k]').forEach(function(b){
+      b.onclick=function(){ var k=+b.dataset.k; q.sel[k]=!q.sel[k]; b.classList.toggle('sel', q.sel[k]); };
+    });
+    $('q-valider').style.display="block";
+    $('q-valider').onclick=function(){
+      $('q-valider').style.display="none";
+      var tout=true, trop=0, oubli=0;
+      document.querySelectorAll('#ph .tok[data-k]').forEach(function(b){
+        var k=+b.dataset.k, t=q.toks[k], choisi=!!q.sel[k], attendu=t.k===q.cible;
+        b.disabled=true; b.classList.remove('sel');
+        if(choisi && attendu) b.classList.add('bon');
+        else if(choisi && !attendu){ b.classList.add('trop'); trop++; tout=false; }
+        else if(!choisi && attendu){ b.classList.add('oubli'); oubli++; tout=false; }
+      });
+      var mot = q.cible==="n" ? "nom" : "déterminant";
+      var msg = tout ? "Tu as trouvé tous les "+mot+"s."
+        : (oubli? oubli+" "+mot+(oubli>1?"s oubliés":" oublié")+" (en pointillés). ":"")+(trop? trop+" mot"+(trop>1?"s":"")+" en trop (barré"+(trop>1?"s":"")+").":"");
+      repondre(tout, msg, q, q.bonne);
+    };
+  }
+}
+
+function repondre(ok, explication, q, bonne){
+  if(ok) etat.score++;
+  else {
+    var intitule = q.type==='phrase' ? (q.cible==="n"?"Les noms : ":"Les déterminants : ")+q.toks.map(function(t){return t.w;}).join(" ").replace(/' /g,"'").replace(/ ([.,])/g,"$1")
+      : (q.enonce.replace(/<span class="trou">\?<\/span>/g,"…").replace(/<[^>]+>/g,"").replace(/…\.$/,"…").replace(/\s*[.?]$/,(q.mot||q.phrase)?"":"$&")+(q.mot?" : "+q.mot.replace(/<[^>]+>/g,""):"")+(q.phrase?" : "+q.phrase.replace(/<span class="trou">\?<\/span>/g,"…").replace(/<[^>]+>/g,""):""));
+    etat.erreurs.push({q:intitule, c:bonne});
+  }
+  var r=$('q-retour');
+  r.className="retour-q on "+(ok?"bien":"mal");
+  r.innerHTML='<b>'+(ok?"Bravo !":"Pas tout à fait.")+'</b>'+explication;
+  var s=$('q-suivant'); s.style.display="block";
+  s.textContent = etat.i+1>=etat.serie.length ? "Voir mon score" : "Suivant";
+  s.focus();
+}
+
+function terminer(){
+  var n=etat.serie.length, s=etat.score, r=s/n;
+  $('q-barre').style.width="100%";
+  $('f-score').textContent=s+" / "+n;
+  $('f-msg').textContent = r===1 ? "Sans faute, bravo !" : r>=.75 ? "Très bien, encore un petit effort." : r>=.5 ? "C'est en bonne voie. Relis les corrections puis recommence." : "Relis la leçon en bref, puis recommence : les questions changeront.";
+  if(etat.mode==='controle'){ var b=enregistrerMeilleurScore(s,n); $('f-record').textContent = b ? "Meilleur score au contrôle : "+b.bon+" / "+b.total : ""; }
+  else $('f-record').textContent="";
+  $('f-erreurs').innerHTML = etat.erreurs.length
+    ? '<h3>À revoir</h3><ul class="erreurs">'+etat.erreurs.map(function(x){ return '<li>'+esc(x.q)+'<span>'+esc(x.c)+'</span></li>'; }).join('')+'</ul>'
+    : '';
+  montrer('fin');
+}
+
+function majAccueil(){
+  var b=meilleurConnu();
+  $('record').textContent = b ? "Meilleur score au contrôle : "+b.bon+" / "+b.total : "";
+}
+
+document.querySelectorAll('.mode').forEach(function(b){ b.onclick=function(){ demarrer(b.dataset.mode); }; });
+document.querySelectorAll('[data-go]').forEach(function(b){ b.onclick=function(){ demarrer(b.dataset.go); }; });
+$('l-retour').onclick=function(){ montrer('accueil'); };
+$('q-suivant').onclick=function(){ etat.i++; if(etat.i>=etat.serie.length) terminer(); else { question(); window.scrollTo(0,0); } };
+$('q-quitter').onclick=function(){ majAccueil(); montrer('accueil'); };
+$('f-encore').onclick=function(){ demarrer(etat.mode); };
+$('f-menu').onclick=function(){ majAccueil(); montrer('accueil'); };
+majAccueil();
+</script>
+</body>
+</html>
