@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les mythes de la création</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nuit:#1b1f4a; --nuit2:#34306f; --or:#f2b632; --aube:#f4f4fb; --encre:#1f1d36; --gris:#5d5b78;
+  --genese:#e8479a; --coran:#4a6fa5; --egypte:#12808b; --dogon:#b8661c; --neuf:#6b4fc8;
+  --fluo:#9df26f; --fluo-rose:#ff8cc6; --faux:#d23c3c; --carte:#ffffff; --ligne:#dcdcee;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Nunito",system-ui,sans-serif;background:var(--aube);color:var(--encre);font-size:17px;line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+
+/* ---------- Ciel d'en-tête ---------- */
+.ciel{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--nuit) 0%,var(--nuit2) 70%,#5b4a8e 100%);
+  color:#fff;padding:calc(env(safe-area-inset-top,0px) + 28px) 20px 26px}
+.ciel::before{content:"";position:absolute;inset:0;background-image:
+  radial-gradient(1.5px 1.5px at 12% 22%,#fff 60%,transparent),radial-gradient(1px 1px at 30% 60%,#fff 60%,transparent),
+  radial-gradient(1.5px 1.5px at 55% 18%,#fff 60%,transparent),radial-gradient(1px 1px at 72% 48%,#fff 60%,transparent),
+  radial-gradient(1.5px 1.5px at 88% 28%,#fff 60%,transparent),radial-gradient(1px 1px at 45% 80%,#fff 60%,transparent),
+  radial-gradient(1px 1px at 8% 70%,#fff 60%,transparent);opacity:.8}
+.soleil{position:absolute;right:-30px;bottom:-70px;width:170px;height:170px;border-radius:50%;
+  background:radial-gradient(circle,#ffe39a 0%,var(--or) 55%,rgba(242,182,50,0) 72%);animation:lever 1.6s ease-out both}
+@keyframes lever{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.soleil{animation:none}}
+.ciel .petit{position:relative;margin:0;font-size:.95rem;opacity:.85}
+.ciel h1{position:relative;font-family:"Marcellus",Georgia,serif;font-weight:400;font-size:2.1rem;line-height:1.1;margin:.2em 0 .25em;max-width:12ch}
+.ciel .incipit{position:relative;margin:0;font-family:"Marcellus",Georgia,serif;font-size:1.05rem;color:#ffe7a8;max-width:26ch}
+
+main{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+.ecran{display:none}
+.ecran.actif{display:block}
+
+/* ---------- Accueil ---------- */
+.record{font-weight:700;color:var(--nuit2);margin:4px 0 14px;min-height:1.2em}
+.modes{display:grid;gap:10px}
+.mode{display:flex;align-items:center;gap:14px;text-align:left;width:100%;background:var(--carte);border:1px solid var(--ligne);
+  border-radius:14px;padding:14px 16px;color:var(--encre)}
+.mode .pastille{flex:0 0 14px;height:44px;border-radius:7px;background:var(--c,var(--nuit2))}
+.mode b{display:block;font-size:1.05rem}
+.mode span{display:block;color:var(--gris);font-size:.92rem;line-height:1.35}
+.mode.controle{background:var(--nuit);color:#fff;border-color:var(--nuit)}
+.mode.controle span{color:#d6d4f2}
+.mode.controle .pastille{background:var(--or)}
+.choix-recit{margin-top:10px;display:none;background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:14px}
+.choix-recit.ouvert{display:block}
+.choix-recit p{margin:0 0 10px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--neuf);background:#fff;color:var(--neuf);border-radius:999px;padding:8px 14px;font-weight:700}
+
+/* ---------- Leçon ---------- */
+.lecon h2{font-family:"Marcellus",Georgia,serif;font-weight:400;font-size:1.5rem;margin:1.2em 0 .4em}
+.lecon h2:first-of-type{margin-top:.2em}
+.lecon dl{margin:0;background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:6px 14px}
+.lecon dt{font-weight:800;margin-top:10px}
+.lecon dd{margin:0 0 8px;color:#35334f}
+.texte-fiche{background:#fff;border:1px solid var(--ligne);border-left:8px solid var(--c);border-radius:12px;padding:12px 14px;margin:10px 0}
+.texte-fiche h3{margin:0 0 4px;font-size:1.08rem}
+.texte-fiche ul{margin:4px 0;padding-left:1.2em}
+.texte-fiche li{margin:3px 0}
+.bilan{background:#fff0f7;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:.95rem}
+.note{font-size:.9rem;color:var(--gris)}
+.jours{counter-reset:j;list-style:none;padding:0;margin:6px 0}
+.jours li{counter-increment:j;display:flex;gap:10px;margin:4px 0}
+.jours li::before{content:counter(j);flex:0 0 26px;height:26px;border-radius:50%;background:var(--genese);color:#fff;
+  font-weight:800;display:grid;place-items:center;font-size:.85rem}
+
+/* ---------- Quiz ---------- */
+.haut{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.barre{flex:1;height:10px;background:#e3e2f2;border-radius:99px;overflow:hidden}
+.barre i{display:block;height:100%;width:0;background:var(--or);transition:width .3s}
+.compteur{font-weight:800;color:var(--gris);font-size:.9rem}
+.theme{display:inline-block;font-weight:800;font-size:.85rem;color:#fff;background:var(--c,var(--nuit2));border-radius:6px;padding:2px 8px;margin:4px 0 6px}
+details.recit{background:#fff;border:1px solid var(--ligne);border-left:8px solid var(--neuf);border-radius:12px;margin:6px 0 12px}
+details.recit summary{padding:10px 14px;font-weight:800;color:var(--neuf)}
+details.recit .corps{padding:0 16px 12px;font-family:Georgia,"Times New Roman",serif;font-size:1.02rem;line-height:1.65}
+details.recit .corps p{margin:.5em 0}
+details.recit .source{font-style:italic;color:var(--gris);font-size:.9rem}
+h2.enonce{font-size:1.22rem;line-height:1.35;margin:4px 0 14px}
+.options{display:grid;gap:10px}
+.opt{text-align:left;background:#fff;border:2px solid var(--ligne);border-radius:12px;padding:12px 14px;color:var(--encre);font-weight:600}
+.opt:disabled{cursor:default}
+/* bonne réponse : surlignée au fluo, comme dans le cahier */
+.opt.ok{border-color:#63c43d;background:linear-gradient(100deg,rgba(157,242,111,.25),var(--fluo) 8%,var(--fluo) 92%,rgba(157,242,111,.4));}
+.opt.faux{border-color:var(--faux);color:var(--faux);text-decoration:line-through}
+.explain{display:none;margin:14px 0 0;background:#fff;border-radius:12px;padding:12px 14px;border:1px dashed #b9b6d8}
+.explain.visible{display:block}
+.explain b.bravo{color:#2f8f18}
+.explain b.oups{color:var(--faux)}
+.actions{display:flex;gap:10px;margin-top:16px}
+.btn{border:none;border-radius:12px;padding:12px 18px;font-weight:800}
+.btn.plein{background:var(--nuit);color:#fff;flex:1}
+.btn.clair{background:#e6e5f3;color:var(--nuit)}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* ordre des jours */
+.seq{list-style:none;padding:0;margin:0 0 12px;display:grid;gap:6px}
+.seq li{display:flex;gap:10px;align-items:center;background:#fff;border:2px dashed var(--ligne);border-radius:10px;padding:8px 10px;min-height:44px}
+.seq li b{flex:0 0 26px;height:26px;border-radius:50%;background:var(--genese);color:#fff;display:grid;place-items:center;font-size:.85rem}
+.seq li.ok{border-style:solid;border-color:#63c43d;background:#effce6}
+.seq li.faux{border-style:solid;border-color:var(--faux);background:#fdecec}
+.reserve{display:flex;flex-wrap:wrap;gap:8px}
+.reserve button{background:#fff;border:2px solid var(--genese);color:var(--encre);border-radius:10px;padding:8px 10px;font-weight:600;text-align:left}
+.reserve button:disabled{opacity:.3}
+
+/* arbre égyptien */
+.arbre{display:grid;gap:6px;text-align:center}
+.rang{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.lien{height:14px;width:2px;background:var(--egypte);margin:0 auto}
+.fixe{background:var(--fluo-rose);border-radius:8px;padding:6px 12px;font-weight:800}
+.arbre select{font:inherit;font-weight:700;padding:6px 4px;border-radius:8px;border:2px solid var(--egypte);background:#fff;min-width:0;width:118px}
+.arbre select.ok{border-color:#63c43d;background:#effce6}
+.arbre select.faux{border-color:var(--faux);background:#fdecec}
+.legende{font-size:.85rem;color:var(--gris)}
+
+/* rédaction */
+textarea{width:100%;min-height:120px;font:inherit;padding:10px;border-radius:12px;border:2px solid var(--ligne);resize:vertical}
+.modele{display:none;background:#f3effe;border-left:6px solid var(--neuf);border-radius:10px;padding:10px 12px;margin-top:12px}
+.modele.visible{display:block}
+.auto{display:none;gap:8px;margin-top:12px;flex-wrap:wrap}
+.auto.visible{display:flex}
+.auto button{flex:1;min-width:140px}
+
+/* fin */
+.score{font-family:"Marcellus",Georgia,serif;font-size:3rem;margin:.2em 0 0;color:var(--nuit)}
+.revoir{background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:6px 14px;margin-top:12px}
+.revoir li{margin:8px 0}
+.revoir .bonne{display:block;font-weight:800;color:#2f7d16}
+</style>
+<style>
+.methode{counter-reset:m;list-style:none;padding:0;margin:8px 0}
+.methode li{counter-increment:m;display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:10px 12px;margin:6px 0}
+.methode li::before{content:counter(m);flex:0 0 28px;height:28px;border-radius:50%;background:var(--neuf);color:#fff;font-weight:800;display:grid;place-items:center}
+.methode li b{display:block}
+.methode li span{color:#45435f;font-size:.95rem}
+.enonce .cit{display:block;font-family:Georgia,"Times New Roman",serif;font-weight:400;font-style:italic;background:#fff;border-left:5px solid var(--dogon);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:1.05rem}
+.enonce .src{display:block;font-size:.85rem;font-weight:600;color:var(--gris);margin:-4px 0 10px}
+</style>
+</head>
+<body>
+<header class="ciel">
+  <div class="soleil" aria-hidden="true"></div>
+  <p class="petit">Français 6e, chapitre 1</p>
+  <h1>Les mythes de la création</h1>
+  <p class="incipit">« Au commencement… »</p>
+</header>
+
+<main>
+<section id="accueil" class="ecran actif">
+  <p class="record" id="record"></p>
+  <div class="modes">
+    <button class="mode" data-mode="lecon" style="--c:var(--or)"><i class="pastille"></i><div><b>Revoir la leçon</b><span>Les mots clés, la méthode pour analyser un mythe, les textes étudiés.</span></div></button>
+    <button class="mode" data-mode="vocab" style="--c:var(--nuit2)"><i class="pastille"></i><div><b>Le vocabulaire</b><span>Cosmogonie, théogonie, mythe… et les racines grecques.</span></div></button>
+    <button class="mode" data-mode="extraits" style="--c:var(--dogon)"><i class="pastille"></i><div><b>Analyser des extraits</b><span>Des passages de mythes du monde entier : que nous apprennent-ils ?</span></div></button>
+    <button class="mode" data-mode="recit" style="--c:var(--neuf)"><i class="pastille"></i><div><b>Analyser un récit complet</b><span>Lis un mythe que tu ne connais pas et analyse-le avec la méthode.</span></div></button>
+    <button class="mode controle" data-mode="controle"><i class="pastille"></i><div><b>Le contrôle</b><span>Vocabulaire, extraits et un récit inconnu. Ton meilleur score est gardé.</span></div></button>
+  </div>
+  <div class="choix-recit" id="choixRecit">
+    <p>Quel récit veux-tu analyser ?</p>
+    <div class="chips" id="chipsRecit"></div>
+  </div>
+</section>
+
+<section id="lecon" class="ecran lecon"></section>
+
+<section id="quiz" class="ecran">
+  <div class="haut"><div class="barre"><i id="barre"></i></div><span class="compteur" id="compteur"></span></div>
+  <span class="theme" id="theme"></span>
+  <details class="recit" id="texteRecit"><summary id="titreRecit">Le texte</summary><div class="corps" id="corpsRecit"></div></details>
+  <h2 class="enonce" id="enonce"></h2>
+  <div id="zone"></div>
+  <div class="explain" id="explain"></div>
+  <div class="actions">
+    <button class="btn clair" id="q-quitter">Menu</button>
+    <button class="btn plein" id="q-suivant" style="display:none">Question suivante</button>
+  </div>
+</section>
+
+<section id="fin" class="ecran">
+  <p class="score" id="f-score"></p>
+  <p id="f-message"></p>
+  <div id="f-revoir"></div>
+  <div class="actions">
+    <button class="btn clair" id="f-menu">Menu</button>
+    <button class="btn plein" id="f-encore">Recommencer</button>
+  </div>
+</section>
+</main>
+
+<script>
+/* ================== OUTILS ================== */
+function $(id){ return document.getElementById(id); }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function prendre(a,n){ return melange(a).slice(0,n); }
+function Q(theme, enonce, bonne, mauvaises, explain){
+  return {type:"qcm", theme:theme, enonce:enonce, bonne:bonne, options:melange([bonne].concat(mauvaises)), explain:explain||""};
+}
+function echap(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+/* ====== Meilleur score (lu par la page d'accueil du site) ====== */
+function enregistrerMeilleurScore(bon, total){
+  try{
+    var lien = location.pathname.split("/").pop() || "index.html";
+    var cle = "meilleur:" + lien, prev = null;
+    try { prev = JSON.parse(localStorage.getItem(cle)); } catch(e){}
+    var mieux = !prev || (bon/total) > (prev.bon/prev.total) || ((bon/total) === (prev.bon/prev.total) && bon > prev.bon);
+    if(mieux) localStorage.setItem(cle, JSON.stringify({bon:bon, total:total}));
+  }catch(e){}
+}
+function meilleurConnu(){
+  try{ var lien = location.pathname.split("/").pop() || "index.html"; return JSON.parse(localStorage.getItem("meilleur:" + lien)); }
+  catch(e){ return null; }
+}
+
+/* ================== LA MÉTHODE (grille d'analyse) ================== */
+var GRILLE = [
+  ["Au départ","Qu'y a-t-il avant la création ? (le vide, la nuit, l'eau, un œuf…)"],
+  ["Qui crée ?","Un seul dieu (monothéiste) ou plusieurs dieux (polythéiste) ?"],
+  ["Comment ?","Par la parole, par un geste (fabriquer, façonner), par la naissance des dieux, ou par la transformation d'un corps ?"],
+  ["Les étapes","Y a-t-il des séparations (ciel et terre, lumière et nuit), des combats, des essais ratés ?"],
+  ["L'homme","Comment et pourquoi l'homme est-il créé ? Quelle place a-t-il ?"],
+  ["Ce que le mythe explique","Le soleil, la pluie, la mort, le mal, le pouvoir des rois…"],
+  ["Cosmogonie ou théogonie ?","Le récit raconte-t-il la naissance du monde, celle des dieux, ou les deux ?"],
+  ["Comparer","Quels points communs et quelles différences avec les textes étudiés en classe ?"]
+];
+function G(n, enonce, bonne, mauvaises, explain){ return Q(GRILLE[n][0], enonce, bonne, mauvaises, explain); }
+
+var COMMENT=["Par la parole","Par un geste : le créateur fabrique ou façonne","Par la naissance : des dieux mettent au monde d'autres dieux","Par la transformation du corps d'un être"];
+function gComment(enonce, k, explain){ return G(2, enonce, COMMENT[k], COMMENT.filter(function(x,i){return i!==k;}), explain); }
+var POLY="Plusieurs dieux : le récit est polythéiste", MONO="Un seul dieu : le récit est monothéiste";
+var COSMO="Une cosmogonie : surtout la naissance du monde", THEO="Une théogonie : surtout la naissance des dieux", LES2="Les deux : la naissance du monde et celle des dieux";
+
+/* ================== VOCABULAIRE ================== */
+var VOCAB = [
+  ["cosmogonie","Récit qui raconte la naissance, la création du monde."],
+  ["théogonie","Récit qui raconte la naissance des dieux et leur famille."],
+  ["mythe","Récit très ancien, transmis de génération en génération, qui explique l'origine du monde, des dieux ou des hommes."],
+  ["polythéiste","Se dit d'une religion qui a plusieurs dieux."],
+  ["monothéiste","Se dit d'une religion qui n'a qu'un seul dieu."],
+  ["le verbe créateur","La parole qui crée : le créateur parle et les choses apparaissent."]
+];
+var fileVocab=[];
+function qVocab(){
+  if(!fileVocab.length) fileVocab=melange(VOCAB);
+  var e=fileVocab.pop(), autres=prendre(VOCAB.filter(function(x){ return x!==e; }),3);
+  if(Math.random()<0.5) return Q("Vocabulaire","Quel mot correspond à cette définition ?\n« "+e[1]+" »", e[0], autres.map(function(x){return x[0];}), "« "+e[0]+" » : "+e[1]);
+  return Q("Vocabulaire","Que veut dire « "+e[0]+" » ?", e[1], autres.map(function(x){return x[1];}), "« "+e[0]+" » : "+e[1]);
+}
+function racines(){ return [
+  Q("Racines grecques","Dans « cosmogonie », que veut dire kosmos ?","le monde",["la naissance","le dieu","le ciel"],"Kosmos = le monde et gonos = la naissance. Une cosmogonie raconte la naissance du monde."),
+  Q("Racines grecques","Dans « cosmogonie », que veut dire gonos ?","la naissance",["le monde","la parole","la famille"],"Gonos = la naissance. On le retrouve dans cosmogonie et dans théogonie."),
+  Q("Racines grecques","Dans « théogonie », que veut dire theos ?","dieu",["le monde","la terre","la lumière"],"Theos = dieu. Une théogonie raconte la naissance des dieux."),
+  Q("Racines grecques","Que veut dire poly, dans « polythéiste » ?","plusieurs",["un seul","très grand","très ancien"],"Poly = plusieurs : une religion polythéiste a plusieurs dieux."),
+  Q("Racines grecques","Que veut dire mono, dans « monothéiste » ?","un seul",["plusieurs","le monde","la naissance"],"Mono = un seul : une religion monothéiste n'a qu'un seul dieu, comme dans la Bible et le Coran.")
+];}
+
+/* ================== EXTRAITS DE MYTHES DU MONDE ================== */
+var EXPLIQUE=["L'origine des hommes","L'origine du mal et des malheurs","L'origine de la mort","L'origine de la semaine de 7 jours","L'origine du pouvoir des rois","L'origine des éléments de la nature (soleil, lune, vent…)"];
+function ext(cit, src){ return {cit:cit, src:src}; }
+function qExt(e, theme, question, bonne, mauvaises, explain){ var q=Q(theme, question, bonne, mauvaises, explain); q.cit=e.cit; q.src=e.src; return q; }
+function comment(e, k, explain){ return qExt(e,"Comment ?","Comment se fait la création dans ce passage ?",COMMENT[k],COMMENT.filter(function(x,i){return i!==k;}),explain); }
+function explique(e, k, explain){ return qExt(e,"Ce que le mythe explique","Qu'est-ce que ce passage explique ?",EXPLIQUE[k],prendre(EXPLIQUE.filter(function(x,i){return i!==k;}),3),explain); }
+function extraits(){ return [
+  comment(ext("Ptah pensa le monde dans son cœur, puis il prononça le nom de chaque chose, et chaque chose exista.","Égypte, mythe de Memphis"),0,"Prononcer un nom suffit à faire exister la chose : c'est le verbe créateur, comme dans la Genèse (« Dieu dit… »)."),
+  comment(ext("La déesse Nüwa prit de la terre jaune au bord du fleuve, la pétrit et façonna les premiers humains.","Chine"),1,"Prendre, pétrir, façonner : la déesse travaille avec ses mains, comme un potier."),
+  comment(ext("Debout sur le pont du ciel, Izanagi et Izanami plongèrent une lance dans la mer et la remuèrent. Les gouttes qui tombèrent de la pointe formèrent la première île.","Japon"),1,"Le monde naît d'un geste : remuer la mer avec une lance."),
+  comment(ext("Gaïa, la Terre, mit au monde Ouranos, le Ciel étoilé, puis les hautes montagnes et la mer.","Grèce, d'après Hésiode"),2,"Mettre au monde, enfanter : la création se fait par des naissances. C'est typique d'une théogonie."),
+  comment(ext("De l'esprit du géant Purusha naquit la lune, de son œil le soleil, de son souffle le vent.","Inde, d'après le Rig-Véda"),3,"Chaque partie du corps devient un élément du monde, comme pour Ymir chez les Scandinaves ou Pangu en Chine."),
+  comment(ext("Dieu dit : « Que la lumière soit ! » Et la lumière fut.","Genèse, texte étudié en classe"),0,"Repère les verbes « dire », « appeler », « ordonner » : ils signalent une création par la parole."),
+  explique(ext("Pandore souleva le couvercle de la jarre : les maladies, la misère et tous les malheurs se répandirent sur la terre.","Grèce, d'après Hésiode"),1,"Comme Seth dans le mythe égyptien, Pandore explique pourquoi le malheur existe dans le monde."),
+  explique(ext("Izanami, furieuse, cria : « Chaque jour, je ferai mourir mille de tes hommes ! » Izanagi répondit : « Alors chaque jour, j'en ferai naître mille cinq cents. »","Japon"),2,"Le mythe explique pourquoi les hommes meurent… et pourquoi il en naît toujours plus."),
+  explique(ext("Amaterasu, la déesse du Soleil, envoya son petit-fils régner sur les îles. Ses descendants devinrent les empereurs du Japon.","Japon"),4,"Comme Horus, premier pharaon, le roi descend d'un dieu : son pouvoir est présenté comme sacré."),
+  explique(ext("Le septième jour, Dieu se reposa de tout l'ouvrage qu'il avait fait, et il bénit ce jour.","Genèse, texte étudié en classe"),3,"Le récit justifie le rythme de la semaine et le jour de repos."),
+  qExt(ext("Il n'y avait alors ni l'être ni le non-être, ni l'air, ni le ciel. Les ténèbres étaient cachées par les ténèbres.","Inde, d'après le Rig-Véda"),"Au départ","Quelle étape habituelle des mythes de création reconnais-tu ?","La situation de départ : le vide et la nuit, avant toute chose",["Une création par la parole","La création des hommes","L'origine du mal"],"Presque tous les mythes commencent ainsi : le vide, la nuit ou l'eau (le Noun en Égypte, « la terre vide et vague » dans la Genèse)."),
+  qExt(ext("Tāne, allongé sur le dos, poussa de toutes ses forces avec ses jambes : son père Rangi, le Ciel, s'éleva loin de sa mère Papa, la Terre.","Nouvelle-Zélande, mythe maori"),"Les étapes","Quelle étape habituelle des mythes de création reconnais-tu ?","Une séparation du Ciel et de la Terre",["Un essai raté","Un jour de repos","La création de l'homme"],"Comme Chou en Égypte ou Pangu en Chine : il faut séparer le Ciel et la Terre pour faire de la place à la vie."),
+  qExt(ext("Viracocha créa d'abord des géants, mais ils lui désobéirent. Il les détruisit par un déluge et façonna de nouveaux hommes avec de l'argile.","Pérou, mythe inca"),"Les étapes","Qu'est-ce que ce passage a de particulier ?","Le créateur rate un premier essai et recommence",["Le créateur crée par la parole","Les hommes naissent des larmes d'un dieu","Le monde est créé en six jours"],"Comme Amma chez les Dogon : la création ne réussit pas du premier coup."),
+  qExt(ext("Votre Seigneur est Dieu : il a créé les cieux et la terre en six jours.","Coran, texte étudié en classe"),"Qui crée ?","Que nous apprend ce passage sur la religion ?",MONO,[POLY,"Aucun dieu : c'est un récit scientifique"],"Un seul créateur, qui a tout pouvoir : religion monothéiste."),
+  qExt(ext("Odin et ses deux frères, Vili et Vé, décidèrent de bâtir le monde.","Scandinavie"),"Qui crée ?","Que nous apprend ce passage sur la religion ?",POLY,[MONO,"Aucun dieu : c'est un récit scientifique"],"Trois dieux travaillent ensemble : religion polythéiste."),
+  qExt(ext("Du Chaos naquit la Nuit ; de la Nuit naquirent la Lumière et le Jour.","Grèce, d'après Hésiode"),"Cosmogonie ou théogonie ?","Ces êtres sont des divinités qui naissent les unes des autres. Comment appelle-t-on ce genre de récit ?","Une théogonie",["Un récit monothéiste","Un conte de fées","Un texte scientifique"],"Theos = dieu, gonos = naissance : une théogonie raconte la naissance des dieux, génération après génération."),
+  Q("Les mythes en général","À quelles questions les mythes de création cherchent-ils à répondre ?","D'où vient la Terre ? Qui a créé l'homme ?",["Quelle est la distance entre la Terre et le Soleil ?","Comment fabriquer un calendrier ?","Qui a écrit la Bible ?"],"Ce sont des questions essentielles, que les hommes se posent depuis toujours."),
+  Q("Les mythes en général","Un mythe de création est-il une explication scientifique ?","Non : c'est un récit religieux ou traditionnel, qui donne du sens au monde",["Oui : c'est ce que disent les scientifiques","Oui, s'il est très ancien","Non : c'est une histoire inventée pour faire peur"],"Les mythes expliquent à leur manière l'origine du monde et la place de l'homme, sans démonstration scientifique.")
+];}
+
+/* ================== RÉCITS COMPLETS ================== */
+var RECITS = {
+  chine:{ nom:"Pangu (Chine)", titre:"Le géant Pangu", source:"D'après un mythe chinois.",
+    texte:[
+      "Au tout début, il n'y avait ni ciel ni terre. Tout était mélangé dans un grand œuf noir, où régnait le chaos. À l'intérieur dormait un géant, Pangu. Il dormit dix-huit mille ans.",
+      "Un jour, il se réveilla et, d'un coup de hache, brisa la coquille. Ce qui était léger et clair monta pour former le ciel ; ce qui était lourd et sombre descendit pour former la terre.",
+      "Pangu avait peur que le ciel et la terre se referment. Il se plaça entre eux : ses pieds poussaient la terre, ses mains soutenaient le ciel. Chaque jour, il grandissait un peu, et le ciel s'éloignait de la terre. Au bout de dix-huit mille ans, ils étaient enfin bien séparés. Épuisé, Pangu se coucha et mourut.",
+      "Alors son corps se transforma. Son souffle devint le vent et les nuages, sa voix le tonnerre. Son œil gauche devint le soleil, son œil droit la lune. Son sang forma les rivières, ses cheveux les étoiles, ses poils les herbes et les arbres, sa sueur la pluie.",
+      "Plus tard, la déesse Nüwa, qui se sentait seule dans ce monde, prit de la terre jaune au bord d'un fleuve et façonna les premiers êtres humains."],
+    questions:function(){ return [
+      G(0,"Qu'y a-t-il avant la création ?","Un grand œuf noir où tout est mélangé",["Une mer immobile et un ciel silencieux","Un dieu seul dans le vide","Des montagnes et des forêts"],"Le chaos enfermé dans un œuf : on retrouve l'œuf dans le mythe dogon."),
+      G(1,"Qui crée le monde ?","Un géant, Pangu",["Un dieu unique qui parle","Une famille de dieux","Les premiers hommes"],"Plus tard, une déesse, Nüwa, crée les hommes."),
+      gComment("Comment se forment le soleil, le vent, les rivières… ?",3,"Chaque partie du corps de Pangu devient un élément du monde."),
+      G(3,"Quelle étape importante reconnais-tu dans les paragraphes 2 et 3 ?","Une séparation du ciel et de la terre",["Un premier essai raté","Un jour de repos","Une guerre entre dieux"],"Le léger monte, le lourd descend, puis Pangu les écarte : comme Chou en Égypte."),
+      G(4,"Comment l'homme est-il créé ?","Par un geste : Nüwa le façonne avec de la terre",["Par la parole","Il naît des larmes d'un dieu","Il sort de l'œuf avec Pangu"],"Façonner = un geste de potier."),
+      G(5,"Qu'est-ce que ce mythe explique surtout ?","D'où viennent le soleil, la lune, le vent, la pluie, les rivières",["Pourquoi le mal existe","D'où vient le pouvoir des rois","Pourquoi la semaine a 7 jours"],"Le mythe explique les éléments de la nature."),
+      G(6,"Ce récit est plutôt…",COSMO,[THEO,LES2],"Il n'y a pas de famille de dieux : il raconte la naissance du monde."),
+      G(7,"Quel point commun avec le mythe dogon ?","Le monde commence dans un œuf",["Le créateur rate son premier monde","La parole est la chose la plus importante","Le monde est créé en six jours"],"Chez les Dogon, Amma superpose les éléments à l'intérieur d'un œuf.")
+    ];},
+    redac:{consigne:"Écris deux phrases : un point commun avec le mythe dogon, et une différence avec la Genèse.",
+      modele:"Comme dans le mythe dogon, le monde commence dans un œuf. Mais dans la Genèse, Dieu crée le monde par la parole, alors qu'ici le monde naît du corps de Pangu qui se transforme."}
+  },
+  grece:{ nom:"Gaïa et Ouranos (Grèce)", titre:"La naissance des dieux grecs", source:"D'après Hésiode, Théogonie (poème grec, vers 700 avant J.-C.).",
+    texte:[
+      "Au commencement était le Chaos, un immense vide sombre. Puis apparut Gaïa, la Terre, solide et large. Gaïa donna naissance à Ouranos, le Ciel étoilé, pour qu'il la recouvre tout entière. Elle enfanta aussi les hautes montagnes et la mer.",
+      "Gaïa et Ouranos eurent de nombreux enfants : les douze Titans, les Cyclopes qui n'avaient qu'un œil au milieu du front, et des géants aux cent bras. Mais Ouranos détestait ses enfants. Dès qu'ils naissaient, il les enfermait dans le ventre de la Terre.",
+      "Gaïa souffrait et demanda de l'aide à ses fils. Seul Cronos, le plus jeune des Titans, accepta. Armé d'une faucille, il attaqua son père et le blessa. Ouranos s'enfuit tout en haut : depuis ce jour, le Ciel reste séparé de la Terre.",
+      "Cronos devint le roi des dieux. Mais on lui avait prédit qu'un de ses enfants le renverserait. Alors il les avala, un par un, à leur naissance. Leur mère, Rhéa, cacha le dernier, Zeus, dans une grotte de l'île de Crète, et donna à Cronos une pierre enveloppée dans un linge, qu'il avala sans s'en apercevoir.",
+      "Devenu grand, Zeus obligea son père à recracher ses frères et sœurs. Après une longue guerre, il vainquit Cronos et devint le roi des dieux de l'Olympe."],
+    questions:function(){ return [
+      G(0,"Qu'y a-t-il au commencement ?","Le Chaos, un immense vide sombre",["Une immensité d'eau","Un œuf","Un dieu unique"],"Le vide et la nuit : une situation de départ très fréquente."),
+      G(1,"Qui sont les créateurs dans ce récit ?",POLY,[MONO,"Aucun dieu : ce sont des hommes"],"Gaïa, Ouranos, les Titans, Cronos, Zeus… : religion polythéiste."),
+      gComment("Comment apparaissent le Ciel, les montagnes et la mer ?",2,"Gaïa « donne naissance », « enfante » : la création se fait par des naissances."),
+      G(3,"Qu'est-ce qui marque les étapes de ce récit ?","Des conflits : les enfants se révoltent contre leur père",["Des essais ratés","Sept jours de création","Des paroles du créateur"],"Cronos attaque Ouranos, puis Zeus combat Cronos : chaque génération renverse la précédente."),
+      G(4,"Que dit ce texte sur la création des hommes ?","Rien : il s'intéresse surtout aux dieux",["Ils sont façonnés avec de la terre","Ils naissent des larmes de Gaïa","Ils sont créés à l'image de Zeus"],"Ne cherche pas dans un texte ce qui n'y est pas : ici, les hommes n'apparaissent pas."),
+      G(5,"Qu'est-ce que ce mythe explique ?","Pourquoi le Ciel est séparé de la Terre, et comment Zeus est devenu roi des dieux",["Pourquoi la semaine a 7 jours","D'où viennent les hommes","Pourquoi les hommes meurent"],"Le mythe explique l'ordre du monde et qui le gouverne."),
+      G(6,"Ce récit est plutôt…",THEO,[COSMO,"Ni l'un ni l'autre"],"Le poème s'appelle d'ailleurs Théogonie : il raconte la naissance des dieux, génération après génération."),
+      G(7,"Rhéa cache Zeus pour le protéger de son père. Qui fait la même chose dans le mythe égyptien ?","Isis, qui cache Horus dans le marais",["Nout, qui cache Geb","Nephthys, qui cache Seth","Rê-Atoum, qui se cache dans le ciel"],"Dans les deux récits, l'enfant caché grandit, combat et prend le pouvoir.")
+    ];},
+    redac:{consigne:"Trouve deux points communs entre ce récit et le mythe égyptien.",
+      modele:"Les deux récits sont polythéistes : ils racontent la naissance d'une famille de dieux (ce sont des théogonies). Dans les deux, le Ciel est séparé de la Terre, et une mère cache son fils (Isis cache Horus, Rhéa cache Zeus) qui prendra ensuite le pouvoir."}
+  },
+  maya:{ nom:"Les hommes de maïs (Mayas)", titre:"Les hommes de maïs", source:"D'après le Popol Vuh, livre sacré des Mayas K'iche' du Guatemala, écrit au XVIe siècle à partir de récits plus anciens.",
+    texte:[
+      "Au commencement, il n'y avait ni hommes, ni animaux, ni arbres, ni pierres. Il n'y avait que la mer, immobile, et le ciel, immense et silencieux. Tout était calme, tout était sombre.",
+      "Dans l'eau, entourés de lumière, se trouvaient les dieux créateurs, parmi lesquels le Serpent à plumes. Ils se parlèrent et se mirent d'accord. Ils dirent : « Terre ! », et aussitôt la terre apparut. Les montagnes sortirent de l'eau et se couvrirent de forêts.",
+      "Ensuite, les dieux créèrent les animaux. Mais les animaux ne savaient que crier, rugir ou siffler : ils ne pouvaient pas prononcer le nom de leurs créateurs. Les dieux décidèrent donc de faire d'autres êtres.",
+      "Ils façonnèrent un homme avec de la boue, mais il était mou : il s'effritait et fondait dans l'eau. Ils fabriquèrent alors des hommes en bois. Ceux-là parlaient, mais ils n'avaient ni cœur ni mémoire, et ils oublièrent leurs créateurs. Les dieux envoyèrent un grand déluge pour les détruire.",
+      "Enfin, les dieux prirent du maïs jaune et du maïs blanc, les broyèrent et en firent une pâte. De cette pâte naquirent les premiers vrais hommes : ils parlaient, voyaient loin et remerciaient leurs créateurs."],
+    questions:function(){ return [
+      G(0,"Qu'y a-t-il avant la création ?","Seulement la mer immobile et le ciel silencieux",["Un œuf noir","Un dieu seul dans le vide","Des montagnes et des forêts"],"L'eau et la nuit : comme dans la Genèse ou avec le Noun en Égypte."),
+      G(1,"Qui sont les créateurs ?",POLY,[MONO,"Aucun dieu : ce sont les animaux"],"« Les dieux créateurs… se parlèrent et se mirent d'accord. »"),
+      gComment("Comment la terre apparaît-elle ?",0,"Les dieux disent « Terre ! » et elle apparaît : c'est un verbe créateur."),
+      G(3,"Qu'est-ce qui marque les étapes de la création des hommes ?","Des essais ratés avant la réussite",["Une séparation du ciel et de la terre","Une guerre entre dieux","Un jour de repos"],"La boue, puis le bois, puis enfin le maïs."),
+      G(4,"Pourquoi les dieux veulent-ils créer les hommes ?","Pour avoir des êtres qui parlent, se souviennent d'eux et les remercient",["Pour qu'ils travaillent à leur place","Pour garder les animaux","Pour ne plus être seuls dans l'œuf"],"Les animaux et les hommes de bois ne savaient pas honorer les dieux : ils ont été remplacés."),
+      G(5,"Qu'est-ce que ce mythe explique aussi ?","Pourquoi le maïs est si important pour ce peuple",["Pourquoi la semaine a 7 jours","D'où vient le pouvoir des pharaons","Pourquoi le ciel est plein d'étoiles"],"L'homme est fait de maïs, la céréale qui nourrit les Mayas."),
+      G(6,"Ce récit est plutôt…",COSMO,[THEO,LES2],"Les dieux sont déjà là : le récit raconte la naissance du monde et des hommes, pas celle des dieux."),
+      G(7,"Quel texte étudié en classe a aussi un premier essai raté ?","Le mythe dogon",["La Genèse","Le Coran","Le mythe égyptien"],"Le premier monde d'Amma échoue parce que l'eau s'échappe.")
+    ];},
+    redac:{consigne:"Trouve un point commun avec la Genèse et un point commun avec le mythe dogon.",
+      modele:"Comme dans la Genèse, la création se fait par la parole : les dieux disent « Terre ! » et la terre apparaît. Comme dans le mythe dogon, les créateurs ratent d'abord leur création avant de réussir, et une céréale (le maïs, le fonio) joue un rôle important."}
+  },
+  nord:{ nom:"Le géant Ymir (Scandinavie)", titre:"Le géant Ymir", source:"D'après l'Edda de Snorri Sturluson (Islande, XIIIe siècle), qui rassemble d'anciens récits scandinaves.",
+    texte:[
+      "Au commencement, il n'y avait ni sable, ni mer, ni vagues fraîches. Il n'y avait qu'un immense vide. Au nord de ce vide s'étendait un monde de glace et de brouillard ; au sud, un monde de feu, brûlant et lumineux.",
+      "Là où la chaleur du sud rencontra la glace du nord, la glace se mit à fondre. Des gouttes qui coulaient naquit un géant, Ymir. Une vache, née elle aussi de la glace, le nourrissait de son lait. En léchant les blocs de glace salée, elle fit apparaître un être, l'ancêtre des dieux. Ses petits-fils furent Odin et ses deux frères, Vili et Vé.",
+      "Les trois frères tuèrent le géant Ymir et, avec son corps, ils bâtirent le monde. De sa chair, ils firent la terre ; de son sang, la mer et les lacs ; de ses os, les montagnes. Ils prirent son crâne et en firent la voûte du ciel, que quatre nains soutiennent aux quatre coins du monde. Avec les étincelles du monde de feu, ils fabriquèrent les étoiles.",
+      "Un jour, en marchant au bord de la mer, les trois frères trouvèrent deux troncs d'arbres. Ils en firent un homme et une femme. Odin leur donna le souffle et la vie, Vili l'intelligence, Vé la parole, l'ouïe et la vue."],
+    questions:function(){ return [
+      G(0,"Qu'y a-t-il avant la création ?","Un immense vide, entre un monde de glace et un monde de feu",["Une mer immobile","Un œuf noir","Un dieu seul qui parle"],"Le vide, encore une fois : c'est le point de départ de nombreux mythes."),
+      G(1,"Qui construit le monde ?",POLY,[MONO,"Le géant Ymir, tout seul"],"Odin, Vili et Vé : trois dieux. Ymir, lui, sert de matériau."),
+      gComment("Comment sont faites la terre, la mer et les montagnes ?",3,"Chair, sang, os, crâne : le corps d'Ymir devient le monde, comme celui de Pangu en Chine."),
+      G(3,"Quelle étape de la création est violente ?","Les dieux tuent le géant pour bâtir le monde",["Les dieux ratent un premier essai","Un dieu se retire dans le ciel","Un déluge détruit les hommes"],"La création passe par un meurtre : comme dans d'autres mythes, l'ordre naît d'un combat."),
+      G(4,"Comment l'homme et la femme sont-ils créés ?","Avec deux troncs d'arbres, auxquels les dieux donnent la vie, l'intelligence et la parole",["Avec de la terre et de l'eau","À partir des larmes d'Odin","Ils sortent de la glace"],"Un geste (façonner du bois), puis des dons des dieux."),
+      G(5,"Qu'est-ce que ce mythe explique ?","D'où viennent la terre, la mer, les montagnes, le ciel et les étoiles",["Pourquoi la semaine a 7 jours","D'où vient le pouvoir des rois","Pourquoi le mal existe"],"Chaque élément de la nature a son origine dans le corps d'Ymir."),
+      G(6,"Ce récit est plutôt…",LES2,[COSMO,THEO],"Il raconte la naissance du monde, mais aussi l'apparition des premiers dieux (l'ancêtre, puis Odin et ses frères)."),
+      G(7,"Quatre nains soutiennent le ciel. Qui joue le même rôle dans le mythe égyptien ?","Les huit Héhéou, des génies-gardiens",["Horus","Isis et Nephthys","Les hommes nés des larmes de Rê-Atoum"],"Dans les deux récits, il faut empêcher le ciel de retomber sur la terre.")
+    ];},
+    redac:{consigne:"Compare ce récit avec la Genèse : trouve une différence sur la façon de créer, et une différence sur le nombre de créateurs.",
+      modele:"Dans la Genèse, Dieu crée le monde par la parole, alors qu'ici les dieux construisent le monde avec le corps du géant Ymir. De plus, la Genèse est monothéiste (un seul Dieu), alors que ce récit est polythéiste : Odin, Vili et Vé créent ensemble."}
+  },
+  babylone:{ nom:"Marduk (Mésopotamie)", titre:"Marduk et Tiamat", source:"D'après l'Enuma Elish, poème babylonien (Mésopotamie, dans l'actuel Irak), il y a plus de 3 000 ans.",
+    texte:[
+      "Lorsqu'en haut le ciel n'avait pas encore de nom, et qu'en bas la terre n'en avait pas non plus, il n'existait que deux eaux mêlées : Apsou, l'eau douce, et Tiamat, l'eau salée de la mer.",
+      "De leur union naquirent des dieux, puis les enfants de ces dieux. Mais les jeunes dieux étaient bruyants et troublaient le repos d'Apsou, qui voulut les faire disparaître. L'un d'eux, le sage Ea, le tua. Alors Tiamat, folle de colère, créa des monstres pour venger Apsou.",
+      "Les dieux eurent peur. Seul Marduk, le fils d'Ea, accepta de combattre Tiamat, à condition de devenir le roi de tous les dieux. Il lança le vent dans la bouche de Tiamat, la transperça d'une flèche et la vainquit.",
+      "Puis Marduk coupa le corps de Tiamat en deux, comme un poisson qu'on fait sécher. Avec une moitié, il fit la voûte du ciel ; avec l'autre, la terre. Il plaça les étoiles et donna à la lune le soin de marquer les jours.",
+      "Enfin, Marduk créa l'homme, pour qu'il travaille à la place des dieux et que les dieux puissent se reposer. En remerciement, les dieux construisirent pour Marduk la ville de Babylone."],
+    questions:function(){ return [
+      G(0,"Qu'y a-t-il avant la création ?","Deux eaux mêlées : l'eau douce et l'eau salée",["Un œuf noir","Un vide entre la glace et le feu","Un dieu seul qui dessine le monde"],"L'eau au départ : comme le Noun en Égypte ou « les eaux » de la Genèse."),
+      G(1,"Qui sont les créateurs ?",POLY,[MONO,"Aucun dieu : ce sont les monstres"],"Apsou, Tiamat, Ea, Marduk… : religion polythéiste."),
+      gComment("Comment Marduk fabrique-t-il le ciel et la terre ?",3,"Il utilise le corps de Tiamat, coupé en deux."),
+      G(3,"Quelle étape permet au monde d'exister ?","Un combat : Marduk triomphe de Tiamat",["Un premier monde raté","Six jours de travail","Une parole de Marduk"],"L'ordre naît d'une victoire sur le chaos de l'eau et des monstres."),
+      G(4,"Pourquoi l'homme est-il créé ?","Pour travailler à la place des dieux, qui peuvent se reposer",["Pour dominer les animaux","Pour remercier les dieux par sa parole","Parce que Marduk se sentait seul"],"Une place bien différente de la Genèse, où l'homme est créé « à l'image de Dieu »."),
+      G(5,"Qu'est-ce que ce mythe explique ?","Pourquoi Marduk est le roi des dieux, et pourquoi les hommes doivent servir les dieux",["Pourquoi les hommes meurent","Pourquoi la semaine a 7 jours","Pourquoi le maïs est important"],"C'était le grand dieu de Babylone : le mythe justifie sa place."),
+      G(6,"Ce récit est plutôt…",LES2,[COSMO,THEO],"Il raconte la naissance des dieux (d'Apsou et Tiamat) puis celle du monde."),
+      G(7,"Quel point commun avec la Genèse ?","Au début, il y a des eaux, et il faut séparer le haut et le bas",["La création se fait par la parole","L'homme est créé à l'image de Dieu","Il n'y a qu'un seul dieu"],"Dans la Genèse, le firmament sépare les eaux du dessus et du dessous ; ici, le corps de Tiamat devient le ciel en haut et la terre en bas.")
+    ];},
+    redac:{consigne:"Compare la place de l'homme dans ce récit et dans la Genèse.",
+      modele:"Dans la Genèse, l'homme est créé à l'image de Dieu et il domine les animaux : il a une place privilégiée. Ici, l'homme est créé pour travailler à la place des dieux : c'est un serviteur."}
+  },
+  japon:{ nom:"Izanagi et Izanami (Japon)", titre:"Izanagi et Izanami", source:"D'après le Kojiki, recueil des plus anciens récits du Japon (VIIIe siècle).",
+    texte:[
+      "Au commencement, le ciel et la terre venaient de se séparer. Dans le ciel apparurent plusieurs dieux. En bas, la terre était encore jeune et molle : elle flottait sur l'eau comme de l'huile, comme une méduse qui dérive.",
+      "Les dieux demandèrent à un couple, Izanagi et Izanami, de donner une forme à cette terre. Debout sur le pont du ciel, ils plongèrent une lance ornée de pierres précieuses dans la mer et la remuèrent. Quand ils la retirèrent, les gouttes qui tombèrent de la pointe formèrent la première île.",
+      "Izanagi et Izanami descendirent sur cette île et se marièrent. Izanami mit au monde les îles du Japon, puis de nombreux dieux : ceux de la mer, du vent, des arbres, des montagnes. Mais en donnant naissance au dieu du feu, elle fut brûlée et mourut. Elle partit au pays des morts.",
+      "Izanagi alla la chercher. Mais Izanami avait déjà mangé la nourriture des morts et ne pouvait plus revenir. Désobéissant à sa femme, Izanagi la regarda et vit son corps pourri. Il s'enfuit, horrifié. Izanami, furieuse, cria : « Chaque jour, je ferai mourir mille de tes hommes ! » Izanagi répondit : « Alors chaque jour, j'en ferai naître mille cinq cents ! »",
+      "Revenu du pays des morts, Izanagi se lava dans une rivière. De son œil gauche naquit Amaterasu, la déesse du Soleil ; de son œil droit, le dieu de la Lune. Plus tard, le petit-fils d'Amaterasu descendit régner sur les îles : ses descendants devinrent les empereurs du Japon."],
+    questions:function(){ return [
+      G(0,"Comment est la terre au début du récit ?","Jeune et molle, elle flotte sur l'eau comme de l'huile",["Un vide entre la glace et le feu","Un œuf noir","Couverte de montagnes"],"Un monde pas encore formé, sur l'eau : situation de départ."),
+      G(1,"Qui sont les créateurs ?",POLY,[MONO,"Aucun dieu : c'est la mer"],"Plusieurs dieux, dont le couple Izanagi et Izanami : polythéiste."),
+      gComment("Comment se forme la première île ?",1,"Remuer la mer avec une lance : un geste."),
+      G(3,"Comment apparaissent ensuite les îles du Japon et les dieux de la nature ?","Izanami les met au monde : par la naissance",["Izanagi les nomme : par la parole","Ils naissent du corps d'un géant","Ils sortent d'un œuf"],"Le même récit peut mélanger plusieurs façons de créer."),
+      G(5,"Qu'explique la dispute entre Izanagi et Izanami ?","Pourquoi des hommes meurent chaque jour, et pourquoi il en naît toujours plus",["Pourquoi la semaine a 7 jours","D'où vient le maïs","Pourquoi le ciel est séparé de la terre"],"Le mythe explique l'origine de la mort."),
+      G(5,"Qu'explique la fin du récit ?","Pourquoi les empereurs du Japon sont présentés comme descendants d'une déesse",["D'où viennent les étoiles","Pourquoi l'homme travaille pour les dieux","Pourquoi le mal existe"],"Le pouvoir de l'empereur est présenté comme sacré."),
+      G(6,"Ce récit est plutôt…",LES2,[COSMO,THEO],"Il raconte la formation du monde (les îles) et la naissance de nombreux dieux."),
+      G(7,"Amaterasu est l'ancêtre des empereurs. Quel personnage du mythe égyptien joue un rôle comparable ?","Horus, qui devient le premier pharaon",["Seth, qui tue son frère","Chou, qui sépare le Ciel et la Terre","Rê-Atoum, qui pleure"],"Dans les deux cas, le roi descend des dieux.")
+    ];},
+    redac:{consigne:"Montre que ce récit explique à la fois l'origine du monde et des choses de la vie des hommes.",
+      modele:"Ce récit raconte comment les îles du Japon et les dieux de la nature sont apparus. Il explique aussi pourquoi les hommes meurent (la colère d'Izanami) et pourquoi les empereurs du Japon auraient un pouvoir sacré (ils descendraient d'Amaterasu)."}
+  }
+};
+
+/* ================== LEÇON ================== */
+function afficherLecon(){
+  var h='<h2>Les mots clés</h2><dl>';
+  VOCAB.forEach(function(e){ h+='<dt>'+e[0]+'</dt><dd>'+e[1]+'</dd>'; });
+  h+='</dl><p class="note">Racines grecques : kosmos = le monde, theos = dieu, gonos = la naissance, poly = plusieurs, mono = un seul.</p>';
+  h+='<h2>À quoi servent ces récits ?</h2><p>Les mythes de création cherchent à répondre à des questions essentielles : d\'où vient la Terre ? Qui a créé l\'homme ? Ce ne sont pas des explications scientifiques, mais des récits religieux ou traditionnels qui donnent du sens au monde.</p>';
+  h+='<h2>La méthode : 8 questions à se poser</h2><p>Devant un mythe que tu ne connais pas, pose-toi ces questions dans l\'ordre :</p><ol class="methode">';
+  GRILLE.forEach(function(g){ h+='<li><div><b>'+g[0]+'</b><span>'+g[1]+'</span></div></li>'; });
+  h+='</ol><p class="note">Astuce pour « Comment ? » : repère les verbes. Dire, appeler, nommer → la parole. Façonner, pétrir, fabriquer → un geste. Enfanter, donner naissance → la naissance. « Son sang devint… » → la transformation d\'un corps.</p>';
+  h+='<h2>Les textes étudiés en classe</h2>';
+  h+='<div class="texte-fiche" style="--c:var(--genese)"><h3>La Genèse (Bible)</h3><p>Un seul Dieu (monothéiste) crée le monde par la parole, en six jours, de la lumière jusqu\'à l\'homme, créé « à son image ». Il se repose le 7e jour : le récit explique la semaine.</p></div>';
+  h+='<div class="texte-fiche" style="--c:var(--coran)"><h3>Le Coran</h3><p>Un seul Dieu (monothéiste) crée les cieux et la terre en six jours ; il crée l\'homme à partir de l\'eau. Le texte insiste sur la puissance et la majesté de Dieu.</p></div>';
+  h+='<div class="texte-fiche" style="--c:var(--egypte)"><h3>L\'Égypte ancienne</h3><p>Plusieurs dieux (polythéiste) naissent les uns des autres à partir de Rê-Atoum et du Noun, une immensité d\'eau : c\'est aussi une théogonie. Chou sépare le Ciel et la Terre. Les hommes naissent des larmes de Rê-Atoum. Seth introduit le mal ; Horus devient le premier pharaon.</p></div>';
+  h+='<div class="texte-fiche" style="--c:var(--dogon)"><h3>Le mythe dogon (Mali)</h3><p>Amma crée le monde dans un œuf, avec l\'eau, l\'air, le feu et la terre. Son premier monde échoue ; il recommence. La parole est la chose la plus importante. Ogo se révolte contre son créateur.</p></div>';
+  h+='<div class="actions"><button class="btn plein" id="l-retour">Retour au menu</button></div>';
+  $('lecon').innerHTML=h;
+  $('l-retour').onclick=function(){ montrer('accueil'); };
+  montrer('lecon'); window.scrollTo(0,0);
+}
+
+/* ================== DÉROULEMENT ================== */
+var etat=null;
+function montrer(id){ document.querySelectorAll('.ecran').forEach(function(s){ s.classList.toggle('actif', s.id===id); }); }
+function serieRecit(r){ return r.questions().concat([{type:"redac", theme:"Rédiger", enonce:r.redac.consigne, modele:r.redac.modele}]); }
+
+function demarrer(mode, cleRecit){
+  var serie, recit=null; fileVocab=[];
+  if(mode==="vocab"){ var v=[]; for(var i=0;i<6;i++) v.push(qVocab()); serie=melange(v.concat(prendre(racines(),4))); }
+  else if(mode==="extraits") serie=prendre(extraits(),10);
+  else if(mode==="recit"){ recit=RECITS[cleRecit]; serie=serieRecit(recit); }
+  else if(mode==="controle"){
+    var cles=Object.keys(RECITS); cleRecit=cles[Math.floor(Math.random()*cles.length)]; recit=RECITS[cleRecit];
+    var debut=[qVocab(),qVocab(),qVocab()].concat(prendre(extraits(),5));
+    serie=melange(debut).concat(serieRecit(recit));
+  }
+  etat={mode:mode, cle:(mode==="recit"?cleRecit:null), recit:recit, serie:serie, i:0, bon:0, erreurs:[], debutRecit:(mode==="controle"?8:0)};
+  if(recit){
+    $('titreRecit').textContent=recit.titre;
+    $('corpsRecit').innerHTML=recit.texte.map(function(p){return '<p>'+p+'</p>';}).join('')+'<p class="source">'+recit.source+'</p>';
+  }
+  montrer('quiz'); question();
+}
+
+function question(){
+  var q=etat.serie[etat.i], n=etat.serie.length;
+  $('barre').style.width=(100*etat.i/n)+'%';
+  $('compteur').textContent=(etat.i+1)+' / '+n;
+  $('theme').textContent=q.theme;
+  $('theme').style.setProperty('--c', q.theme==="Vocabulaire"||q.theme==="Racines grecques" ? 'var(--nuit2)' : 'var(--neuf)');
+  var avecTexte = etat.recit && etat.i>=etat.debutRecit;
+  $('texteRecit').style.display = avecTexte ? '' : 'none';
+  if(avecTexte) $('texteRecit').open = (etat.i===etat.debutRecit);
+  $('enonce').innerHTML=(q.cit?'<span class="cit">« '+echap(q.cit)+' »</span><span class="src">'+echap(q.src)+'</span>':'')+echap(q.enonce).replace(/\n/g,'<br>');
+  $('explain').className='explain'; $('explain').innerHTML='';
+  $('q-suivant').style.display='none';
+  $('q-suivant').textContent = etat.i===n-1 ? 'Voir mon score' : 'Question suivante';
+  var z=$('zone'); z.innerHTML='';
+  (q.type==="redac"?rendreRedac:rendreQcm)(q,z);
+}
+function conclure(q, juste){
+  if(juste) etat.bon++;
+  else if(q.type!=="redac") etat.erreurs.push({enonce:(q.src?'('+q.src+') ':'')+q.enonce, bonne:q.bonne});
+  if(q.type!=="redac"){
+    $('explain').innerHTML=(juste?'<b class="bravo">Bravo !</b> ':'<b class="oups">Pas tout à fait.</b> ')+echap(q.explain||'');
+    $('explain').className='explain visible';
+  }
+  $('q-suivant').style.display='';
+}
+function rendreQcm(q,z){
+  var d=document.createElement('div'); d.className='options';
+  q.options.forEach(function(o){
+    var b=document.createElement('button'); b.className='opt'; b.textContent=o;
+    b.onclick=function(){
+      d.querySelectorAll('.opt').forEach(function(x){ x.disabled=true; if(x.textContent===q.bonne) x.classList.add('ok'); });
+      var juste = o===q.bonne; if(!juste) b.classList.add('faux');
+      conclure(q, juste);
+    };
+    d.appendChild(b);
+  });
+  z.appendChild(d);
+}
+function rendreRedac(q,z){
+  var t=document.createElement('textarea'); t.placeholder='Écris ta réponse ici…';
+  var b=document.createElement('button'); b.className='btn plein'; b.textContent='Voir une réponse modèle'; b.style.marginTop='10px'; b.style.width='100%';
+  var m=document.createElement('div'); m.className='modele'; m.innerHTML='<b>Une réponse possible :</b><br>'+echap(q.modele)+'<br><br>Compare avec ta réponse : as-tu trouvé les mêmes idées ?';
+  var au=document.createElement('div'); au.className='auto';
+  au.innerHTML='<button class="btn plein">J\'avais les idées</button><button class="btn clair">Il me manquait des idées</button>';
+  b.onclick=function(){ m.classList.add('visible'); au.classList.add('visible'); b.style.display='none'; t.readOnly=true; };
+  au.children[0].onclick=function(){ au.style.display='none'; conclure(q,true); };
+  au.children[1].onclick=function(){ au.style.display='none'; etat.erreurs.push({enonce:q.enonce, bonne:q.modele}); conclure(q,false); };
+  z.appendChild(t); z.appendChild(b); z.appendChild(m); z.appendChild(au);
+}
+function terminer(){
+  var n=etat.serie.length, b=etat.bon, r=b/n;
+  if(etat.mode==="controle") enregistrerMeilleurScore(b,n);
+  $('f-score').textContent=b+' / '+n;
+  $('f-message').textContent = r>=0.9 ? "Excellent ! Tu sais analyser un mythe de création." : r>=0.7 ? "Bien joué ! Encore quelques points à revoir." :
+    r>=0.5 ? "C'est un bon début. Relis la méthode dans la leçon, puis recommence." : "Relis tranquillement la leçon et la méthode, puis réessaie : ça va venir.";
+  $('f-revoir').innerHTML = etat.erreurs.length ? '<div class="revoir"><p><b>À revoir :</b></p><ul>'+etat.erreurs.map(function(e){
+    return '<li>'+echap(e.enonce).replace(/\n/g,' ')+'<span class="bonne">'+echap(e.bonne)+'</span></li>'; }).join('')+'</ul></div>' : '';
+  montrer('fin'); window.scrollTo(0,0);
+}
+function majAccueil(){
+  var b=meilleurConnu();
+  $('record').textContent = b ? "Meilleur score au contrôle : "+b.bon+" / "+b.total : "";
+  $('choixRecit').classList.remove('ouvert');
+}
+
+/* ================== BRANCHEMENTS ================== */
+$('chipsRecit').innerHTML=Object.keys(RECITS).map(function(k){ return '<button class="chip" data-recit="'+k+'">'+RECITS[k].nom+'</button>'; }).join('');
+document.querySelectorAll('.chip').forEach(function(c){ c.onclick=function(){ demarrer("recit", c.dataset.recit); }; });
+document.querySelectorAll('.mode').forEach(function(b){ b.onclick=function(){
+  var m=b.dataset.mode;
+  if(m==="lecon") afficherLecon();
+  else if(m==="recit") $('choixRecit').classList.toggle('ouvert');
+  else demarrer(m);
+}; });
+$('q-suivant').onclick=function(){ etat.i++; if(etat.i>=etat.serie.length) terminer(); else { question(); window.scrollTo(0,0); } };
+$('q-quitter').onclick=function(){ majAccueil(); montrer('accueil'); };
+$('f-encore').onclick=function(){ demarrer(etat.mode, etat.cle); };
+$('f-menu').onclick=function(){ majAccueil(); montrer('accueil'); };
+majAccueil();
+</script>
+</body>
+</html>
