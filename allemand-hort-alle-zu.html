@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allemand – Se présenter et saluer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1D2433; --muted:#5B6475; --paper:#F6F7F9; --card:#FFFFFF; --line:#DCE0E7;
+    --de:#D21F2F; --ok:#1E8A4C; --okbg:#E6F4EC; --near:#B06A00; --nearbg:#FFF3DC;
+    --bad:#8A2F2F; --badbg:#F9E7E7; --gold:#F2B705;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    font-size:18px;line-height:1.5}
+  header{padding:20px 16px 8px;max-width:760px;margin:0 auto}
+  header a{color:var(--muted);font-size:15px}
+  h1{font-size:28px;line-height:1.2;margin:8px 0 4px}
+  h1 .de{color:var(--de)}
+  header p{margin:0;color:var(--muted)}
+  nav{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;gap:6px;overflow-x:auto;max-width:760px;margin:0 auto;padding:10px 16px}
+  nav button{flex:0 0 auto;border:2px solid var(--line);background:var(--card);color:var(--ink);
+    font:inherit;font-size:16px;padding:8px 14px;border-radius:999px;cursor:pointer}
+  nav button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  main{max-width:760px;margin:0 auto;padding:16px}
+  .consigne{margin:0 0 16px;color:var(--muted)}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+  .fr{font-size:20px;font-weight:700}
+  .phrase{color:var(--de);font-weight:700;font-size:26px;line-height:1.3}
+  .btn{font:inherit;border:2px solid var(--ink);background:var(--ink);color:#fff;border-radius:10px;
+    padding:10px 16px;cursor:pointer;font-size:17px}
+  .btn.ghost{background:var(--card);color:var(--ink)}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn:focus-visible,nav button:focus-visible,.opt:focus-visible,input:focus-visible,.key:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .listen{border:none;background:none;cursor:pointer;font-size:22px;padding:2px 6px;vertical-align:middle}
+  .opts{display:grid;gap:10px;margin-top:14px}
+  .opt{font:inherit;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:10px;
+    padding:12px 14px;cursor:pointer;font-size:19px}
+  .opt.de-txt{color:var(--de);font-weight:700}
+  .opt.ok{border-color:var(--ok);background:var(--okbg)}
+  .opt.bad{border-color:var(--bad);background:var(--badbg)}
+  .feedback{margin-top:12px;padding:10px 14px;border-radius:10px;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--okbg);color:var(--ok)}
+  .feedback.bad{background:var(--badbg);color:var(--bad)}
+  .feedback.near{background:var(--nearbg);color:var(--near)}
+  .progress{font-size:15px;color:var(--muted);margin-bottom:8px}
+  .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
+  .bar span{display:block;height:100%;background:var(--de);transition:width .3s}
+  ul.list{list-style:none;padding:0;margin:12px 0 0}
+  ul.list li{padding:4px 0}
+  input[type=text]{font:inherit;font-size:20px;width:100%;padding:10px 12px;border:2px solid var(--line);
+    border-radius:10px;margin-top:8px;background:#fff;color:var(--ink)}
+  input.ok{border-color:var(--ok);background:var(--okbg)}
+  input.near{border-color:var(--near);background:var(--nearbg)}
+  input.bad{border-color:var(--bad);background:var(--badbg)}
+  .corr{font-size:15px;margin-top:4px}
+  .keys{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap;align-items:center;font-size:15px;color:var(--muted)}
+  .key{font:inherit;font-size:20px;width:46px;height:42px;border:2px solid var(--line);background:#fff;border-radius:8px;cursor:pointer}
+  .end{text-align:center}
+  .end .big{font-size:40px;font-weight:700}
+  .hidden{display:none}
+  .card-back{border-top:2px dashed var(--line);margin-top:16px;padding-top:12px}
+  .note{font-size:15px;color:var(--muted);margin-top:6px}
+  @media (prefers-reduced-motion:reduce){.bar span{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html">← Mes révisions</a>
+  <h1>Allemand : <span class="de">Hört alle zu!</span></h1>
+  <p>Saluer, se présenter, dire son âge, demander comment ça va, dire au revoir.</p>
+</header>
+
+<nav><div class="row" role="tablist" id="tabs"></div></nav>
+<main id="main"></main>
+
+<script>
+/* ---------- Contenu de la leçon ---------- */
+const SITUATIONS = [
+  {id:"saluer",    fr:"Je salue une personne.",                     de:["Hallo!","Guten Morgen!","Guten Tag!"]},
+  {id:"presenter", fr:"Je me présente.",                            de:["Ich bin …","Ich heiße …"]},
+  {id:"age",       fr:"J’indique mon âge.",                         de:["Ich bin …"]},
+  {id:"demander",  fr:"Je demande à une personne comment elle va.", de:["Wie geht’s?"]},
+  {id:"conge",     fr:"Je prends congé d’une personne.",            de:["Tschüs!","Auf Wiedersehen!"]}
+];
+const EXEMPLES = {"Ich bin …":"Ich bin Lena.","Ich heiße …":"Ich heiße Tom."};
+const TOUTES = [...new Set(SITUATIONS.flatMap(s=>s.de))];
+
+/* ---------- Outils ---------- */
+const $ = s => document.querySelector(s);
+const shuffle = a => {a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let deVoice=null;
+function loadVoice(){
+  if(!("speechSynthesis" in window)) return;
+  const v=speechSynthesis.getVoices();
+  deVoice=v.find(x=>x.lang==="de-DE")||v.find(x=>x.lang&&x.lang.startsWith("de"))||null;
+}
+if("speechSynthesis" in window){loadVoice();speechSynthesis.onvoiceschanged=loadVoice;}
+function speak(txt,age){
+  if(!("speechSynthesis" in window)) return;
+  let t = age ? "Ich bin elf." : (EXEMPLES[txt]||txt);
+  t=t.replace("…","");
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang="de-DE"; u.rate=0.85; if(deVoice) u.voice=deVoice;
+  speechSynthesis.speak(u);
+}
+const listenBtn = (txt,age) => `<button class="listen" aria-label="Écouter" data-say="${esc(txt)}" ${age?'data-age="1"':''}>🔊</button>`;
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-say]");
+  if(b) speak(b.dataset.say,b.dataset.age==="1");
+});
+
+/* Correction de l'écrit */
+function loose(s){
+  return s.toLowerCase().replace(/[’'`´]/g,"").replace(/[^a-zäöüß0-9 ]/g," ")
+    .replace(/\s+/g," ").trim().replace(/tschüss/g,"tschüs");
+}
+function plain(s){
+  return loose(s).replace(/ä/g,"a").replace(/ö/g,"o").replace(/ü/g,"u").replace(/ß/g,"ss")
+    .replace(/ae/g,"a").replace(/oe/g,"o").replace(/ue/g,"u");
+}
+function grade(input,expected){
+  const stem=expected.includes("…");
+  const L=loose(input), E=loose(expected);
+  if(!L) return "bad";
+  const match=(a,b)=> stem ? (a===b||a.startsWith(b+" ")) : a===b;
+  if(match(L,E)) return "ok";
+  if(match(plain(input),plain(expected))) return "near";
+  return "bad";
+}
+
+/* ---------- Onglets ---------- */
+const TABS=[
+  {id:"apprendre", label:"1. Apprendre",  run:apprendre},
+  {id:"trier",     label:"2. Trier",      run:trier},
+  {id:"ecouter",   label:"3. Écouter",    run:ecouter},
+  {id:"situation", label:"4. En situation",run:situation},
+  {id:"memoire",   label:"5. Par cœur",   run:memoire}
+];
+function showTab(id){
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.id===id));
+  TABS.find(t=>t.id===id).run();
+  window.scrollTo({top:0});
+}
+$("#tabs").innerHTML=TABS.map(t=>`<button role="tab" data-id="${t.id}">${t.label}</button>`).join("");
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)showTab(b.dataset.id)});
+
+function endScreen(score,total,again,next){
+  const pct=score/total;
+  const msg=pct===1?"Parfait, tu le sais par cœur !":pct>=.7?"Très bien ! Encore un petit effort.":"Revois les cartes et recommence.";
+  $("#main").innerHTML=`<div class="box end"><div class="big">${score} / ${total}</div><p>${msg}</p>
+    <div class="actions" style="justify-content:center"><button class="btn ghost" id="again">Recommencer</button>
+    ${next?`<button class="btn" id="next">Activité suivante</button>`:""}</div></div>`;
+  $("#again").onclick=again;
+  if(next) $("#next").onclick=()=>showTab(next);
+}
+
+/* ---------- 1. Cartes ---------- */
+function apprendre(){
+  let deck=shuffle(SITUATIONS.map((_,i)=>i)), done=0;
+  const total=deck.length;
+  function card(){
+    if(!deck.length){
+      $("#main").innerHTML=`<div class="box end"><div class="big">✓</div><p>Tu as revu toutes les cartes.</p>
+      <div class="actions" style="justify-content:center"><button class="btn ghost" id="again">Revoir</button><button class="btn" id="next">Activité suivante</button></div></div>`;
+      $("#again").onclick=apprendre; $("#next").onclick=()=>showTab("trier"); return;
+    }
+    const s=SITUATIONS[deck[0]], n=s.de.length, age=s.id==="age";
+    $("#main").innerHTML=`<p class="consigne">Lis la situation. Dis les phrases en allemand dans ta tête (ou à voix haute), puis retourne la carte pour vérifier.</p>
+      <div class="progress">Cartes sues : ${done} / ${total}</div>
+      <div class="bar"><span style="width:${done/total*100}%"></span></div>
+      <div class="box">
+        <div class="fr">${s.fr}</div>
+        <div class="note">${n>1?`Il y a ${n} façons de le dire.`:"Une seule façon de le dire."}</div>
+        <div class="card-back hidden" id="back">
+          <ul class="list">${s.de.map(d=>`<li><span class="phrase">${d}</span> ${listenBtn(d,age)}</li>`).join("")}</ul>
+          ${s.id==="presenter"?`<div class="note">Exemple : Ich heiße Tom. / Ich bin Lena.</div>`:""}
+          ${age?`<div class="note">Exemple : Ich bin 11. (Ich bin elf.)</div>`:""}
+        </div>
+        <div class="actions" id="act"><button class="btn" id="flip">Retourner la carte</button></div>
+      </div>`;
+    $("#flip").onclick=()=>{
+      $("#back").classList.remove("hidden");
+      $("#act").innerHTML=`<button class="btn" id="yes">Je savais ✓</button><button class="btn ghost" id="no">À revoir</button>`;
+      $("#yes").onclick=()=>{deck.shift();done++;card()};
+      $("#no").onclick=()=>{deck.push(deck.shift());card()};
+    };
+  }
+  card();
+}
+
+/* ---------- 2. Trier ---------- */
+function trier(){
+  const items=shuffle(SITUATIONS.flatMap(s=>s.de.map(d=>({d,ids:SITUATIONS.filter(x=>x.de.includes(d)).map(x=>x.id)}))));
+  // "Ich bin …" apparaît deux fois : on garde un seul exemplaire
+  const seen=new Set(), list=items.filter(it=>seen.has(it.d)?false:seen.add(it.d));
+  let i=0,score=0;
+  function q(){
+    if(i>=list.length) return endScreen(score,list.length,trier,"ecouter");
+    const it=list[i];
+    $("#main").innerHTML=`<p class="consigne">À quoi sert cette expression ? Choisis la bonne situation.</p>
+      <div class="progress">Question ${i+1} / ${list.length}</div>
+      <div class="bar"><span style="width:${i/list.length*100}%"></span></div>
+      <div class="box"><span class="phrase">${it.d}</span> ${listenBtn(it.d)}
+        <div class="opts">${SITUATIONS.map(s=>`<button class="opt" data-id="${s.id}">${s.fr}</button>`).join("")}</div>
+        <div class="feedback" id="fb"></div>
+        <div class="actions hidden" id="act"><button class="btn" id="nx">Suivant</button></div></div>`;
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const good=it.ids.includes(b.dataset.id);
+      document.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(it.ids.includes(o.dataset.id))o.classList.add("ok")});
+      if(!good) b.classList.add("bad"); else score++;
+      const fb=$("#fb"); fb.className="feedback show "+(good?"ok":"bad");
+      fb.textContent = it.ids.length>1 ? (good?"Oui ! « Ich bin … » sert à dire son prénom ET son âge.":"Non. « Ich bin … » sert à dire son prénom et son âge.")
+                                       : (good?"Bravo !":"Non, regarde la bonne réponse en vert.");
+      $("#act").classList.remove("hidden"); $("#nx").onclick=()=>{i++;q()}; $("#nx").focus();
+    });
+  }
+  q();
+}
+
+/* ---------- 3. Écouter ---------- */
+function ecouter(){
+  if(!("speechSynthesis" in window)){
+    $("#main").innerHTML=`<div class="box">Ce navigateur ne peut pas lire l’audio. Essaie avec Chrome, Edge ou Safari.</div>`;return;
+  }
+  const list=shuffle(TOUTES); let i=0,score=0;
+  function q(){
+    if(i>=list.length) return endScreen(score,list.length,ecouter,"situation");
+    const ans=list[i];
+    const opts=shuffle([ans,...shuffle(TOUTES.filter(x=>x!==ans)).slice(0,3)]);
+    $("#main").innerHTML=`<p class="consigne">Écoute (tu peux réécouter) et choisis ce que tu entends.</p>
+      <div class="progress">Question ${i+1} / ${list.length}</div>
+      <div class="bar"><span style="width:${i/list.length*100}%"></span></div>
+      <div class="box"><button class="btn" id="play">🔊 Écouter</button>
+        ${deVoice?"":`<div class="note">Si tu n’entends rien, monte le son ou change de navigateur.</div>`}
+        <div class="opts">${opts.map(o=>`<button class="opt de-txt" data-v="${esc(o)}">${o}</button>`).join("")}</div>
+        <div class="feedback" id="fb"></div>
+        <div class="actions hidden" id="act"><button class="btn" id="nx">Suivant</button></div></div>`;
+    $("#play").onclick=()=>speak(ans);
+    setTimeout(()=>speak(ans),300);
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const good=b.dataset.v===ans;
+      document.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(o.dataset.v===ans)o.classList.add("ok")});
+      if(!good) b.classList.add("bad"); else score++;
+      const fb=$("#fb"); fb.className="feedback show "+(good?"ok":"bad");
+      fb.textContent=good?"Bravo !":"Non, c’était : "+ans;
+      $("#act").classList.remove("hidden"); $("#nx").onclick=()=>{i++;q()}; $("#nx").focus();
+    });
+  }
+  q();
+}
+
+/* ---------- 4. En situation ---------- */
+const SCENES=[
+  {t:"Il est 8 h. Tu arrives au collège et tu vois ta professeure d’allemand.", a:"Guten Morgen!", o:["Guten Morgen!","Tschüs!","Wie geht’s?"], ex:"Le matin, on dit « Guten Morgen! »."},
+  {t:"Tu croises ton copain dans la cour.", a:"Hallo!", o:["Hallo!","Auf Wiedersehen!","Ich heiße …"], ex:"« Hallo! » : pour saluer quelqu’un qu’on connaît bien."},
+  {t:"Il est 15 h. Tu entres dans une boulangerie en Allemagne.", a:"Guten Tag!", o:["Guten Tag!","Guten Morgen!","Tschüs!"], ex:"Dans la journée, on dit « Guten Tag! »."},
+  {t:"Un nouvel élève te demande comment tu t’appelles.", a:"Ich heiße …", o:["Ich heiße …","Wie geht’s?","Hallo!"], ex:"« Ich heiße Tom. » = Je m’appelle Tom."},
+  {t:"Tu veux savoir si ton ami va bien.", a:"Wie geht’s?", o:["Wie geht’s?","Ich bin …","Guten Tag!"], ex:"« Wie geht’s? » = Comment ça va ?"},
+  {t:"On te demande ton âge. Tu as 11 ans.", a:"Ich bin 11.", o:["Ich bin 11.","Ich heiße 11.","Wie geht’s?"], ex:"Pour l’âge, on utilise « Ich bin … »."},
+  {t:"La récré est finie, tu quittes ton copain.", a:"Tschüs!", o:["Tschüs!","Guten Morgen!","Hallo!"], ex:"« Tschüs! » = Salut ! (pour partir)."},
+  {t:"Tu sors de la boulangerie et tu dis au revoir poliment à la vendeuse.", a:"Auf Wiedersehen!", o:["Auf Wiedersehen!","Guten Tag!","Wie geht’s?"], ex:"« Auf Wiedersehen! » = Au revoir !"}
+];
+function situation(){
+  const list=shuffle(SCENES); let i=0,score=0;
+  function q(){
+    if(i>=list.length) return endScreen(score,list.length,situation,"memoire");
+    const s=list[i];
+    $("#main").innerHTML=`<p class="consigne">Que dis-tu dans cette situation ?</p>
+      <div class="progress">Question ${i+1} / ${list.length}</div>
+      <div class="bar"><span style="width:${i/list.length*100}%"></span></div>
+      <div class="box"><div class="fr">${s.t}</div>
+        <div class="opts">${shuffle(s.o).map(o=>`<button class="opt de-txt" data-v="${esc(o)}">${o}</button>`).join("")}</div>
+        <div class="feedback" id="fb"></div>
+        <div class="actions hidden" id="act"><button class="btn" id="nx">Suivant</button></div></div>`;
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const good=b.dataset.v===s.a;
+      document.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(o.dataset.v===s.a)o.classList.add("ok")});
+      if(!good) b.classList.add("bad"); else score++;
+      const fb=$("#fb"); fb.className="feedback show "+(good?"ok":"bad");
+      fb.innerHTML=(good?"Bravo ! ":"Non. ")+esc(s.ex)+" "+listenBtn(s.a==="Ich bin 11."?"Ich bin …":s.a, s.a==="Ich bin 11.");
+      $("#act").classList.remove("hidden"); $("#nx").onclick=()=>{i++;q()}; $("#nx").focus();
+    });
+  }
+  q();
+}
+
+/* ---------- 5. Par cœur ---------- */
+function memoire(){
+  let last=null;
+  $("#main").innerHTML=`<p class="consigne">Écris de mémoire toutes les expressions, sans regarder la leçon. Pour « Je me présente » et « Mon âge », tu peux écrire juste le début ou une phrase complète (ex. : Ich heiße Tom).</p>
+    <div class="keys">Lettres allemandes :
+      ${["ä","ö","ü","ß"].map(k=>`<button class="key" data-k="${k}">${k}</button>`).join("")}</div>
+    ${SITUATIONS.map((s,si)=>`<div class="box"><div class="fr">${s.fr}</div>
+      <div class="note">${s.de.length} expression${s.de.length>1?"s":""}</div>
+      ${s.de.map((_,di)=>`<input type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" lang="de" data-s="${si}" id="in${si}_${di}"><div class="corr" id="c${si}_${di}"></div>`).join("")}
+    </div>`).join("")}
+    <div class="actions"><button class="btn" id="check">Vérifier</button><button class="btn ghost" id="reset">Tout effacer</button></div>
+    <div class="box hidden end" id="res"></div>`;
+  document.querySelectorAll("input").forEach(inp=>inp.addEventListener("focus",()=>last=inp));
+  document.querySelectorAll(".key").forEach(k=>k.onclick=()=>{
+    if(!last) return;
+    const p=last.selectionStart??last.value.length;
+    last.value=last.value.slice(0,p)+k.dataset.k+last.value.slice(p);
+    last.focus(); last.setSelectionRange(p+1,p+1);
+  });
+  $("#reset").onclick=memoire;
+  $("#check").onclick=()=>{
+    let score=0,total=0;
+    SITUATIONS.forEach((s,si)=>{
+      const remaining=[...s.de];
+      s.de.forEach((_,di)=>{
+        total++;
+        const inp=$(`#in${si}_${di}`), c=$(`#c${si}_${di}`), v=inp.value;
+        let res="bad",hit=-1;
+        remaining.forEach((e,k)=>{ if(res==="ok")return; const g=grade(v,e); if(g==="ok"||(g==="near"&&res==="bad")){res=g;hit=k;} });
+        inp.className=res;
+        if(res==="ok"){
+          score++;
+          const e=remaining[hit];
+          const capOk=v.trim()[0]===v.trim()[0]?.toUpperCase();
+          c.style.color="var(--ok)";
+          c.textContent="✓"+(capOk?"":" (pense à la majuscule au début)");
+          remaining.splice(hit,1);
+        } else if(res==="near"){
+          c.style.color="var(--near)";
+          c.textContent="Presque ! Vérifie les lettres ä, ö, ü, ß : "+remaining[hit];
+          remaining.splice(hit,1);
+        } else { c.textContent=""; }
+      });
+      // réponses manquantes
+      s.de.forEach((_,di)=>{
+        const inp=$(`#in${si}_${di}`), c=$(`#c${si}_${di}`);
+        if(inp.className==="bad"){ const m=remaining.shift(); c.style.color="var(--bad)"; c.textContent="Il fallait : "+m; }
+      });
+    });
+    const r=$("#res"); r.classList.remove("hidden");
+    const msg=score===total?"Parfait, tu le sais par cœur !":score>=total-2?"Très bien ! Revois les expressions en orange ou rouge.":"Retourne aux cartes, puis réessaie.";
+    r.innerHTML=`<div class="big">${score} / ${total}</div><p>${msg}</p>`;
+    r.scrollIntoView({behavior:"smooth",block:"center"});
+  };
+}
+
+showTab("apprendre");
+</script>
+</body>
+</html>
