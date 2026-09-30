@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dictée n°5 – Les mots pièges</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nuit:#1F2A5A;      /* bleu royal */
+    --ciel:#EAF0F8;      /* fond */
+    --or:#C9962B;        /* dorure */
+    --grenat:#9B2C3F;    /* erreur */
+    --sapin:#2F7A4E;     /* juste */
+    --blanc:#FFFFFF;
+    --gris:#5B6485;
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:light}
+  body{margin:0;background:var(--ciel);color:var(--nuit);
+    font-family:"Andika","Trebuchet MS",Verdana,sans-serif;font-size:18px;line-height:1.55}
+  main{max-width:760px;margin:0 auto;padding:1.5rem 1rem 4rem}
+  a{color:var(--nuit)}
+  .retour{font-size:.95rem}
+
+  header{text-align:center;margin:1rem 0 2rem}
+  h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.4rem;line-height:1.1;margin:.4rem 0}
+  .source{color:var(--gris);font-size:.95rem;margin:0}
+  .cloche{width:190px;max-width:60%;height:auto;display:block;margin:0 auto}
+  #couvercle{transition:transform .8s ease;transform-origin:40px 70px}
+  .score-general{font-size:1rem;color:var(--gris);margin-top:.5rem}
+
+  section{background:var(--blanc);border-radius:18px;padding:1.4rem 1.2rem 1.2rem;margin:0 0 1.8rem;
+    border-top:6px solid var(--or)}
+  h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.8rem;margin:0 0 .2rem;display:flex;gap:.6rem;align-items:baseline}
+  h2 .num{display:inline-grid;place-items:center;width:2rem;height:2rem;border-radius:50%;
+    background:var(--nuit);color:var(--blanc);font-family:"Andika",sans-serif;font-size:1rem;flex:none}
+  .consigne{margin:.2rem 0 1rem;color:var(--gris)}
+
+  .outils{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;margin-bottom:1rem;font-size:.95rem}
+  .accents{display:flex;gap:.35rem;flex-wrap:wrap}
+  .accents button{min-width:2.4rem;padding:.3rem .5rem;font-size:1.1rem}
+
+  button{font-family:inherit;font-size:1rem;cursor:pointer;border-radius:10px;border:2px solid var(--nuit);
+    background:var(--blanc);color:var(--nuit);padding:.45rem .9rem}
+  button.plein{background:var(--nuit);color:var(--blanc)}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+  button:disabled{opacity:.45;cursor:default}
+
+  .item{border-bottom:1px dashed #C9D2E6;padding:.8rem 0}
+  .item:last-child{border-bottom:none}
+  .ligne{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+  .phrase{flex:1 1 100%}
+  input[type=text]{font-family:inherit;font-size:1.15rem;padding:.4rem .6rem;border:2px solid #AEB8D4;
+    border-radius:10px;min-width:0;flex:1 1 180px;color:var(--nuit);background:#FBFCFE}
+  input.juste{border-color:var(--sapin);background:#EEF7F1}
+  input.faux{border-color:var(--grenat);background:#FBEFF1}
+  .retour-item{flex:1 1 100%;font-size:.95rem;margin-top:.35rem;display:none}
+  .retour-item.vu{display:block}
+  .retour-item .ok{color:var(--sapin);font-weight:700}
+  .retour-item .ko{color:var(--grenat);font-weight:700}
+  .piege{display:block;color:var(--gris)}
+  .piege b{color:var(--nuit)}
+
+  .choix{display:flex;gap:.4rem;flex-wrap:wrap}
+  .choix button{min-width:3.2rem}
+  .choix button.juste{background:var(--sapin);border-color:var(--sapin);color:var(--blanc)}
+  .choix button.faux{background:var(--grenat);border-color:var(--grenat);color:var(--blanc)}
+
+  .bilan{margin-top:1rem;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+  .bilan .resultat{font-weight:700}
+  .flash{font-size:1.6rem;font-weight:700;letter-spacing:.03em;min-height:2.4rem;color:var(--nuit)}
+  .note{font-size:.9rem;color:var(--gris)}
+
+  @media (prefers-reduced-motion:reduce){#couvercle{transition:none}}
+  @media (max-width:480px){h1{font-size:2rem}section{padding:1.1rem .9rem}}
+</style>
+</head>
+<body>
+<main>
+  <a class="retour" href="index.html">← Retour à mes révisions</a>
+
+  <header>
+    <svg class="cloche" viewBox="0 0 200 130" role="img" aria-label="Le grand plat fermé du roi">
+      <ellipse cx="100" cy="112" rx="92" ry="12" fill="#C9962B"/>
+      <ellipse cx="100" cy="108" rx="80" ry="8" fill="#E2BE63"/>
+      <g id="couvercle">
+        <path d="M28 104 Q30 30 100 28 Q170 30 172 104 Z" fill="#1F2A5A"/>
+        <path d="M48 90 Q52 50 92 40" stroke="#5B6FB0" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <rect x="90" y="14" width="20" height="16" rx="8" fill="#C9962B"/>
+      </g>
+      <text id="surprise" x="100" y="100" text-anchor="middle" font-size="26" opacity="0">🍗🍇🍰</text>
+    </svg>
+    <h1>Dictée n°5 : les mots pièges</h1>
+    <p class="source">Texte d'après Mme Leprince de Beaumont, <i>La Curiosité</i></p>
+    <p class="score-general" id="scoreGeneral">Réussis les trois étapes pour ouvrir le plat du roi.</p>
+  </header>
+
+  <!-- ÉTAPE 1 -->
+  <section id="etape1">
+    <h2><span class="num">1</span>Les mots difficiles</h2>
+    <p class="consigne">Écoute le mot, écris-le, puis vérifie. Attention aux accents et aux lettres doubles.</p>
+    <div class="outils">
+      <label>Vitesse
+        <input type="range" id="vitesse" min="0.5" max="1.1" step="0.1" value="0.8">
+      </label>
+      <label><input type="checkbox" id="modeFlash"> Voir le mot 3 secondes au lieu de l'écouter</label>
+    </div>
+    <div class="outils accents" aria-label="Lettres accentuées">
+      <span>Lettres :</span>
+      <button type="button" data-car="é">é</button><button type="button" data-car="è">è</button>
+      <button type="button" data-car="ê">ê</button><button type="button" data-car="à">à</button>
+      <button type="button" data-car="ç">ç</button><button type="button" data-car="’">’</button>
+    </div>
+    <p class="note" id="noteVoix"></p>
+    <div id="listeMots"></div>
+    <div class="bilan">
+      <button class="plein" type="button" id="verif1">Vérifier tous les mots</button>
+      <span class="resultat" id="res1"></span>
+    </div>
+  </section>
+
+  <!-- ÉTAPE 2 -->
+  <section id="etape2">
+    <h2><span class="num">2</span>Passé simple ou imparfait ?</h2>
+    <p class="consigne">Conjugue le verbe au temps indiqué. Le passé simple raconte les actions ; l'imparfait décrit ce qui dure ou se répète.</p>
+    <div class="outils accents" aria-label="Lettres accentuées">
+      <span>Lettres :</span>
+      <button type="button" data-car="é">é</button><button type="button" data-car="è">è</button>
+      <button type="button" data-car="ê">ê</button><button type="button" data-car="’">’</button>
+    </div>
+    <div id="listeVerbes"></div>
+    <div class="bilan">
+      <button class="plein" type="button" id="verif2">Vérifier les verbes</button>
+      <span class="resultat" id="res2"></span>
+    </div>
+  </section>
+
+  <!-- ÉTAPE 3 -->
+  <section id="etape3">
+    <h2><span class="num">3</span>Les accords</h2>
+    <p class="consigne">Choisis la bonne terminaison. Cherche d'abord le mot avec lequel il s'accorde.</p>
+    <div id="listeAccords"></div>
+    <div class="bilan">
+      <span class="resultat" id="res3"></span>
+    </div>
+  </section>
+
+  <div class="bilan" style="justify-content:center">
+    <button type="button" id="recommencer">Tout recommencer</button>
+  </div>
+</main>
+
+<script>
+/* ---------- Données ---------- */
+const MOTS = [
+  {m:"détresse",   p:"<b>dé</b>tre<b>ss</b>e : é au début, deux s entre deux voyelles pour faire [s]."},
+  {m:"couple",     p:"cou<b>ple</b> : le e final ne s'entend pas."},
+  {m:"palais",     p:"pala<b>is</b> : s muet à la fin, comme dans « palatial »."},
+  {m:"emmena",     p:"<b>emm</b>ena : e + deux m, comme « emmener »."},
+  {m:"étonnés",    p:"éto<b>nn</b>é<b>s</b> : deux n, et -és car ce sont les pauvres gens (masculin pluriel)."},
+  {m:"joyeux",     p:"jo<b>y</b>eu<b>x</b> : un y et un x final."},
+  {m:"festin",     p:"fest<b>in</b> : le son [ɛ̃] s'écrit « in »."},
+  {m:"viande",     p:"vi<b>an</b>de : le son [ɑ̃] s'écrit « an »."},
+  {m:"profusion",  p:"profu<b>s</b>ion : un seul s qui chante [z] entre deux voyelles."},
+  {m:"formellement", p:"forme<b>ll</b>ement : formelle + ment, donc deux l."},
+  {m:"malgré",     p:"malgr<b>é</b> : é à la fin, sans e muet."},
+  {m:"curiosité",  p:"curiosit<b>é</b> : les noms en -té n'ont pas de e final."}
+];
+
+const VERBES = [
+  {av:"Le roi", ap:"au couple.", inf:"s'adresser", t:"passé simple", r:["s'adressa"], p:"il/elle + -er au passé simple → <b>-a</b>."},
+  {av:"Il", ap:"la détresse de l'homme.", inf:"comprendre", t:"passé simple", r:["comprit"], p:"comprendre → il <b>comprit</b> (comme prendre → il prit)."},
+  {av:"Il les", ap:"avec lui.", inf:"emmener", t:"passé simple", r:["emmena"], p:"verbe en -er → il <b>emmena</b>."},
+  {av:"Quand ils", ap:"dans le palais…", inf:"être", t:"passé simple", r:["furent"], p:"être au passé simple : ils <b>furent</b>."},
+  {av:"Tous les jours, on leur", ap:"un festin.", inf:"servir", t:"imparfait", r:["servait"], p:"action qui se répète (tous les jours) → imparfait : on <b>servait</b>."},
+  {av:"Sur la table, se", ap:"un grand plat fermé.", inf:"trouver", t:"imparfait", r:["trouvait"], p:"description → imparfait : il <b>trouvait</b>."},
+  {av:"La femme ne", ap:"qu'au plat devant elle.", inf:"penser", t:"imparfait", r:["pensait"], p:"ce qui dure → imparfait : elle <b>pensait</b>."},
+  {av:"La curiosité", ap:"plus forte que tout.", inf:"être", t:"imparfait", r:["était"], p:"être à l'imparfait : elle <b>était</b>."}
+];
+
+const ACCORDS = [
+  {av:"Les pauvres gens furent étonn", ap:" mais joyeux.", o:["é","és","ée","ées"], r:"és", p:"« gens » est masculin pluriel ici → étonn<b>és</b>."},
+  {av:"Les pauvres gens furent étonnés mais joy", ap:".", o:["eu","eus","eux"], r:"eux", p:"joyeux se termine toujours par <b>x</b>, au singulier comme au pluriel."},
+  {av:"Tous les jour", ap:", on leur servait un festin.", o:["","s","x"], r:"s", p:"« les » annonce un pluriel → jour<b>s</b>."},
+  {av:"Se trouvait un grand plat ferm", ap:".", o:["é","és","ée","er"], r:"é", p:"s'accorde avec « plat » (masculin singulier) → ferm<b>é</b>."},
+  {av:"Le roi avait formellement interdi", ap:" de l'ouvrir.", o:["t","te","ts"], r:"t", p:"avec l'auxiliaire avoir, pas d'accord ici → interdi<b>t</b> (t comme « interdiction »)."},
+  {av:"Malgré les bonnes choses propos", ap:"…", o:["é","és","ée","ées"], r:"ées", p:"s'accorde avec « choses » (féminin pluriel) → propos<b>ées</b>."},
+  {av:"La curiosité était plus fort", ap:" que tout.", o:["","e","es"], r:"e", p:"s'accorde avec « curiosité » (féminin singulier) → fort<b>e</b>."},
+  {av:"Le roi s'adressa ", ap:" couple.", o:["à le","au","aux"], r:"au", p:"« à + le » se contracte en <b>au</b> (article défini contracté)."}
+];
+
+/* ---------- Outils ---------- */
+const norm = s => s.trim().replace(/[’`´]/g,"'").replace(/\s+/g," ").toLowerCase();
+let dernierChamp = null;
+document.addEventListener("focusin", e => { if (e.target.matches('input[type=text]')) dernierChamp = e.target; });
+document.querySelectorAll(".accents button").forEach(b => {
+  b.addEventListener("mousedown", e => e.preventDefault());
+  b.addEventListener("click", () => {
+    const c = dernierChamp; if (!c) return;
+    const car = b.dataset.car === "’" ? "'" : b.dataset.car;
+    const d = c.selectionStart ?? c.value.length, f = c.selectionEnd ?? c.value.length;
+    c.value = c.value.slice(0,d) + car + c.value.slice(f);
+    c.focus(); c.setSelectionRange(d+1,d+1);
+  });
+});
+
+function champ(){
+  const i = document.createElement("input");
+  i.type="text"; i.autocomplete="off"; i.spellcheck=false;
+  i.setAttribute("autocorrect","off"); i.setAttribute("autocapitalize","off");
+  return i;
+}
+
+/* ---------- Voix ---------- */
+let voixFr = null;
+function chargerVoix(){
+  const v = speechSynthesis.getVoices().filter(x => x.lang && x.lang.toLowerCase().startsWith("fr"));
+  voixFr = v.find(x => /fr-FR/i.test(x.lang)) || v[0] || null;
+  document.getElementById("noteVoix").textContent = voixFr ? "" :
+    "Aucune voix française trouvée sur cet appareil : coche « Voir le mot 3 secondes ».";
+}
+const audioOK = "speechSynthesis" in window;
+if (audioOK){ chargerVoix(); speechSynthesis.onvoiceschanged = chargerVoix; }
+else { document.getElementById("noteVoix").textContent = "Ce navigateur ne peut pas lire à voix haute : coche « Voir le mot 3 secondes »."; }
+
+function dire(texte){
+  if (!audioOK) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(texte);
+  u.lang = "fr-FR"; if (voixFr) u.voice = voixFr;
+  u.rate = parseFloat(document.getElementById("vitesse").value);
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Étape 1 ---------- */
+const scores = {1:null,2:null,3:null};
+function construireMots(){
+  const zone = document.getElementById("listeMots"); zone.innerHTML = "";
+  MOTS.forEach((it,k) => {
+    const d = document.createElement("div"); d.className="item";
+    const l = document.createElement("div"); l.className="ligne";
+    const b = document.createElement("button"); b.type="button"; b.textContent = "🔊 Mot " + (k+1);
+    const flash = document.createElement("span"); flash.className="flash";
+    const i = champ(); i.setAttribute("aria-label","Mot " + (k+1));
+    const r = document.createElement("div"); r.className="retour-item";
+    b.addEventListener("click", () => {
+      if (document.getElementById("modeFlash").checked){
+        flash.textContent = it.m; setTimeout(() => flash.textContent = "", 3000);
+      } else dire(it.m);
+      i.focus();
+    });
+    i.addEventListener("keydown", e => { if (e.key === "Enter") verifierMot(k); });
+    l.append(b, i, flash); d.append(l, r); zone.append(d);
+    it.el = {i, r};
+  });
+}
+function verifierMot(k){
+  const it = MOTS[k], {i, r} = it.el;
+  if (!i.value.trim()) return false;
+  const ok = norm(i.value) === norm(it.m);
+  i.className = ok ? "juste" : "faux";
+  r.innerHTML = (ok ? '<span class="ok">Bravo !</span> ' : '<span class="ko">Il fallait écrire : ' + it.m + '</span> ')
+    + '<span class="piege">' + it.p + '</span>';
+  r.classList.add("vu");
+  return ok;
+}
+document.getElementById("verif1").addEventListener("click", () => {
+  let n = 0; MOTS.forEach((_,k) => { if (verifierMot(k)) n++; });
+  scores[1] = n; document.getElementById("res1").textContent = n + " / " + MOTS.length;
+  majScore();
+});
+
+/* ---------- Étape 2 ---------- */
+function construireVerbes(){
+  const zone = document.getElementById("listeVerbes"); zone.innerHTML = "";
+  VERBES.forEach(it => {
+    const d = document.createElement("div"); d.className="item";
+    const l = document.createElement("div"); l.className="ligne";
+    const ph = document.createElement("div"); ph.className="phrase";
+    ph.innerHTML = it.av + " … " + it.ap + ' <span class="note">(' + it.inf + ", " + it.t + ")</span>";
+    const i = champ(); i.setAttribute("aria-label", it.inf + " au " + it.t);
+    const r = document.createElement("div"); r.className="retour-item";
+    l.append(ph, i); d.append(l, r); zone.append(d);
+    it.el = {i, r};
+  });
+}
+document.getElementById("verif2").addEventListener("click", () => {
+  let n = 0;
+  VERBES.forEach(it => {
+    const {i, r} = it.el;
+    const ok = it.r.some(x => norm(x) === norm(i.value));
+    if (ok) n++;
+    i.className = ok ? "juste" : "faux";
+    r.innerHTML = (ok ? '<span class="ok">Juste !</span> ' : '<span class="ko">Réponse : ' + it.r[0] + '</span> ')
+      + '<span class="piege">' + it.p + '</span>';
+    r.classList.add("vu");
+  });
+  scores[2] = n; document.getElementById("res2").textContent = n + " / " + VERBES.length;
+  majScore();
+});
+
+/* ---------- Étape 3 ---------- */
+function construireAccords(){
+  const zone = document.getElementById("listeAccords"); zone.innerHTML = "";
+  let faits = 0, justes = 0;
+  ACCORDS.forEach(it => {
+    const d = document.createElement("div"); d.className="item";
+    const ph = document.createElement("div"); ph.className="phrase";
+    const trou = document.createElement("b"); trou.textContent = "___";
+    ph.append(it.av); ph.append(trou); ph.append(it.ap);
+    const c = document.createElement("div"); c.className="choix";
+    const r = document.createElement("div"); r.className="retour-item";
+    it.o.forEach(o => {
+      const b = document.createElement("button"); b.type="button"; b.textContent = o === "" ? "(rien)" : o;
+      b.addEventListener("click", () => {
+        const ok = o === it.r;
+        c.querySelectorAll("button").forEach(x => x.disabled = true);
+        b.classList.add(ok ? "juste" : "faux");
+        trou.textContent = it.r; trou.style.color = ok ? "var(--sapin)" : "var(--grenat)";
+        r.innerHTML = (ok ? '<span class="ok">Juste !</span> ' : '<span class="ko">Réponse : ' + (it.r || "rien") + '</span> ')
+          + '<span class="piege">' + it.p + '</span>';
+        r.classList.add("vu");
+        faits++; if (ok) justes++;
+        if (faits === ACCORDS.length){
+          scores[3] = justes; document.getElementById("res3").textContent = justes + " / " + ACCORDS.length;
+          majScore();
+        }
+      });
+      c.append(b);
+    });
+    d.append(ph, c, r); zone.append(d);
+  });
+}
+
+/* ---------- Score général et cloche ---------- */
+function majScore(){
+  const total = MOTS.length + VERBES.length + ACCORDS.length;
+  const faits = [1,2,3].filter(k => scores[k] !== null);
+  const pts = faits.reduce((s,k) => s + scores[k], 0);
+  const el = document.getElementById("scoreGeneral");
+  if (faits.length < 3){
+    el.textContent = "Étapes terminées : " + faits.length + " / 3. Réussis les trois étapes pour ouvrir le plat du roi.";
+    return;
+  }
+  el.textContent = "Score total : " + pts + " / " + total + (pts >= total * 0.8
+    ? ". Le plat s'ouvre : tu es prêt pour la dictée !"
+    : ". Refais les mots en rouge, puis retente pour ouvrir le plat.");
+  if (pts >= total * 0.8){
+    document.getElementById("couvercle").style.transform = "translate(40px,-40px) rotate(-25deg)";
+    document.getElementById("surprise").setAttribute("opacity","1");
+  }
+}
+
+document.getElementById("recommencer").addEventListener("click", () => {
+  scores[1]=scores[2]=scores[3]=null;
+  ["res1","res2","res3"].forEach(id => document.getElementById(id).textContent = "");
+  document.getElementById("couvercle").style.transform = "";
+  document.getElementById("surprise").setAttribute("opacity","0");
+  construireMots(); construireVerbes(); construireAccords(); majScore();
+  window.scrollTo({top:0});
+});
+
+construireMots(); construireVerbes(); construireAccords();
+</script>
+</body>
+</html>
