@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e11d48">
+<title>Le pronom personnel</title>
+<style>
+  :root{
+    --rose:#e11d48; --rose-f:#be123c; --rose-c:#fff1f2;
+    --sujet:#2563eb; --sujet-c:#eff6ff;
+    --cod:#dc2626;   --cod-c:#fef2f2;
+    --coi:#059669;   --coi-c:#ecfdf5;
+    --det:#7c3aed;   --det-c:#f5f3ff;
+    --encre:#1f2937; --gris:#6b7280; --trait:#e5e7eb;
+    --fond:#f8fafc; --carte:#ffffff;
+    --ok:#059669; --ko:#dc2626;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --sujet:#60a5fa; --sujet-c:#172554;
+      --cod:#f87171;   --cod-c:#3b0d0d;
+      --coi:#34d399;   --coi-c:#052e22;
+      --det:#a78bfa;   --det-c:#2e1065;
+      --rose-c:#3b0a18;
+      --encre:#f1f5f9; --gris:#9ca3af; --trait:#334155;
+      --fond:#0f172a; --carte:#1e293b;
+      --ok:#34d399; --ko:#f87171;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--fond); color:var(--encre); line-height:1.5;
+    padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+  }
+  .app{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+  header{
+    background:linear-gradient(135deg,var(--rose),#f43f5e 60%,#fb7185);
+    color:#fff;border-radius:20px;padding:18px 18px 16px;margin-bottom:16px;
+  }
+  header a{color:#fff;text-decoration:none;font-size:.9rem;opacity:.9}
+  header h1{margin:6px 0 2px;font-size:1.6rem;line-height:1.2}
+  header p{margin:0;opacity:.9;font-size:.95rem}
+  .ecran{display:none}
+  .ecran.actif{display:block}
+  .panneau{background:var(--carte);border:1px solid var(--trait);border-radius:18px;padding:16px;margin-bottom:14px}
+  .record{font-size:.95rem;color:var(--gris);margin:0 0 12px}
+  .modes{display:grid;gap:10px}
+  .mode{
+    display:block;width:100%;text-align:left;border:1px solid var(--trait);background:var(--carte);
+    color:var(--encre);border-radius:16px;padding:14px 16px;font:inherit;cursor:pointer;
+  }
+  .mode b{display:block;font-size:1.05rem}
+  .mode span{color:var(--gris);font-size:.9rem}
+  .mode.controle{border:2px solid var(--rose);background:var(--rose-c)}
+  button:focus-visible,.pr:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+  .btn{
+    border:0;border-radius:14px;background:var(--rose);color:#fff;font:inherit;font-weight:600;
+    padding:12px 18px;cursor:pointer;
+  }
+  .btn.second{background:transparent;color:var(--rose);border:2px solid var(--rose)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .barre{height:8px;background:var(--trait);border-radius:8px;overflow:hidden;margin-bottom:8px}
+  .barre i{display:block;height:100%;background:var(--rose);width:0;transition:width .3s}
+  .compteur{display:flex;justify-content:space-between;color:var(--gris);font-size:.9rem;margin-bottom:10px}
+  .consigne{color:var(--gris);font-size:.95rem;margin:0 0 6px}
+  .question{font-size:1.2rem;margin:0 0 14px}
+  .question .gn{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;text-decoration-color:var(--rose);font-weight:600}
+  .question .cible{background:var(--rose-c);border:2px solid var(--rose);border-radius:8px;padding:0 6px;font-weight:700}
+  .question .trou{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--rose);text-align:center;font-weight:700}
+  .choix{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .choix button{
+    border:2px solid var(--trait);background:var(--carte);color:var(--encre);border-radius:14px;
+    padding:12px 8px;font:inherit;font-size:1.05rem;cursor:pointer;min-height:52px;
+  }
+  .choix button.ok{border-color:var(--ok);background:var(--coi-c)}
+  .choix button.ko{border-color:var(--ko);background:var(--cod-c)}
+  .choix.fonctions button[data-v="S"]{color:var(--sujet);font-weight:700}
+  .choix.fonctions button[data-v="COD"]{color:var(--cod);font-weight:700}
+  .choix.fonctions button[data-v="COI"]{color:var(--coi);font-weight:700}
+  .choix.fonctions button[data-v="DET"]{color:var(--det);font-weight:700}
+  .retour{margin-top:14px;padding:12px 14px;border-radius:14px;display:none}
+  .retour.ok{display:block;background:var(--coi-c);border-left:5px solid var(--ok)}
+  .retour.ko{display:block;background:var(--cod-c);border-left:5px solid var(--ko)}
+  .retour b.t{display:block}
+  .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+
+  /* Tableau de la leçon */
+  .tabwrap{overflow-x:auto}
+  table.pp{width:100%;border-collapse:collapse;font-size:.88rem}
+  .pp th,.pp td{border:1px solid var(--trait);padding:6px 4px;text-align:center}
+  .pp thead th{font-size:.95rem}
+  .pp th.S{color:var(--sujet);background:var(--sujet-c)}
+  .pp th.COD{color:var(--cod);background:var(--cod-c)}
+  .pp th.COI{color:var(--coi);background:var(--coi-c)}
+  .pp td.S{color:var(--sujet)} .pp td.COD{color:var(--cod)} .pp td.COI{color:var(--coi)}
+  .pp tbody th{font-weight:500;color:var(--gris);text-align:left;white-space:nowrap}
+  .pp tr.sep td,.pp tr.sep th{border-top:3px solid var(--gris)}
+  .lecon h2{font-size:1.1rem;margin:0 0 8px}
+  .lecon p{margin:0 0 8px}
+  .lecon ul{margin:0;padding-left:20px}
+  .lecon li{margin-bottom:6px}
+  .ex{display:grid;grid-template-columns:1fr;gap:4px;margin-top:6px;padding:10px 12px;background:var(--fond);border-radius:12px}
+  .S-t{color:var(--sujet);font-weight:700} .COD-t{color:var(--cod);font-weight:700}
+  .COI-t{color:var(--coi);font-weight:700} .DET-t{color:var(--det);font-weight:700}
+
+  /* Mode texte */
+  .legende{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:.9rem}
+  .legende span{padding:3px 10px;border-radius:999px;font-weight:600}
+  .legende .S{background:var(--sujet-c);color:var(--sujet)}
+  .legende .COD{background:var(--cod-c);color:var(--cod)}
+  .legende .COI{background:var(--coi-c);color:var(--coi)}
+  .texte{font-size:1.15rem;line-height:2.3}
+  .pr{
+    border:0;background:transparent;font:inherit;color:inherit;cursor:pointer;padding:0 2px;
+    border-bottom:3px dashed var(--gris);border-radius:0;
+  }
+  .pr[data-c="S"]{border-bottom:4px solid var(--sujet);color:var(--sujet);font-weight:700}
+  .pr[data-c="COD"]{border-bottom:4px solid var(--cod);color:var(--cod);font-weight:700}
+  .pr[data-c="COI"]{border-bottom:4px solid var(--coi);color:var(--coi);font-weight:700}
+  .pr .etiq{font-size:.62em;vertical-align:super;margin-left:1px}
+  .pr.faux{background:var(--cod-c);outline:2px solid var(--ko);border-radius:4px}
+  .pr.juste{background:var(--coi-c);border-radius:4px}
+
+  /* Fin */
+  .score{font-size:2.6rem;font-weight:800;color:var(--rose);margin:0}
+  .erreurs{padding-left:18px;margin:8px 0 0}
+  .erreurs li{margin-bottom:8px}
+  @media (max-width:380px){ .choix{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a href="index.html">‹ Mes révisions</a>
+    <h1>Le pronom personnel</h1>
+    <p>Français, 6e</p>
+  </header>
+
+  <!-- MENU -->
+  <section class="ecran actif" id="menu">
+    <p class="record" id="record"></p>
+    <div class="modes">
+      <button class="mode" data-mode="lecon"><b>La leçon en bref</b><span>Le tableau et les astuces</span></button>
+      <button class="mode" data-mode="tableau"><b>Le tableau</b><span>Quelle personne ? Quelle fonction ?</span></button>
+      <button class="mode" data-mode="remplacer"><b>Remplacer</b><span>Trouver le pronom qui remplace le groupe souligné</span></button>
+      <button class="mode" data-mode="completer"><b>Compléter</b><span>Choisir le bon pronom dans la phrase</span></button>
+      <button class="mode" data-mode="fonction"><b>Sujet, COD ou COI ?</b><span>Et attention aux déterminants !</span></button>
+      <button class="mode" data-mode="texte"><b>Souligner en couleur</b><span>Sujets en bleu, COD en rouge, COI en vert</span></button>
+      <button class="mode controle" data-mode="controle"><b>Contrôle</b><span>12 questions mélangées, meilleur score enregistré</span></button>
+    </div>
+  </section>
+
+  <!-- LEÇON -->
+  <section class="ecran lecon" id="lecon">
+    <div class="panneau">
+      <h2>À quoi sert le pronom ?</h2>
+      <p>Le pronom <b>remplace un nom</b> (ou un groupe nominal) et <b>évite les répétitions</b>.</p>
+      <div class="ex">
+        <span>Tu as croisé <u>la nouvelle élève</u> ? Je connais bien <u>la nouvelle élève</u>. 😕</span>
+        <span>Tu as croisé la nouvelle élève ? Je <span class="COD-t">la</span> connais bien. 👍</span>
+      </div>
+    </div>
+    <div class="panneau">
+      <h2>Le tableau des pronoms personnels</h2>
+      <div class="tabwrap">
+        <table class="pp">
+          <thead><tr><th></th><th></th><th class="S">sujet</th><th class="COD">COD</th><th class="COI">COI</th></tr></thead>
+          <tbody>
+            <tr><th rowspan="3">sing.</th><th>1re</th><td class="S">je</td><td class="COD">me, m'</td><td class="COI">me, m'</td></tr>
+            <tr><th>2e</th><td class="S">tu</td><td class="COD">te, t'</td><td class="COI">te, t'</td></tr>
+            <tr><th>3e</th><td class="S">il, elle, on</td><td class="COD">le, la, se, s'</td><td class="COI">lui, se, s'</td></tr>
+            <tr class="sep"><th rowspan="3">plur.</th><th>1re</th><td class="S">nous</td><td class="COD">nous</td><td class="COI">nous</td></tr>
+            <tr><th>2e</th><td class="S">vous</td><td class="COD">vous</td><td class="COI">vous</td></tr>
+            <tr><th>3e</th><td class="S">ils, elles</td><td class="COD">les, se, s'</td><td class="COI">leur, se, s'</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panneau">
+      <h2>Les astuces</h2>
+      <ul>
+        <li><b>COD ou COI ?</b> Regarde le verbe. Sans « à » : c'est un <span class="COD-t">COD</span> (voir <i>quelqu'un</i> → je <span class="COD-t">le</span> vois). Avec « à » : c'est un <span class="COI-t">COI</span> (parler <i>à quelqu'un</i> → je <span class="COI-t">lui</span> parle).</li>
+        <li><b>Devant une voyelle</b>, on élide : me → m', te → t', se → s', et aussi le / la → l' (je <span class="COD-t">l'</span>ai vue).</li>
+        <li><b>Pronom ou déterminant ?</b> <i>le, la, les, leur</i> devant un <b>nom</b> sont des <span class="DET-t">déterminants</span> (<span class="DET-t">la</span> maison). Devant un <b>verbe</b>, ce sont des <b>pronoms</b> (je <span class="COD-t">la</span> vois).</li>
+        <li>Le pronom <b>leur</b> ne prend <b>jamais de s</b> : je <span class="COI-t">leur</span> parle.</li>
+      </ul>
+    </div>
+    <div class="actions"><button class="btn second" data-go="menu">Menu</button><button class="btn" data-go-mode="tableau">S'entraîner</button></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="ecran" id="quiz">
+    <div class="barre"><i id="prog"></i></div>
+    <div class="compteur"><span id="num"></span><span id="pts"></span></div>
+    <div class="panneau">
+      <p class="consigne" id="consigne"></p>
+      <p class="question" id="question"></p>
+      <div class="choix" id="choix"></div>
+      <div class="retour" id="retour"></div>
+    </div>
+    <div class="actions">
+      <button class="btn second" data-go="menu">Quitter</button>
+      <button class="btn" id="suivant" disabled>Suivant</button>
+    </div>
+  </section>
+
+  <!-- TEXTE -->
+  <section class="ecran" id="texte">
+    <div class="panneau">
+      <p class="consigne">Touche chaque pronom pour changer sa couleur, puis vérifie.</p>
+      <div class="legende"><span class="S">1 fois : sujet</span><span class="COD">2 fois : COD</span><span class="COI">3 fois : COI</span></div>
+      <p class="texte" id="zoneTexte"></p>
+      <div class="retour" id="retourTexte"></div>
+    </div>
+    <div class="actions">
+      <button class="btn second" data-go="menu">Menu</button>
+      <button class="btn" id="verifTexte">Vérifier</button>
+    </div>
+  </section>
+
+  <!-- FIN -->
+  <section class="ecran" id="fin">
+    <div class="panneau">
+      <p class="consigne" id="finTitre"></p>
+      <p class="score" id="finScore"></p>
+      <p id="finMsg"></p>
+      <div id="finErreurs"></div>
+    </div>
+    <div class="actions">
+      <button class="btn second" data-go="menu">Menu</button>
+      <button class="btn" id="rejouer">Recommencer</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ====== Enregistrement du meilleur score (lu par la page d'accueil) ====== */
+var TOTAL_CONTROLE = 12;
+function cleScore(){ return "meilleur:" + (location.pathname.split("/").pop() || "pronom-personnel.html"); }
+function meilleurConnu(){
+  try{
+    var v = JSON.parse(localStorage.getItem(cleScore()));
+    return (v && v.total === TOTAL_CONTROLE) ? v : null;
+  }catch(e){ return null; }
+}
+function enregistrerMeilleurScore(bon, total){
+  try{
+    var prev = meilleurConnu();
+    var mieux = !prev || (bon/total) > (prev.bon/prev.total) ||
+                ((bon/total) === (prev.bon/prev.total) && bon > prev.bon);
+    if(mieux) localStorage.setItem(cleScore(), JSON.stringify({bon:bon, total:total}));
+    return meilleurConnu();
+  }catch(e){ return null; }
+}
+
+/* ====== Outils ====== */
+function $(id){ return document.getElementById(id); }
+function melange(t){ t=t.slice(); for(var i=t.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var x=t[i]; t[i]=t[j]; t[j]=x; } return t; }
+function tirer(t,n){ return melange(t).slice(0,n); }
+function unDe(t){ return t[Math.floor(Math.random()*t.length)]; }
+function sansBalises(s){ return s.replace(/<[^>]+>/g,""); }
+
+var NOM_F = {S:"sujet", COD:"COD", COI:"COI", DET:"déterminant"};
+function f(fn, txt){ return '<span class="'+fn+'-t">'+(txt||NOM_F[fn])+'</span>'; }
+
+/* ====== 1. Le tableau ====== */
+var PERS = [
+  {k:"1s", lab:"1re personne du singulier"}, {k:"2s", lab:"2e personne du singulier"}, {k:"3s", lab:"3e personne du singulier"},
+  {k:"1p", lab:"1re personne du pluriel"},   {k:"2p", lab:"2e personne du pluriel"},   {k:"3p", lab:"3e personne du pluriel"}
+];
+var CASES = {
+  S:  {"1s":"je","2s":"tu","3s":"il, elle, on","1p":"nous","2p":"vous","3p":"ils, elles"},
+  COD:{"1s":"me, m'","2s":"te, t'","3s":"le, la, se, s'","1p":"nous","2p":"vous","3p":"les, se, s'"},
+  COI:{"1s":"me, m'","2s":"te, t'","3s":"lui, se, s'","1p":"nous","2p":"vous","3p":"leur, se, s'"}
+};
+var TOUTES_CASES = [];
+["S","COD","COI"].forEach(function(fn){ PERS.forEach(function(p){ var v=CASES[fn][p.k]; if(TOUTES_CASES.indexOf(v)<0) TOUTES_CASES.push(v); }); });
+
+/* Pronoms qui n'ont qu'une personne possible */
+var PERSONNE_DE = {je:"1s",tu:"2s",il:"3s",elle:"3s",on:"3s",le:"3s",la:"3s",lui:"3s",
+                   me:"1s",te:"2s",nous:"1p",vous:"2p",ils:"3p",elles:"3p",les:"3p",leur:"3p"};
+/* Pronoms qui n'ont qu'une fonction possible dans le tableau */
+var FONCTION_DE = {je:"S",tu:"S",il:"S",elle:"S",on:"S",ils:"S",elles:"S",le:"COD",la:"COD",les:"COD",lui:"COI",leur:"COI"};
+
+function qCase(){
+  var fn = unDe(["S","COD","COI"]), p = unDe(PERS), rep = CASES[fn][p.k];
+  var autres = tirer(TOUTES_CASES.filter(function(v){ return v!==rep; }), 3);
+  return {type:"tableau", consigne:"Complète le tableau.",
+    question:"Pronom "+f(fn)+" de la <b>"+p.lab+"</b> ?",
+    choix:melange([rep].concat(autres)), rep:rep,
+    explic:"Dans le tableau, colonne "+f(fn)+", ligne "+p.lab+" : <b>"+rep+"</b>."};
+}
+function qPersonne(){
+  var mot = unDe(Object.keys(PERSONNE_DE)), k = PERSONNE_DE[mot];
+  var bonne = PERS.filter(function(p){ return p.k===k; })[0].lab;
+  var autres = tirer(PERS.filter(function(p){ return p.k!==k; }).map(function(p){ return p.lab; }),3);
+  return {type:"tableau", consigne:"Quelle personne ?",
+    question:"Le pronom « <b>"+mot+"</b> » est à la…",
+    choix:melange([bonne].concat(autres)), rep:bonne,
+    explic:"« "+mot+" » : "+bonne+"."};
+}
+function qFonctionTableau(){
+  var mot = unDe(Object.keys(FONCTION_DE)), fn = FONCTION_DE[mot];
+  return {type:"tableau", consigne:"Dans quelle colonne du tableau ?", fonctions:true,
+    question:"Dans le tableau, « <b>"+mot+"</b> » est dans la colonne…",
+    choix:["S","COD","COI"], rep:fn, etiquettes:true,
+    explic:"« "+mot+" » est dans la colonne "+f(fn)+"."};
+}
+function qTableau(){ return unDe([qCase,qCase,qPersonne,qFonctionTableau])(); }
+
+/* ====== 2. Remplacer ====== */
+var REMPLACER = [
+  ["Je regarde [le film].","le","Je le regarde."],
+  ["Tu préviens [ta grand-mère].","la","Tu la préviens."],
+  ["Nous rangeons [nos affaires].","les","Nous les rangeons."],
+  ["Elle écrit [à son cousin].","lui","Elle lui écrit."],
+  ["Le professeur parle [aux élèves].","leur","Le professeur leur parle."],
+  ["[Les enfants] jouent dans la cour.","ils","Ils jouent dans la cour."],
+  ["[Ma sœur] lit un roman.","elle","Elle lit un roman."],
+  ["Je téléphone [à mes parents].","leur","Je leur téléphone."],
+  ["Il connaît [cette histoire].","la","Il la connaît."],
+  ["Nous offrons un cadeau [à Léa].","lui","Nous lui offrons un cadeau."],
+  ["Vous mangez [les pommes].","les","Vous les mangez."],
+  ["[Le chat] dort sur le canapé.","il","Il dort sur le canapé."],
+  ["Le magicien transforme [le prince].","le","Le magicien le transforme."],
+  ["Je réponds [à la professeure].","lui","Je lui réponds."],
+  ["[Lucas et Inès] préparent un exposé.","ils","Ils préparent un exposé."],
+  ["[Les filles] chantent une chanson.","elles","Elles chantent une chanson."],
+  ["Il prête son vélo [à ses amis].","leur","Il leur prête son vélo."],
+  ["Tu ranges [ton cartable].","le","Tu le ranges."],
+  ["La sorcière punit [les voleurs].","les","La sorcière les punit."],
+  ["La fermière donne du grain [aux poules].","leur","La fermière leur donne du grain."],
+  ["[La princesse] pleure au bord du puits.","elle","Elle pleure au bord du puits."],
+  ["Le crapaud rapporte la balle [à la princesse].","lui","Le crapaud lui rapporte la balle."]
+];
+var SUJETS = ["il","elle","ils","elles"], OBJETS = ["le","la","les","lui","leur"];
+function qRemplacer(){
+  var d = unDe(REMPLACER), rep = d[1];
+  var groupe = SUJETS.indexOf(rep)>=0 ? SUJETS.concat(["le"]) : OBJETS;
+  var autres = tirer(groupe.filter(function(v){ return v!==rep; }),3);
+  var astuce;
+  if(rep==="lui"||rep==="leur") astuce = "Il y a « à » devant le groupe : c'est un "+f("COI")+", donc <b>lui</b> (singulier) ou <b>leur</b> (pluriel).";
+  else if(OBJETS.indexOf(rep)>=0) astuce = "Pas de « à » devant le groupe : c'est un "+f("COD")+".";
+  else astuce = "Le groupe fait l'action : c'est le "+f("S")+".";
+  return {type:"remplacer", consigne:"Quel pronom remplace le groupe souligné ?",
+    question:d[0].replace(/\[(.+?)\]/,'<span class="gn">$1</span>'),
+    choix:melange([rep].concat(autres)), rep:rep,
+    explic:"<b>"+d[2]+"</b><br>"+astuce, resume:d[0].replace(/[\[\]]/g,"")};
+}
+
+/* ====== 3. Compléter ====== */
+var COMPLETER = [
+  ["As-tu vu Paul ? Oui, je ___ ai vu hier.","l'",["l'","le","lui","la"],"voir <i>quelqu'un</i> : COD. Devant une voyelle, le devient l'."],
+  ["Ma voisine est gentille : je ___ dis toujours bonjour.","lui",["lui","la","leur","elle"],"dire bonjour <i>à</i> quelqu'un : COI singulier."],
+  ["Mes cousins arrivent : nous ___ attendons à la gare.","les",["les","leur","lui","ils"],"attendre <i>quelqu'un</i> : COD pluriel."],
+  ["Les élèves écoutent le directeur : il ___ explique le règlement.","leur",["leur","les","leurs","lui"],"expliquer <i>aux</i> élèves : COI pluriel, et leur sans s."],
+  ["Mon frère et moi, ___ partons en vacances demain.","nous",["nous","vous","ils","on"],"« mon frère et moi » = nous (1re personne du pluriel)."],
+  ["Je ___ attends devant le portail, dépêche-toi !","t'",["t'","te","vous","lui"],"« dépêche-toi » : on parle à toi. Devant une voyelle, te devient t'."],
+  ["Marie et Julie ? ___ sont dans la même classe.","Elles",["Elles","Ils","Elle","Leur"],"Deux filles : elles (3e personne du pluriel)."],
+  ["Pour mon anniversaire, mon oncle ___ a offert un livre.","m'",["m'","me","lui","t'"],"offrir <i>à moi</i> : COI, 1re personne. Devant une voyelle, me devient m'."],
+  ["Cette chanson, je ___ connais par cœur.","la",["la","le","lui","les"],"connaître <i>la chanson</i> : COD féminin singulier."],
+  ["Mes grands-parents habitent loin : je ___ écris souvent.","leur",["leur","les","leurs","lui"],"écrire <i>à</i> mes grands-parents : COI pluriel."],
+  ["___ as oublié ton manteau !","Tu",["Tu","Il","Vous","Te"],"« ton manteau » : on parle à une seule personne, tu."],
+  ["Le chien a faim : je ___ donne ses croquettes.","lui",["lui","le","leur","la"],"donner <i>au</i> chien : COI singulier."],
+  ["Vous parlez trop vite, je ne ___ comprends pas.","vous",["vous","nous","tu","leur"],"comprendre <i>vous</i> : COD, 2e personne du pluriel."],
+  ["Le prince a perdu ses bottes ; il ___ cherche partout.","les",["les","leur","lui","la"],"chercher <i>les bottes</i> : COD pluriel."],
+  ["Nous formions un groupe d'amis, mais ils ne veulent plus ___ voir.","me",["me","lui","leur","je"],"voir <i>quelqu'un</i> : COD, 1re personne."]
+];
+function qCompleter(){
+  var d = unDe(COMPLETER);
+  return {type:"completer", consigne:"Complète avec le bon pronom personnel.",
+    question:d[0].replace("___",'<span class="trou">?</span>'),
+    choix:melange(d[2]), rep:d[1],
+    explic:"<b>"+d[0].replace("___",d[1]).replace(/(^|\s)(l'|t'|m') /,"$1$2")+"</b><br>"+d[3], resume:d[0].replace("___","…")};
+}
+
+/* ====== 4. Sujet, COD, COI ou déterminant ? ====== */
+var FONCTIONS = [
+  ["Ovide est un poète latin ; [il] a fait des études à Rome.","S","« il » remplace Ovide, qui fait l'action."],
+  ["Ses parents [lui] offrent un voyage en Orient.","COI","offrir <i>à</i> Ovide."],
+  ["Ses parents [le] destinent à une carrière politique.","COD","destiner <i>quelqu'un</i>, sans « à » devant."],
+  ["La nouvelle élève ? Je [la] connais bien.","COD","connaître <i>quelqu'un</i>."],
+  ["Nous avons réussi à [lui] parler.","COI","parler <i>à</i> quelqu'un."],
+  ["Ils ne veulent plus [me] voir.","COD","voir <i>quelqu'un</i>."],
+  ["[La] maîtresse corrige les cahiers.","DET","« la » est devant le nom « maîtresse »."],
+  ["Les cahiers ? La maîtresse [les] corrige.","COD","« les » est devant le verbe : corriger <i>les cahiers</i>."],
+  ["Le facteur [leur] apporte une lettre.","COI","apporter <i>à</i> eux."],
+  ["Ils rangent [leur] chambre.","DET","« leur » est devant le nom « chambre » : c'est un déterminant possessif."],
+  ["Tu [me] prêtes ta gomme ?","COI","prêter <i>à</i> moi."],
+  ["Elle [nous] regarde.","COD","regarder <i>quelqu'un</i>."],
+  ["[Vous] chantez faux !","S","« vous » fait l'action de chanter."],
+  ["Le loup [les] dévore.","COD","dévorer <i>quelqu'un</i>."],
+  ["[On] part à huit heures.","S","« on » fait l'action de partir."],
+  ["Je [te] téléphone ce soir.","COI","téléphoner <i>à</i> quelqu'un."],
+  ["Le prince [la] réveille d'un baiser.","COD","« la » est devant le verbe : réveiller <i>quelqu'un</i>."],
+  ["Le prince réveille [la] princesse.","DET","« la » est devant le nom « princesse »."],
+  ["La fée [lui] donne une baguette.","COI","donner <i>à</i> quelqu'un."],
+  ["Je [t']aide à porter ton sac.","COD","aider <i>quelqu'un</i>, sans « à » devant."],
+  ["Le roi [leur] parle.","COI","parler <i>à</i> eux."],
+  ["Elles [m']attendent.","COD","attendre <i>quelqu'un</i>."],
+  ["[Ils] ouvrent [les] fenêtres.","DET","« les » est devant le nom « fenêtres »."],
+  ["[Elle] lit une histoire.","S","« elle » fait l'action de lire."]
+];
+function qFonction(){
+  var d = unDe(FONCTIONS), n = 0;
+  var cibles = (d[0].match(/\[/g)||[]).length;
+  /* s'il y a deux crochets, la cible est le dernier ; le premier est un simple mot */
+  var html = d[0].replace(/\[(.+?)\]/g, function(m, mot){ n++; return (n===cibles) ? '<span class="cible">'+mot+'</span>' : mot; });
+  return {type:"fonction", consigne:"Quelle est la fonction du mot encadré ?", fonctions:true,
+    question:html, choix:["S","COD","COI","DET"], rep:d[1], etiquettes:true,
+    explic:f(d[1],NOM_F[d[1]].charAt(0).toUpperCase()+NOM_F[d[1]].slice(1))+" : "+d[2], resume:sansBalises(html)};
+}
+
+/* ====== Moteur de quiz ====== */
+var GEN = {tableau:qTableau, remplacer:qRemplacer, completer:qCompleter, fonction:qFonction};
+var TITRES = {tableau:"Le tableau", remplacer:"Remplacer", completer:"Compléter", fonction:"Sujet, COD ou COI ?", controle:"Contrôle"};
+var etat = null;
+
+function montrer(id){
+  document.querySelectorAll(".ecran").forEach(function(e){ e.classList.toggle("actif", e.id===id); });
+  window.scrollTo(0,0);
+  if(id==="menu") afficherRecord();
+}
+function afficherRecord(){
+  var m = meilleurConnu();
+  $("record").textContent = m ? "Meilleur score au contrôle : "+m.bon+" / "+m.total : "Pas encore de contrôle réussi.";
+}
+
+function construireListe(mode){
+  var liste = [], vus = {};
+  function ajouter(gen, n){
+    var essais = 0;
+    while(n>0 && essais<200){
+      var q = gen(); essais++;
+      var cle = sansBalises(q.question)+"|"+q.rep;
+      if(vus[cle]) continue;
+      vus[cle] = true; liste.push(q); n--;
+    }
+  }
+  if(mode==="controle"){
+    ajouter(qTableau,3); ajouter(qRemplacer,3); ajouter(qCompleter,3); ajouter(qFonction,3);
+    return melange(liste);
+  }
+  ajouter(GEN[mode],10);
+  return liste;
+}
+
+function lancer(mode){
+  etat = {mode:mode, liste:construireListe(mode), i:0, bon:0, erreurs:[]};
+  montrer("quiz");
+  afficherQuestion();
+}
+
+function libelle(q, v){ return q.etiquettes ? NOM_F[v].charAt(0).toUpperCase()+NOM_F[v].slice(1) : v; }
+
+function afficherQuestion(){
+  var q = etat.liste[etat.i], total = etat.liste.length;
+  $("prog").style.width = (etat.i/total*100)+"%";
+  $("num").textContent = "Question "+(etat.i+1)+" / "+total;
+  $("pts").textContent = etat.bon+" point"+(etat.bon>1?"s":"");
+  $("consigne").textContent = q.consigne;
+  $("question").innerHTML = q.question;
+  var zone = $("choix"); zone.innerHTML = "";
+  zone.classList.toggle("fonctions", !!q.fonctions);
+  q.choix.forEach(function(v){
+    var b = document.createElement("button");
+    b.type = "button"; b.dataset.v = v; b.textContent = libelle(q, v);
+    b.addEventListener("click", function(){ repondre(v, b); });
+    zone.appendChild(b);
+  });
+  var r = $("retour"); r.className = "retour"; r.innerHTML = "";
+  $("suivant").disabled = true;
+  $("suivant").textContent = (etat.i+1<total) ? "Suivant" : "Voir le résultat";
+}
+
+function repondre(v, bouton){
+  var q = etat.liste[etat.i];
+  if(!$("suivant").disabled) return;
+  var juste = (v===q.rep);
+  $("choix").querySelectorAll("button").forEach(function(b){
+    b.disabled = true;
+    if(b.dataset.v===q.rep) b.classList.add("ok");
+  });
+  var r = $("retour");
+  if(juste){ etat.bon++; r.className = "retour ok"; r.innerHTML = '<b class="t">Bravo !</b>'+q.explic; }
+  else{
+    bouton.classList.add("ko");
+    r.className = "retour ko";
+    r.innerHTML = '<b class="t">La bonne réponse : '+libelle(q,q.rep)+'</b>'+q.explic;
+    etat.erreurs.push({q:q.resume || sansBalises(q.question), donne:libelle(q,v), rep:libelle(q,q.rep)});
+  }
+  $("pts").textContent = etat.bon+" point"+(etat.bon>1?"s":"");
+  $("suivant").disabled = false;
+  $("suivant").focus();
+}
+
+$("suivant").addEventListener("click", function(){
+  etat.i++;
+  if(etat.i<etat.liste.length) afficherQuestion(); else terminer();
+});
+
+function terminer(){
+  var total = etat.liste.length, bon = etat.bon;
+  $("prog").style.width = "100%";
+  $("finTitre").textContent = TITRES[etat.mode];
+  $("finScore").textContent = bon+" / "+total;
+  var msg;
+  if(bon===total) msg = "Parfait, tout est juste !";
+  else if(bon>=total*0.75) msg = "Très bien, encore un petit effort sur les erreurs ci-dessous.";
+  else if(bon>=total*0.5) msg = "C'est en bonne voie. Relis la leçon en bref puis recommence.";
+  else msg = "Relis le tableau et les astuces, puis recommence : les questions changent à chaque fois.";
+  if(etat.mode==="controle"){
+    var m = enregistrerMeilleurScore(bon, total);
+    if(m) msg += " Meilleur score : "+m.bon+" / "+m.total+".";
+  }
+  $("finMsg").textContent = msg;
+  var e = $("finErreurs");
+  if(etat.erreurs.length){
+    e.innerHTML = '<p class="consigne">À revoir :</p><ul class="erreurs">'+etat.erreurs.map(function(x){
+      return "<li>"+x.q+"<br>Tu as répondu <b>"+x.donne+"</b>, il fallait <b>"+x.rep+"</b>.</li>";
+    }).join("")+"</ul>";
+  } else e.innerHTML = "";
+  $("rejouer").onclick = function(){ lancer(etat.mode); };
+  montrer("fin");
+}
+
+/* ====== 5. Souligner en couleur ====== */
+var TEXTES = [
+  "Ovide est un poète latin. {S|Il} a fait des études à Rome. Ses parents {COI|lui} offrent un voyage en Orient. {S|Ils} {COD|le} destinent à une carrière politique.",
+  "La princesse a perdu sa balle d'or. {S|Elle} pleure au bord du puits. Un crapaud {COD|la} regarde et {COI|lui} propose son aide. {S|Il} plonge et rapporte la balle. La princesse {COD|le} remercie à peine.",
+  "Tom et Léa {COD|m'}attendent devant le collège. Je {COD|les} rejoins en courant. {S|Ils} {COI|me} disent bonjour. La professeure {COD|nous} accueille, puis elle {COI|nous} distribue les cahiers.",
+  "As-tu croisé la nouvelle élève ? Je {COD|la} connais bien. {S|Elle} est très timide, mais nous avons réussi à {COI|lui} parler. Ses parents {COD|l'}accompagnent chaque matin et {S|ils} {COI|lui} disent au revoir devant le portail."
+];
+var ORDRE = ["", "S", "COD", "COI"];
+var ETIQ = {S:"S", COD:"COD", COI:"COI"};
+var texteCourant = -1;
+
+function lancerTexte(){
+  var i; do{ i = Math.floor(Math.random()*TEXTES.length); } while(TEXTES.length>1 && i===texteCourant);
+  texteCourant = i;
+  var zone = $("zoneTexte"); zone.innerHTML = "";
+  var parts = TEXTES[i].split(/(\{[A-Z]+\|[^}]+\})/);
+  parts.forEach(function(p){
+    var m = p.match(/^\{([A-Z]+)\|([^}]+)\}$/);
+    if(m){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "pr"; b.dataset.rep = m[1]; b.dataset.c = "";
+      b.innerHTML = m[2]+'<span class="etiq"></span>';
+      b.setAttribute("aria-label", m[2]+" : pas encore choisi");
+      b.addEventListener("click", function(){
+        if(b.dataset.fini) return;
+        var k = (ORDRE.indexOf(b.dataset.c)+1) % ORDRE.length;
+        b.dataset.c = ORDRE[k];
+        b.querySelector(".etiq").textContent = ORDRE[k] ? ETIQ[ORDRE[k]] : "";
+        b.setAttribute("aria-label", m[2]+" : "+(ORDRE[k] ? NOM_F[ORDRE[k]] : "pas encore choisi"));
+      });
+      zone.appendChild(b);
+    } else zone.appendChild(document.createTextNode(p));
+  });
+  var r = $("retourTexte"); r.className = "retour"; r.innerHTML = "";
+  $("verifTexte").textContent = "Vérifier";
+  $("verifTexte").onclick = verifierTexte;
+  montrer("texte");
+}
+
+function verifierTexte(){
+  var prs = $("zoneTexte").querySelectorAll(".pr"), bon = 0, vides = 0;
+  prs.forEach(function(b){ if(!b.dataset.c) vides++; });
+  var r = $("retourTexte");
+  if(vides){
+    r.className = "retour ko";
+    r.innerHTML = '<b class="t">Il reste '+vides+' pronom'+(vides>1?"s":"")+' sans couleur.</b>Touche chaque mot souligné en pointillés.';
+    return;
+  }
+  prs.forEach(function(b){
+    b.dataset.fini = "1";
+    if(b.dataset.c===b.dataset.rep){ bon++; b.classList.add("juste"); }
+    else{
+      b.classList.add("faux");
+      b.dataset.c = b.dataset.rep;
+      b.querySelector(".etiq").textContent = ETIQ[b.dataset.rep];
+    }
+  });
+  var total = prs.length;
+  r.className = (bon===total) ? "retour ok" : "retour ko";
+  r.innerHTML = '<b class="t">'+bon+" / "+total+(bon===total?" : parfait !":"")+'</b>'+
+    (bon===total ? "Tous les pronoms sont bien colorés." : "Les mots encadrés en rouge étaient faux : ils affichent maintenant la bonne couleur. Astuce : « à » après le verbe → COI.");
+  $("verifTexte").textContent = "Un autre texte";
+  $("verifTexte").onclick = lancerTexte;
+}
+
+/* ====== Navigation ====== */
+document.querySelectorAll(".mode").forEach(function(b){
+  b.addEventListener("click", function(){
+    var m = b.dataset.mode;
+    if(m==="lecon") montrer("lecon");
+    else if(m==="texte") lancerTexte();
+    else lancer(m);
+  });
+});
+document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click", function(){ montrer(b.dataset.go); }); });
+document.querySelectorAll("[data-go-mode]").forEach(function(b){ b.addEventListener("click", function(){ lancer(b.dataset.goMode); }); });
+
+afficherRecord();
+})();
+</script>
+</body>
+</html>
