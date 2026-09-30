@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anglais – Le verbe to be</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FBFBF7;
+    --ink: #2B2D33;
+    --soft: #6B6F7A;
+    --line: #DCDDE3;
+    --am: #C8102E;
+    --is: #0B4F9C;
+    --are: #1E7F4F;
+    --ok: #1E7F4F;
+    --ok-bg: #E4F4EA;
+    --ko: #C8102E;
+    --ko-bg: #FBE6E9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Lexend", "Verdana", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 18px 60px; }
+  a.back { color: var(--soft); font-size: 15px; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+
+  header { margin: 18px 0 28px; }
+  h1 { font-size: clamp(44px, 12vw, 72px); font-weight: 800; line-height: 1; margin: 0; letter-spacing: -1px; }
+  .forms { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .tag { font-weight: 800; font-size: 22px; padding: 2px 14px; border-radius: 8px; color: #fff; }
+  .t-am { background: var(--am); } .t-is { background: var(--is); } .t-are { background: var(--are); }
+  header p { color: var(--soft); margin: 12px 0 0; }
+
+  section { margin-top: 40px; }
+  h2 { font-size: 24px; margin: 0 0 4px; }
+  .consigne { color: var(--soft); margin: 0 0 18px; font-size: 16px; }
+
+  /* Rappel */
+  .rappel { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(5, auto); grid-auto-flow: column; gap: 0 32px; border-left: 4px solid var(--ink); padding: 6px 0 6px 18px; }
+  .rappel div { font-size: 20px; }
+  .rappel b { font-weight: 800; }
+  .c-am { color: var(--am); } .c-is { color: var(--is); } .c-are { color: var(--are); }
+  .fr { color: var(--soft); font-size: 15px; margin: 12px 0 0; }
+
+  ol.items { list-style: none; padding: 0; margin: 0; counter-reset: q; }
+  ol.items li { counter-increment: q; padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  ol.items li::before { content: counter(q, lower-alpha) ")"; color: var(--soft); min-width: 22px; }
+  .hint { color: var(--soft); font-size: 16px; }
+
+  input[type=text] {
+    font: inherit; font-weight: 600; width: 72px; text-align: center;
+    border: none; border-bottom: 2px solid var(--ink); background: transparent; padding: 0 4px; color: var(--ink);
+  }
+  input[type=text]:focus { outline: 3px solid #FFD23F; outline-offset: 2px; }
+  input.ok { background: var(--ok-bg); border-bottom-color: var(--ok); color: var(--ok); }
+  input.ko { background: var(--ko-bg); border-bottom-color: var(--ko); color: var(--ko); }
+
+  .blank { display: inline-block; min-width: 56px; border-bottom: 2px solid var(--ink); text-align: center; font-weight: 800; }
+  .choices { display: flex; gap: 8px; width: 100%; padding-left: 32px; }
+  .choice {
+    font: inherit; font-weight: 600; font-size: 17px; background: #fff; color: var(--ink);
+    border: 2px solid var(--line); border-radius: 10px; padding: 4px 16px; cursor: pointer;
+  }
+  .choice:hover { border-color: var(--ink); }
+  .choice:focus-visible { outline: 3px solid #FFD23F; outline-offset: 2px; }
+  .choice.picked { border-color: var(--ink); background: var(--ink); color: #fff; }
+  .choice.ok { border-color: var(--ok); background: var(--ok); color: #fff; }
+  .choice.ko { border-color: var(--ko); background: var(--ko-bg); color: var(--ko); }
+
+  .mark { font-weight: 800; margin-left: 4px; }
+  .mark.ok { color: var(--ok); } .mark.ko { color: var(--ko); }
+
+  .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
+  .btn { font: inherit; font-weight: 600; font-size: 16px; border-radius: 10px; padding: 8px 18px; cursor: pointer; border: 2px solid var(--ink); }
+  .btn.main { background: var(--ink); color: #fff; }
+  .btn.alt { background: transparent; color: var(--ink); }
+  .btn:focus-visible { outline: 3px solid #FFD23F; outline-offset: 2px; }
+  .score { font-weight: 800; font-size: 18px; }
+
+  @media (max-width: 480px) {
+    body { font-size: 17px; }
+    .rappel { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
+    .choices { padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .choice, input[type=text] { transition: background .15s, border-color .15s; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">‹ Retour à mes révisions</a>
+
+  <header>
+    <h1>To be</h1>
+    <div class="forms"><span class="tag t-am">am</span><span class="tag t-is">is</span><span class="tag t-are">are</span></div>
+    <p>Le verbe <em>être</em> en anglais.</p>
+  </header>
+
+  <section>
+    <h2>Rappel</h2>
+    <div class="rappel">
+      <div>I <b class="c-am">am</b></div>
+      <div>you <b class="c-are">are</b></div>
+      <div>he <b class="c-is">is</b></div>
+      <div>she <b class="c-is">is</b></div>
+      <div>it <b class="c-is">is</b></div>
+      <div>we <b class="c-are">are</b></div>
+      <div>you <b class="c-are">are</b></div>
+      <div>they <b class="c-are">are</b></div>
+    </div>
+    <p class="fr">Astuce : remplace le sujet par un pronom (Tom → he, my mum → she, the cats → they), puis choisis am, is ou are.</p>
+  </section>
+
+  <section id="ex1">
+    <h2>Exercice 1 – Remplace le sujet par un pronom</h2>
+    <p class="consigne">Choisis le bon pronom : he, she, it, we ou they.</p>
+    <ol class="items" id="ex1-list"></ol>
+    <div class="actions">
+      <button class="btn main" data-check="ex1">Vérifier</button>
+      <button class="btn alt" data-show="ex1">Voir la correction</button>
+      <button class="btn alt" data-reset="ex1">Recommencer</button>
+      <span class="score" id="ex1-score"></span>
+    </div>
+  </section>
+
+  <section id="ex2">
+    <h2>Exercice 2 – Complete with be</h2>
+    <p class="consigne">Écris am, is ou are. Le pronom entre parenthèses t'aide.</p>
+    <ol class="items" id="ex2-list"></ol>
+    <div class="actions">
+      <button class="btn main" data-check="ex2">Vérifier</button>
+      <button class="btn alt" data-show="ex2">Voir la correction</button>
+      <button class="btn alt" data-reset="ex2">Recommencer</button>
+      <span class="score" id="ex2-score"></span>
+    </div>
+  </section>
+
+  <section id="ex3">
+    <h2>Exercice 3 – Choose am, is or are</h2>
+    <p class="consigne">Plus de pronom pour t'aider : trouve-le dans ta tête !</p>
+    <ol class="items" id="ex3-list"></ol>
+    <div class="actions">
+      <button class="btn main" data-check="ex3">Vérifier</button>
+      <button class="btn alt" data-show="ex3">Voir la correction</button>
+      <button class="btn alt" data-reset="ex3">Recommencer</button>
+      <span class="score" id="ex3-score"></span>
+    </div>
+  </section>
+</main>
+
+<script>
+const DATA = {
+  ex1: { type: "choice", options: ["he", "she", "it", "we", "they"], items: [
+    { before: "My sister", after: "", answer: "she" },
+    { before: "The book", after: "", answer: "it" },
+    { before: "Leo and Sam", after: "", answer: "they" },
+    { before: "My dad", after: "", answer: "he" },
+    { before: "My friend and I", after: "", answer: "we" },
+    { before: "The dogs", after: "", answer: "they" },
+    { before: "London", after: "", answer: "it" },
+    { before: "Mrs Smith", after: "", answer: "she" }
+  ]},
+  ex2: { type: "input", items: [
+    { before: "My dog (it)", after: "brown.", answer: "is" },
+    { before: "Tom (he)", after: "eleven.", answer: "is" },
+    { before: "Emma and Lucy (they)", after: "my friends.", answer: "are" },
+    { before: "I", after: "hungry.", answer: "am" },
+    { before: "My mum (she)", after: "a teacher.", answer: "is" },
+    { before: "You", after: "very funny!", answer: "are" },
+    { before: "My brother and I (we)", after: "at school.", answer: "are" },
+    { before: "The cats (they)", after: "black and white.", answer: "are" },
+    { before: "Paris (it)", after: "in France.", answer: "is" },
+    { before: "Anna (she)", after: "happy today.", answer: "is" }
+  ]},
+  ex3: { type: "choice", options: ["am", "is", "are"], items: [
+    { before: "The sun", after: "yellow.", answer: "is" },
+    { before: "We", after: "in the classroom.", answer: "are" },
+    { before: "I", after: "twelve.", answer: "am" },
+    { before: "My grandparents", after: "nice.", answer: "are" },
+    { before: "Max", after: "my cousin.", answer: "is" },
+    { before: "You", after: "my best friend.", answer: "are" },
+    { before: "The pizza", after: "hot!", answer: "is" },
+    { before: "I", after: "from France.", answer: "am" }
+  ]}
+};
+
+const picks = { ex1: [], ex3: [] };
+
+function build(id) {
+  const ex = DATA[id];
+  const list = document.getElementById(id + "-list");
+  list.innerHTML = "";
+  document.getElementById(id + "-score").textContent = "";
+  if (ex.type === "choice") picks[id] = ex.items.map(() => null);
+
+  ex.items.forEach((it, i) => {
+    const li = document.createElement("li");
+    if (ex.type === "input") {
+      li.innerHTML = `<span>${it.before}</span>
+        <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Réponse ${i + 1}" data-i="${i}">
+        <span>${it.after}</span><span class="mark"></span>`;
+    } else {
+      const arrow = id === "ex1" ? " → " : "";
+      li.innerHTML = `<span>${it.before}${arrow}</span><span class="blank" data-blank="${i}">&nbsp;</span>
+        <span>${it.after}</span><span class="mark"></span>
+        <div class="choices">${ex.options.map(o => `<button class="choice" type="button" data-i="${i}" data-v="${o}">${o}</button>`).join("")}</div>`;
+      li.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => {
+        picks[id][i] = b.dataset.v;
+        li.querySelectorAll(".choice").forEach(x => x.className = "choice");
+        b.classList.add("picked");
+        li.querySelector(".blank").textContent = b.dataset.v;
+        li.querySelector(".mark").textContent = "";
+      }));
+    }
+    list.appendChild(li);
+  });
+
+  list.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      inp.className = "";
+      inp.parentElement.querySelector(".mark").textContent = "";
+    });
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const all = [...list.querySelectorAll("input")];
+        const next = all[all.indexOf(inp) + 1];
+        next ? next.focus() : check(id);
+      }
+    });
+  });
+}
+
+function check(id) {
+  const ex = DATA[id];
+  const rows = document.querySelectorAll(`#${id}-list li`);
+  let good = 0;
+  ex.items.forEach((it, i) => {
+    const mark = rows[i].querySelector(".mark");
+    let ok;
+    if (ex.type === "input") {
+      const inp = rows[i].querySelector("input");
+      const v = inp.value.trim().toLowerCase();
+      ok = v === it.answer;
+      inp.className = v === "" ? "" : (ok ? "ok" : "ko");
+      if (v === "") { mark.textContent = ""; return; }
+    } else {
+      const v = picks[id][i];
+      ok = v === it.answer;
+      rows[i].querySelectorAll(".choice").forEach(b => {
+        b.className = "choice";
+        if (b.dataset.v === v) b.classList.add(ok ? "ok" : "ko");
+      });
+      if (v === null) { mark.textContent = ""; return; }
+    }
+    mark.textContent = ok ? "✓" : "✗";
+    mark.className = "mark " + (ok ? "ok" : "ko");
+    if (ok) good++;
+  });
+  const total = ex.items.length;
+  document.getElementById(id + "-score").textContent =
+    `${good} / ${total}` + (good === total ? " – Bravo !" : "");
+}
+
+function show(id) {
+  const ex = DATA[id];
+  const rows = document.querySelectorAll(`#${id}-list li`);
+  ex.items.forEach((it, i) => {
+    if (ex.type === "input") {
+      const inp = rows[i].querySelector("input");
+      inp.value = it.answer;
+      inp.className = "ok";
+    } else {
+      picks[id][i] = it.answer;
+      rows[i].querySelector(".blank").textContent = it.answer;
+      rows[i].querySelectorAll(".choice").forEach(b => {
+        b.className = "choice" + (b.dataset.v === it.answer ? " ok" : "");
+      });
+    }
+    rows[i].querySelector(".mark").textContent = "";
+  });
+  document.getElementById(id + "-score").textContent = "Correction affichée";
+}
+
+document.querySelectorAll("[data-check]").forEach(b => b.addEventListener("click", () => check(b.dataset.check)));
+document.querySelectorAll("[data-show]").forEach(b => b.addEventListener("click", () => show(b.dataset.show)));
+document.querySelectorAll("[data-reset]").forEach(b => b.addEventListener("click", () => build(b.dataset.reset)));
+
+Object.keys(DATA).forEach(build);
+</script>
+</body>
+</html>
