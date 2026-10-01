@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schulsachen – le matériel scolaire en allemand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFFFF; --line:#D5DCF2; --line-strong:#AFBCE6; --margin:#E9A3AC;
+  --text:#23262F; --muted:#5F6577;
+  --der:#1F4FBF; --die:#D0242B; --das:#1E8A3E; --almost:#C96A00;
+  --card:#FFFFFF; --card-border:#C7CEE3; --btn:#EEF1FA;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1C1F27; --line:#262B38; --line-strong:#323A50; --margin:#6B3840;
+    --text:#ECEEF4; --muted:#A5ABBD; --der:#7FA6FF; --die:#FF7A7F; --das:#5FD48A; --almost:#FFB04D;
+    --card:#242833; --card-border:#3A4256; --btn:#2E3442;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1C1F27; --line:#262B38; --line-strong:#323A50; --margin:#6B3840;
+  --text:#ECEEF4; --muted:#A5ABBD; --der:#7FA6FF; --die:#FF7A7F; --das:#5FD48A; --almost:#FFB04D;
+  --card:#242833; --card-border:#3A4256; --btn:#2E3442;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; min-height:100%; color:var(--text); font-family:"Andika","Trebuchet MS",Verdana,sans-serif; font-size:18px; line-height:1.5;
+  background-color:var(--paper);
+  /* papier Seyès */
+  background-image:
+    linear-gradient(90deg, transparent 54px, var(--margin) 54px, var(--margin) 56px, transparent 56px),
+    repeating-linear-gradient(0deg, var(--line-strong) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(0deg, var(--line) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 32px);
+}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 48px 70px}
+@media (max-width:520px){ .wrap{padding-left:64px;padding-right:10px} }
+a.back{color:var(--muted);font-size:.95rem}
+h1{font-family:"Kalam","Comic Sans MS",cursive;font-weight:700;font-size:clamp(2.4rem,9vw,3.6rem);line-height:1;margin:12px 0 4px;letter-spacing:.02em}
+.sub{margin:0 0 14px;color:var(--muted)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.legend span{font-family:"Kalam",cursive;font-weight:700;font-size:1.3rem;padding:2px 12px;border:2px solid currentColor;border-radius:999px;background:var(--card)}
+.der{color:var(--der)} .die{color:var(--die)} .das{color:var(--das)}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+nav button{font:inherit;font-size:1rem;padding:8px 14px;border-radius:10px;border:2px solid var(--card-border);background:var(--card);color:var(--text);cursor:pointer}
+nav button[aria-selected="true"]{border-color:var(--text);font-weight:700}
+button:focus-visible,input:focus-visible{outline:3px solid var(--der);outline-offset:2px}
+.panel{display:none} .panel.on{display:block}
+.hint{color:var(--muted);margin:0 0 14px}
+/* cartes Découvrir */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{background:var(--card);border:2px solid var(--card-border);border-radius:14px;padding:10px;text-align:center;cursor:pointer;font:inherit;color:inherit;position:relative}
+.card .pic{height:72px;display:flex;align-items:center;justify-content:center;font-size:52px}
+.card .pic svg{width:66px;height:66px}
+.card .word{font-family:"Kalam",cursive;font-weight:700;font-size:1.35rem;line-height:1.2;margin-top:4px}
+.card .fr{font-size:.95rem;color:var(--muted);min-height:1.4em}
+.card .trap{position:absolute;top:6px;right:8px;font-size:.8rem;color:var(--almost);font-weight:700}
+.card.flipped{border-color:var(--text)}
+/* quiz */
+.bar{height:10px;background:var(--btn);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.bar div{height:100%;width:0;background:var(--das);transition:width .3s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.95rem;margin-bottom:12px}
+.q{background:var(--card);border:2px solid var(--card-border);border-radius:16px;padding:18px;text-align:center}
+.q .pic{height:110px;display:flex;align-items:center;justify-content:center;font-size:84px}
+.q .pic svg{width:100px;height:100px}
+.big{font-family:"Kalam",cursive;font-weight:700;font-size:2rem;margin:6px 0 12px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.art{font-family:"Kalam",cursive;font-weight:700;font-size:1.6rem;min-width:92px;padding:6px 16px;border-radius:12px;border:3px solid currentColor;background:var(--card);cursor:pointer}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.choice{background:var(--card);border:2px solid var(--card-border);border-radius:14px;padding:10px;cursor:pointer;font-size:56px;height:100px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.choice svg{width:72px;height:72px}
+.choice.good{border-color:var(--das);border-width:4px} .choice.bad{border-color:var(--die);border-width:4px;opacity:.6}
+.act{font:inherit;padding:9px 18px;border-radius:12px;border:2px solid var(--text);background:var(--btn);color:var(--text);cursor:pointer;font-weight:700}
+.act.ghost{font-weight:400;border-color:var(--card-border)}
+input.answer{font-family:"Kalam",cursive;font-size:1.6rem;width:100%;max-width:380px;padding:6px 12px;border-radius:12px;border:2px solid var(--card-border);background:var(--paper);color:var(--text);text-align:center}
+.keys{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.keys button{font:inherit;font-size:1.1rem;width:44px;height:40px;border-radius:10px;border:2px solid var(--card-border);background:var(--btn);color:var(--text);cursor:pointer}
+.fb{min-height:2.6em;margin-top:12px;font-weight:700}
+.fb.ok{color:var(--das)} .fb.ko{color:var(--die)} .fb.mid{color:var(--almost)}
+.fb .w{font-family:"Kalam",cursive;font-size:1.3rem}
+.end{text-align:center;padding:20px}
+.end .score{font-family:"Kalam",cursive;font-size:3rem;font-weight:700;line-height:1.1}
+@media (prefers-reduced-motion:reduce){.bar div{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html">← Mes révisions</a>
+  <h1>Schulsachen</h1>
+  <p class="sub">Le matériel scolaire en allemand. Chaque nom s'apprend avec son article et sa couleur.</p>
+  <div class="legend" aria-label="Code couleur">
+    <span class="der">der · masculin</span><span class="die">die · féminin</span><span class="das">das · neutre</span>
+  </div>
+
+  <nav role="tablist">
+    <button role="tab" data-p="learn" aria-selected="true">Découvrir</button>
+    <button role="tab" data-p="gender" aria-selected="false">Der, die, das ?</button>
+    <button role="tab" data-p="listen" aria-selected="false">Écouter</button>
+    <button role="tab" data-p="write" aria-selected="false">Écrire</button>
+    <button role="tab" data-p="speak" aria-selected="false">Parler</button>
+  </nav>
+
+  <section class="panel on" id="learn">
+    <p class="hint">Touche une carte pour l'entendre et voir sa traduction. Le signe ⚠ montre les mots qui n'ont pas le même genre qu'en français.</p>
+    <div class="grid" id="grid"></div>
+  </section>
+  <section class="panel" id="gender"><p class="hint">Choisis le bon article : der, die ou das.</p><div id="genderQ"></div></section>
+  <section class="panel" id="listen"><p class="hint">Écoute le mot, puis touche le bon dessin.</p><div id="listenQ"></div></section>
+  <section class="panel" id="write"><p class="hint">Écris l'article et le nom. N'oublie pas : en allemand, les noms prennent une majuscule.</p><div id="writeQ"></div></section>
+  <section class="panel" id="speak"><p class="hint">Regarde le dessin et dis le mot avec son article.</p><div id="speakQ"></div></section>
+</div>
+
+<script>
+const S = 'stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"';
+const ICONS = {
+  gomme:`<svg viewBox="0 0 64 64"><g transform="rotate(-20 32 32)"><rect x="8" y="20" width="48" height="24" rx="5" fill="#ECE6DA" ${S}/><path d="M8 25 a5 5 0 0 1 5 -5 h13 v24 h-13 a5 5 0 0 1 -5 -5z" fill="#4F78C4" ${S}/></g></svg>`,
+  colle:`<svg viewBox="0 0 64 64"><rect x="22" y="6" width="20" height="14" rx="3" fill="#E04848" ${S}/><rect x="20" y="19" width="24" height="40" rx="4" fill="#FFFFFF" ${S}/><rect x="24" y="30" width="16" height="16" rx="2" fill="#F2C94C"/></svg>`,
+  marker:`<svg viewBox="0 0 64 64"><g transform="rotate(35 32 32)"><rect x="23" y="6" width="18" height="12" rx="2" fill="#555" ${S}/><rect x="22" y="18" width="20" height="30" rx="3" fill="#F2E34C" ${S}/><path d="M25 48 h14 l-3 10 h-8z" fill="#555" ${S}/></g></svg>`,
+  usb:`<svg viewBox="0 0 64 64"><g transform="rotate(-25 32 32)"><rect x="8" y="22" width="36" height="20" rx="5" fill="#3A3A3A" ${S}/><rect x="44" y="26" width="12" height="12" fill="#C9CCD2" ${S}/><rect x="16" y="28" width="16" height="8" rx="1" fill="#C9CCD2"/></g></svg>`,
+  tablet:`<svg viewBox="0 0 64 64"><rect x="12" y="5" width="40" height="54" rx="6" fill="#3A3A3A" ${S}/><rect x="16" y="10" width="32" height="42" rx="1" fill="#8EC5E8"/><circle cx="32" cy="55.5" r="1.8" fill="#BBB"/></svg>`,
+  trousse:`<svg viewBox="0 0 64 64"><rect x="5" y="20" width="54" height="28" rx="14" fill="#7B5EA7" ${S}/><path d="M12 27 H52" stroke="#E6E0F0" stroke-width="2" stroke-dasharray="3 2"/><rect x="48" y="23" width="6" height="8" rx="2" fill="#E6E0F0"/></svg>`
+};
+const WORDS = [
+  {art:'der', noun:'Kuli', fr:'le stylo (bille)', pic:'🖊️'},
+  {art:'das', noun:'Lineal', fr:'la règle', pic:'📏', trap:true},
+  {art:'der', noun:'Bleistift', fr:'le crayon à papier', pic:'✏️'},
+  {art:'der', noun:'Radiergummi', fr:'la gomme', pic:'gomme', trap:true},
+  {art:'das', noun:'Buch', fr:'le livre', pic:'📕', trap:true},
+  {art:'das', noun:'Heft', fr:'le cahier', pic:'📓', trap:true},
+  {art:'die', noun:'Schere', fr:'les ciseaux', pic:'✂️', trap:true},
+  {art:'das', noun:'Mäppchen', fr:'la trousse', pic:'trousse', trap:true},
+  {art:'der', noun:'Kleber', fr:'la colle', pic:'colle', trap:true},
+  {art:'der', noun:'Marker', fr:'le surligneur', pic:'marker'},
+  {art:'der', noun:'USB-Stick', fr:'la clé USB', pic:'usb', trap:true},
+  {art:'das', noun:'Tablet', fr:'la tablette', pic:'tablet', trap:true}
+];
+const pic = w => ICONS[w.pic] || `<span aria-hidden="true">${w.pic}</span>`;
+const full = w => `${w.art} ${w.noun}`;
+const ink = w => `<span class="${w.art}">${full(w)}</span>`;
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+/* synthèse vocale */
+let deVoice=null;
+function pickVoice(){ try{ const v=speechSynthesis.getVoices(); deVoice=v.find(x=>x.lang&&x.lang.toLowerCase().startsWith('de'))||null; }catch(e){} }
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function say(t){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='de-DE'; u.rate=.85; if(deVoice) u.voice=deVoice;
+  speechSynthesis.speak(u);
+}
+
+/* onglets */
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+}));
+
+/* Découvrir */
+const grid=document.getElementById('grid');
+WORDS.forEach(w=>{
+  const c=document.createElement('button'); c.className='card'; c.type='button';
+  c.innerHTML=`${w.trap?'<span class="trap" title="Genre différent du français">⚠</span>':''}<div class="pic">${pic(w)}</div><div class="word ${w.art}">${full(w)}</div><div class="fr"></div>`;
+  c.addEventListener('click',()=>{ say(full(w)); c.classList.toggle('flipped'); c.querySelector('.fr').textContent=c.classList.contains('flipped')?w.fr:''; });
+  grid.appendChild(c);
+});
+
+/* moteur de quiz commun */
+function makeQuiz(rootId, renderQ){
+  const root=document.getElementById(rootId);
+  const st={deck:[],i:0,score:0};
+  function start(){ st.deck=shuffle(WORDS); st.i=0; st.score=0; draw(); }
+  function draw(){
+    if(st.i>=st.deck.length){
+      const n=st.deck.length, s=Math.round(st.score*10)/10;
+      root.innerHTML=`<div class="q end"><div class="score">${s} / ${n}</div><p>${s===n?'Parfait, tout est juste !':s>=n*.75?'Très bien ! Encore un tour pour tout réussir ?':'Revois les cartes dans « Découvrir », puis recommence.'}</p><button class="act">Recommencer</button></div>`;
+      root.querySelector('button').onclick=start; return;
+    }
+    const w=st.deck[st.i];
+    root.innerHTML=`<div class="bar"><div style="width:${st.i/st.deck.length*100}%"></div></div><div class="meta"><span>Question ${st.i+1} / ${st.deck.length}</span><span>Score : ${Math.round(st.score*10)/10}</span></div><div class="q"></div>`;
+    renderQ(root.querySelector('.q'), w, pts=>{ st.score+=pts; }, ()=>{ st.i++; draw(); });
+  }
+  start();
+}
+function nextBtn(box, next){
+  const b=document.createElement('button'); b.className='act'; b.textContent='Suivant'; b.onclick=next;
+  const r=document.createElement('div'); r.className='row'; r.appendChild(b); box.appendChild(r); b.focus();
+}
+
+/* Der, die, das ? */
+makeQuiz('genderQ',(box,w,add,next)=>{
+  box.innerHTML=`<div class="pic">${pic(w)}</div><div class="big">… ${w.noun}</div><div class="row">${['der','die','das'].map(a=>`<button class="art ${a}" data-a="${a}">${a}</button>`).join('')}</div><div class="fb"></div>`;
+  const fb=box.querySelector('.fb');
+  box.querySelectorAll('.art').forEach(b=>b.onclick=()=>{
+    box.querySelectorAll('.art').forEach(x=>x.disabled=true);
+    const ok=b.dataset.a===w.art; if(ok) add(1);
+    fb.className='fb '+(ok?'ok':'ko');
+    fb.innerHTML=(ok?'Bravo ! ':'Non, c\'est ')+`<span class="w">${ink(w)}</span>`+(w.trap&&!ok?`<br><small>Attention, en français on dit « ${w.fr} ».</small>`:'');
+    say(full(w)); nextBtn(box,next);
+  });
+});
+
+/* Écouter */
+makeQuiz('listenQ',(box,w,add,next)=>{
+  const opts=shuffle([w,...shuffle(WORDS.filter(x=>x!==w)).slice(0,3)]);
+  box.innerHTML=`<div class="row"><button class="act">🔊 Écouter</button></div><div class="choices">${opts.map((o,k)=>`<button class="choice" data-k="${k}" aria-label="Choix ${k+1}">${pic(o)}</button>`).join('')}</div><div class="fb"></div>`;
+  box.querySelector('.act').onclick=()=>say(full(w));
+  setTimeout(()=>say(full(w)),300);
+  const fb=box.querySelector('.fb');
+  box.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+    const o=opts[b.dataset.k], ok=o===w;
+    box.querySelectorAll('.choice').forEach(x=>{x.disabled=true; if(opts[x.dataset.k]===w) x.classList.add('good');});
+    if(!ok) b.classList.add('bad'); else add(1);
+    fb.className='fb '+(ok?'ok':'ko');
+    fb.innerHTML=(ok?'Bravo ! ':'Non, c\'était ')+`<span class="w">${ink(w)}</span>`;
+    nextBtn(box,next);
+  });
+});
+
+/* Écrire : correction */
+const loose = s => s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[-\s]+/g,' ').trim();
+function grade(input,w){
+  const t=input.trim().replace(/\s+/g,' ');
+  const sp=t.indexOf(' ');
+  const art=(sp<0?'':t.slice(0,sp)).toLowerCase(), noun=sp<0?t:t.slice(sp+1);
+  const artOk=art===w.art;
+  let nounState='ko';
+  if(noun===w.noun) nounState='ok';
+  else if(noun.toLowerCase()===w.noun.toLowerCase()) nounState='case';
+  else if(loose(noun)===loose(w.noun)) nounState='accent';
+  return {artOk,nounState,art};
+}
+makeQuiz('writeQ',(box,w,add,next)=>{
+  box.innerHTML=`<div class="pic">${pic(w)}</div><p class="hint" style="margin:4px 0 10px">${w.fr}</p><input class="answer" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ta réponse"><div class="keys">${['ä','ö','ü','ß'].map(k=>`<button type="button">${k}</button>`).join('')}</div><div class="row"><button class="act">Vérifier</button></div><div class="fb"></div>`;
+  const inp=box.querySelector('input'), fb=box.querySelector('.fb'), check=box.querySelector('.act');
+  box.querySelectorAll('.keys button').forEach(k=>k.onclick=()=>{ const p=inp.selectionStart??inp.value.length; inp.value=inp.value.slice(0,p)+k.textContent+inp.value.slice(p); inp.focus(); inp.setSelectionRange(p+1,p+1); });
+  inp.focus();
+  function verify(){
+    if(!inp.value.trim()) { fb.className='fb mid'; fb.textContent='Écris ta réponse, par exemple : der Kuli.'; return; }
+    const g=grade(inp.value,w); const msgs=[];
+    if(!g.artOk) msgs.push(g.art?`L'article n'est pas « ${g.art} ».`:'Il manque l\'article.');
+    if(g.nounState==='case') msgs.push('Le nom doit commencer par une majuscule.');
+    if(g.nounState==='accent') msgs.push('Attention à l\'orthographe (tréma ou tiret).');
+    if(g.nounState==='ko') msgs.push('Le nom n\'est pas bien écrit.');
+    let pts=0, cls='ko';
+    if(g.artOk && g.nounState==='ok'){pts=1;cls='ok';}
+    else if(g.artOk && (g.nounState==='case'||g.nounState==='accent')){pts=.5;cls='mid';}
+    add(pts);
+    fb.className='fb '+cls;
+    fb.innerHTML=(cls==='ok'?'Parfait ! ':cls==='mid'?'Presque ! ':'')+(msgs.length?msgs.join(' ')+'<br>':'')+`Réponse : <span class="w">${ink(w)}</span>`;
+    inp.disabled=true; check.remove(); box.querySelector('.keys').remove(); say(full(w)); nextBtn(box,next);
+  }
+  check.onclick=verify;
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') verify(); });
+});
+
+/* Parler */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const norm=s=>loose(s).replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
+makeQuiz('speakQ',(box,w,add,next)=>{
+  box.innerHTML=`<div class="pic">${pic(w)}</div><p class="hint" style="margin:4px 0 10px">${w.fr}</p><div class="row">${SR?'<button class="act" id="mic">🎤 Parler</button>':''}<button class="act ghost" id="reveal">Voir la réponse</button></div><div class="fb"></div>`;
+  const fb=box.querySelector('.fb'); let done=false;
+  function finish(ok,heard){
+    if(done) return; done=true; if(ok) add(1);
+    fb.className='fb '+(ok?'ok':'ko');
+    fb.innerHTML=(heard?`J'ai entendu : « ${heard} ».<br>`:'')+(ok?'Bravo ! ':'Écoute bien : ')+`<span class="w">${ink(w)}</span>`;
+    say(full(w)); if(!ok) setTimeout(()=>say(full(w)),1800);
+    box.querySelectorAll('#mic,#reveal').forEach(b=>b.remove()); nextBtn(box,next);
+  }
+  box.querySelector('#reveal').onclick=()=>{
+    box.querySelector('.row').innerHTML='';
+    fb.className='fb'; fb.innerHTML=`<span class="w">${ink(w)}</span><br>Est-ce que tu l'avais bien dit ?`;
+    say(full(w));
+    const r=box.querySelector('.row');
+    r.innerHTML='<button class="act">Oui</button><button class="act ghost">Pas encore</button>';
+    const [yes,no]=r.querySelectorAll('button');
+    yes.onclick=()=>{ if(done) return; done=true; add(1); r.remove(); nextBtn(box,next); };
+    no.onclick=()=>{ if(done) return; done=true; r.remove(); nextBtn(box,next); };
+  };
+  const mic=box.querySelector('#mic');
+  if(mic) mic.onclick=()=>{
+    const rec=new SR(); rec.lang='de-DE'; rec.maxAlternatives=5; rec.interimResults=false;
+    mic.textContent='J\'écoute…'; mic.disabled=true;
+    rec.onresult=e=>{
+      const alts=[...e.results[0]].map(a=>a.transcript);
+      const target=norm(full(w));
+      const ok=alts.some(a=>{const n=norm(a); return n===target||lev(n,target)<=2;});
+      finish(ok,alts[0]);
+    };
+    rec.onerror=()=>{ mic.textContent='🎤 Réessayer'; mic.disabled=false; fb.className='fb mid'; fb.textContent='Je n\'ai rien entendu. Vérifie le micro et réessaie.'; };
+    rec.onend=()=>{ if(!done){ mic.textContent='🎤 Réessayer'; mic.disabled=false; } };
+    rec.start();
+  };
+});
+</script>
+</body>
+</html>
