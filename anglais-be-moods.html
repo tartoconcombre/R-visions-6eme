@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Be, moods &amp; introductions</title>
+<style>
+
+  :root{
+    --paper:#f3efe6; --panel:#ffffff; --ink:#26221c; --muted:#7a7367;
+    --line:#e2dccf; --brand:#c2410c; --brand2:#1d4ed8;
+    --good:#15803d; --good-bg:#e6f4ea; --bad:#b91c1c; --bad-bg:#fdecec;
+    --warn:#a16207; --warn-bg:#fdf6e3;
+    --sea:#dbe7f3; --land:#ece6d8; --landline:#b9b09d;
+    --shadow:0 8px 26px rgba(60,50,35,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--paper);
+    min-height:100vh;line-height:1.5;padding:18px 15px 46px;-webkit-tap-highlight-color:transparent}
+  .wrap{max-width:620px;margin:0 auto}
+  h1{font-size:1.7rem;margin:.1em 0;line-height:1.2}
+  h2{font-size:1.15rem;margin:1.2em 0 .5em}
+  .lead{color:var(--muted);margin:0 0 16px;font-size:.95rem}
+  .hidden{display:none !important}
+  .home{display:inline-block;margin-bottom:8px;color:var(--brand2);font-weight:700;text-decoration:none}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mode{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:14px 12px;text-align:left;
+    cursor:pointer;font:inherit;color:inherit;box-shadow:var(--shadow)}
+  .mode b{display:block;font-size:1rem}
+  .mode span{display:block;color:var(--muted);font-size:.83rem;line-height:1.35;margin-top:2px}
+  .mode.controle{grid-column:1/-1;background:var(--brand);color:#fff;border-color:var(--brand)}
+  .mode.controle span{color:#fde5d6}
+  .record{margin:12px 2px 0;color:var(--muted);font-size:.9rem;min-height:1.4em}
+
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .top .prog{font-weight:700;font-size:.9rem;white-space:nowrap}
+  .barre-fond{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  #barre{height:100%;width:0;background:var(--brand);transition:width .3s}
+  .quitter{border:none;background:none;color:var(--brand2);font:inherit;font-weight:700;cursor:pointer;padding:4px}
+
+  .theme{font-size:.8rem;font-weight:700;color:var(--brand);margin-bottom:2px}
+  .enonce{font-size:1.15rem;font-weight:650;margin:0 0 12px}
+  .visuel{text-align:center;margin:6px 0 14px}
+  .flag-big{width:200px;max-width:70%;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.18);display:inline-block}
+  .gros-mot{font-size:1.7rem;font-weight:700;color:var(--brand2)}
+  .options{display:grid;grid-template-columns:1fr;gap:8px}
+  .options.deux{grid-template-columns:1fr 1fr}
+  .opt{border:2px solid var(--line);background:#fffdf8;border-radius:12px;padding:12px;font:inherit;font-size:1.02rem;
+    color:inherit;cursor:pointer;text-align:center;min-height:52px}
+  .opt img{width:100%;max-width:130px;border-radius:4px;display:block;margin:0 auto;box-shadow:0 1px 5px rgba(0,0,0,.2)}
+  .opt.bon{border-color:var(--good);background:var(--good-bg)}
+  .opt.faux{border-color:var(--bad);background:var(--bad-bg)}
+  .opt:disabled{cursor:default}
+  .saisie{display:flex;gap:8px}
+  .saisie input{flex:1;min-width:0;font:inherit;font-size:1.1rem;padding:11px 12px;border:2px solid var(--line);border-radius:12px;background:#fffdf8}
+  .saisie input:focus{outline:none;border-color:var(--brand2)}
+  .btn{border:none;background:var(--brand2);color:#fff;font:inherit;font-weight:700;padding:11px 16px;border-radius:12px;cursor:pointer}
+  .btn.second{background:var(--panel);color:var(--brand2);border:2px solid var(--brand2)}
+  .btn:disabled{opacity:.5}
+  .ecoute{font-size:1.05rem;padding:14px 22px}
+  .fb{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:.98rem}
+  .fb.ok{background:var(--good-bg);color:var(--good)}
+  .fb.ko{background:var(--bad-bg);color:var(--bad)}
+  .fb.presque{background:var(--warn-bg);color:var(--warn)}
+  .fb b{color:inherit}
+  .suivant{margin-top:14px;width:100%}
+  .say{border:none;background:none;cursor:pointer;font-size:1.15rem;padding:0 4px;vertical-align:middle}
+
+  /* cartes */
+  .cartes{display:grid;grid-template-columns:1fr;gap:10px}
+  .carte-monde{position:relative}
+  svg.map{width:100%;height:auto;display:block;border-radius:12px;background:var(--sea);touch-action:manipulation}
+  svg.map .autre{fill:var(--land);stroke:var(--landline);stroke-width:.6;pointer-events:none}
+  svg.map .cible{fill:var(--land);stroke:var(--landline);stroke-width:.6;cursor:pointer}
+  svg.map.isles .autre,svg.map.isles .cible{stroke-width:1.2}
+  svg.map .cible.vu{fill:#fbd38d}
+  svg.map .cible.bon{fill:#4ade80}
+  svg.map .cible.faux{fill:#f87171}
+  svg.map .pad{fill:transparent;cursor:pointer}
+  svg.map .zone{fill:none;stroke:#ea580c;stroke-width:3.5;stroke-dasharray:4 3;pointer-events:none}
+  svg.map text{font:700 13px "Segoe UI",system-ui,sans-serif;fill:#26221c;paint-order:stroke;stroke:#fff;stroke-width:3px;pointer-events:none}
+  svg.map.isles text{font-size:15px}
+  .zoom-wrap{display:flex;gap:10px;align-items:flex-start}
+  .zoom-wrap .isles-box{width:46%;flex:0 0 auto}
+  .zoom-legende{font-size:.82rem;color:var(--muted)}
+  .zoom-titre{font-size:.8rem;font-weight:700;color:var(--brand);margin:0 0 4px}
+
+  /* fiches */
+  .fiches{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .fiche{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px;cursor:pointer;text-align:center;font:inherit;color:inherit}
+  .fiche.actif{border-color:var(--brand)}
+  .fiche img{width:84px;border-radius:3px;box-shadow:0 1px 5px rgba(0,0,0,.2)}
+  .fiche .p{font-weight:700;margin-top:4px}
+  .fiche .n{color:var(--brand2);font-weight:700}
+  .fiche .f{color:var(--muted);font-size:.8rem}
+  .astuce{background:var(--warn-bg);border-radius:12px;padding:10px 12px;font-size:.9rem;margin-top:12px}
+
+  .score-fin{font-size:2.6rem;font-weight:800;margin:0}
+  ul.erreurs{padding-left:18px}
+  ul.erreurs li{margin-bottom:8px}
+  ul.erreurs span{display:block;color:var(--good);font-size:.92rem}
+  .actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  @media (max-width:420px){ .modes{grid-template-columns:1fr} .zoom-wrap .isles-box{width:58%} }
+
+  .am{color:#b91c1c;font-weight:700} .is{color:#1d4ed8;font-weight:700} .are{color:#15803d;font-weight:700}
+  table.conj{width:100%;border-collapse:collapse;font-size:1rem;margin:6px 0 4px}
+  table.conj td{padding:5px 8px;border-bottom:1px solid var(--line)}
+  table.conj th{text-align:left;font-size:.85rem;color:var(--muted);padding:4px 8px}
+  .lecon h2:first-child{margin-top:0}
+  .lecon p{margin:.4em 0}
+  .moods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .moodc{display:flex;align-items:center;gap:8px;background:#fffdf8;border:1px solid var(--line);border-radius:12px;padding:8px;font:inherit;color:inherit;text-align:left;cursor:pointer}
+  .moodc .e{font-size:1.8rem;line-height:1}
+  .moodc b{display:block}
+  .moodc small{color:var(--muted)}
+  .emo-big{font-size:4rem;line-height:1.1}
+  .opt .emo{font-size:2.4rem;line-height:1}
+  .qa{margin:0;padding-left:0;list-style:none}
+  .qa li{padding:6px 0;border-bottom:1px solid var(--line)}
+  .qa .r{color:var(--brand2)}
+  /* étiquettes à remettre dans l'ordre */
+  .ligne-rep{min-height:54px;border:2px dashed var(--line);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center}
+  .tuiles{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .tuile{border:2px solid var(--brand2);background:#eef2ff;color:var(--brand2);font:inherit;font-weight:700;font-size:1.05rem;padding:7px 12px;border-radius:10px;cursor:pointer}
+  .tuile.posee{background:var(--brand2);color:#fff}
+  /* carte d'identité */
+  .id-card{display:flex;gap:12px;align-items:center;background:#fffdf8;border:2px solid var(--line);border-radius:14px;padding:12px;text-align:left;margin:0 auto;max-width:360px}
+  .id-card .av{font-size:2.6rem;line-height:1;white-space:nowrap}
+  .id-card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.98rem}
+  .id-card dt{color:var(--muted)} .id-card dd{margin:0;font-weight:700}
+  .id-card img{width:42px;vertical-align:middle;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .barre-x{position:relative;display:inline-block}
+  .barre-x:after{content:"✗";position:absolute;inset:-6px 0 0 0;color:#dc2626;font-size:2rem;font-weight:900;text-align:center;line-height:1}
+  .consigne{background:#eef2ff;border-radius:10px;padding:8px 12px;margin:12px 0;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="home" href="index.html">← Mes révisions</a>
+
+  <section id="accueil">
+    <h1>Be, moods &amp; introductions</h1>
+    <p class="lead">Le verbe be, les humeurs, les questions et la présentation d'un personnage, pour le test d'anglais.</p>
+    <div class="modes">
+      <button class="mode" data-mode="lecon"><b>📖 La leçon</b><span>Be, les humeurs, les questions</span></button>
+      <button class="mode" data-mode="moods"><b>😊 Moods</b><span>Le vocabulaire des humeurs</span></button>
+      <button class="mode" data-mode="be"><b>✅ Be (+)</b><span>am, is ou are ?</span></button>
+      <button class="mode" data-mode="neg"><b>❌ Be (−)</b><span>La forme négative : 'm not, isn't, aren't</span></button>
+      <button class="mode" data-mode="questions"><b>❓ Questions</b><span>Poser les questions et y répondre</span></button>
+      <button class="mode" data-mode="presenter"><b>🪪 Présenter</b><span>Présenter un ou des personnages</span></button>
+      <button class="mode controle" data-mode="controle"><b>🎯 Contrôle</b><span>Un peu de tout, comme le test. Ton meilleur score est gardé.</span></button>
+    </div>
+    <p class="record" id="record"></p>
+  </section>
+
+  <section id="lecon" class="hidden">
+    <div class="top"><b class="prog">La leçon</b><span style="flex:1"></span><button class="quitter" data-retour>Menu</button></div>
+    <div class="panel lecon">
+      <h2>Le verbe be (être)</h2>
+      <table class="conj">
+        <tr><th>Forme affirmative</th><th>Forme négative</th></tr>
+        <tr><td>I <span class="am">am</span> = I<span class="am">'m</span></td><td>I <span class="am">am not</span> = I<span class="am">'m not</span></td></tr>
+        <tr><td>You <span class="are">are</span></td><td>You <span class="are">aren't</span></td></tr>
+        <tr><td>He <span class="is">is</span></td><td>He <span class="is">isn't</span></td></tr>
+        <tr><td>She <span class="is">is</span></td><td>She <span class="is">isn't</span></td></tr>
+        <tr><td>It <span class="is">is</span></td><td>It <span class="is">isn't</span></td></tr>
+        <tr><td>We <span class="are">are</span></td><td>We <span class="are">aren't</span></td></tr>
+        <tr><td>You <span class="are">are</span></td><td>You <span class="are">aren't</span></td></tr>
+        <tr><td>They <span class="are">are</span></td><td>They <span class="are">aren't</span></td></tr>
+      </table>
+      <p>isn't = is not, aren't = are not. Attention : « I amn't » n'existe pas, on dit <span class="am">I'm not</span>.</p>
+      <p>Un prénom seul → <span class="is">is</span> (Jenny <span class="is">is</span> happy). Deux personnes → <span class="are">are</span> (Mike and Paul <span class="are">are</span> sick).</p>
+      <p><b>L'apostrophe</b> remplace les lettres enlevées : I'm, isn't, aren't, what's. Et <b>I</b> s'écrit toujours en majuscule.</p>
+
+      <h2>Moods (les humeurs)</h2>
+      <p style="color:var(--muted);font-size:.9rem">Touche pour écouter.</p>
+      <div class="moods" id="lecon-moods"></div>
+      <p style="margin-top:8px">How do you feel? → I feel great. / I'm tired.<br>Gabriel <span class="is">is</span> grumpy today.<br>Sally <span class="is">is</span> sick, she has got a cold. (Sally est malade, elle a un rhume.)</p>
+      <p>Se présenter : Hi. I<span class="am">'m</span> Paul and I<span class="am">'m</span> eleven.</p>
+
+      <h2>Questions et réponses</h2>
+      <ul class="qa" id="lecon-qa"></ul>
+
+      <h2>Présenter un personnage</h2>
+      <p>He <span class="is">is</span> Amar. He <span class="is">is</span> ten (years old). He <span class="is">is</span> Welsh. He <span class="is">is</span> happy, he <span class="is">isn't</span> sad.</p>
+      <p>She <span class="is">is</span> Jenny. She <span class="is">is</span> fourteen. She <span class="is">is</span> American.</p>
+      <p>They <span class="are">are</span> Kate and Meg. They <span class="are">are</span> seven. They <span class="are">are</span> Australian. They <span class="are">aren't</span> Irish.</p>
+      <p>Les nationalités prennent une <b>majuscule</b> : American, Welsh, French.</p>
+    </div>
+  </section>
+
+  <section id="jeu" class="hidden">
+    <div class="top">
+      <span class="prog" id="prog">1 / 10</span>
+      <div class="barre-fond"><div id="barre"></div></div>
+      <button class="quitter" id="quitter">Menu</button>
+    </div>
+    <div class="panel">
+      <div id="q-zone"></div>
+      <div id="fb"></div>
+      <button class="btn suivant hidden" id="q-suivant">Suivant</button>
+    </div>
+  </section>
+
+  <section id="fin" class="hidden">
+    <div class="panel">
+      <p class="score-fin" id="f-score"></p>
+      <p id="f-msg"></p>
+      <p id="f-record" style="color:var(--muted)"></p>
+      <div id="f-erreurs"></div>
+      <div class="actions">
+        <button class="btn" id="f-encore">Recommencer</button>
+        <button class="btn second" id="f-menu">Menu</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+var FICHIER = "anglais-be-moods.html";
+var FLAGS = {"au": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-au\" viewBox=\"0 0 640 480\">  <path fill=\"#00008B\" d=\"M0 0h640v480H0z\"/>  <path fill=\"#fff\" d=\"m37.5 0 122 90.5L281 0h39v31l-120 89.5 120 89V240h-40l-120-89.5L40.5 240H0v-30l119.5-89L0 32V0z\"/>  <path fill=\"red\" d=\"M212 140.5 320 220v20l-135.5-99.5zm-92 10 3 17.5-96 72H0zM320 0v1.5l-124.5 94 1-22L295 0zM0 0l119.5 88h-30L0 21z\"/>  <path fill=\"#fff\" d=\"M120.5 0v240h80V0zM0 80v80h320V80z\"/>  <path fill=\"red\" d=\"M0 96.5v48h320v-48zM136.5 0v240h48V0z\"/>  <path fill=\"#fff\" d=\"m527 396.7-20.5 2.6 2.2 20.5-14.8-14.4-14.7 14.5 2-20.5-20.5-2.4 17.3-11.2-10.9-17.5 19.6 6.5 6.9-19.5 7.1 19.4 19.5-6.7-10.7 17.6zm-3.7-117.2 2.7-13-9.8-9 13.2-1.5 5.5-12.1 5.5 12.1 13.2 1.5-9.8 9 2.7 13-11.6-6.6zm-104.1-60-20.3 2.2 1.8 20.3-14.4-14.5-14.8 14.1 2.4-20.3-20.2-2.7 17.3-10.8-10.5-17.5 19.3 6.8L387 178l6.7 19.3 19.4-6.3-10.9 17.3 17.1 11.2ZM623 186.7l-20.9 2.7 2.3 20.9-15.1-14.7-15 14.8 2.1-21-20.9-2.4 17.7-11.5-11.1-17.9 20 6.7 7-19.8 7.2 19.8 19.9-6.9-11 18zm-96.1-83.5-20.7 2.3 1.9 20.8-14.7-14.8-15.1 14.4 2.4-20.7-20.7-2.8 17.7-11L467 73.5l19.7 6.9 7.3-19.5 6.8 19.7 19.8-6.5-11.1 17.6zM234 385.7l-45.8 5.4 4.6 45.9-32.8-32.4-33 32.2 4.9-45.9-45.8-5.8 38.9-24.8-24-39.4 43.6 15 15.8-43.4 15.5 43.5 43.7-14.7-24.3 39.2 38.8 25.1Z\"/></svg>", "us": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-us\" viewBox=\"0 0 640 480\">  <path fill=\"#bd3d44\" d=\"M0 0h640v480H0\"/>  <path stroke=\"#fff\" stroke-width=\"37\" d=\"M0 55.3h640M0 129h640M0 203h640M0 277h640M0 351h640M0 425h640\"/>  <path fill=\"#192f5d\" d=\"M0 0h364.8v258.5H0\"/>  <marker id=\"us-a\" markerHeight=\"30\" markerWidth=\"30\">    <path fill=\"#fff\" d=\"m14 0 9 27L0 10h28L5 27z\"/>  </marker>  <path fill=\"none\" marker-mid=\"url(#us-a)\" d=\"m0 0 16 11h61 61 61 61 60L47 37h61 61 60 61L16 63h61 61 61 61 60L47 89h61 61 60 61L16 115h61 61 61 61 60L47 141h61 61 60 61L16 166h61 61 61 61 60L47 192h61 61 60 61L16 218h61 61 61 61 60z\"/></svg>", "ca": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-ca\" viewBox=\"0 0 640 480\">  <path fill=\"#fff\" d=\"M150.1 0h339.7v480H150z\"/>  <path fill=\"#d52b1e\" d=\"M-19.7 0h169.8v480H-19.7zm509.5 0h169.8v480H489.9zM201 232l-13.3 4.4 61.4 54c4.7 13.7-1.6 17.8-5.6 25l66.6-8.4-1.6 67 13.9-.3-3.1-66.6 66.7 8c-4.1-8.7-7.8-13.3-4-27.2l61.3-51-10.7-4c-8.8-6.8 3.8-32.6 5.6-48.9 0 0-35.7 12.3-38 5.8l-9.2-17.5-32.6 35.8c-3.5.9-5-.5-5.9-3.5l15-74.8-23.8 13.4q-3.2 1.3-5.2-2.2l-23-46-23.6 47.8q-2.8 2.5-5 .7L264 130.8l13.7 74.1c-1.1 3-3.7 3.8-6.7 2.2l-31.2-35.3c-4 6.5-6.8 17.1-12.2 19.5s-23.5-4.5-35.6-7c4.2 14.8 17 39.6 9 47.7\"/></svg>", "nz": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" id=\"flag-icons-nz\" viewBox=\"0 0 640 480\">  <defs>    <g id=\"nz-b\">      <g id=\"nz-a\">        <path d=\"M0-.3v.5l1-.5z\"/>        <path d=\"M.2.3 0-.1l1-.2z\"/>      </g>      <use xlink:href=\"#nz-a\" transform=\"scale(-1 1)\"/>      <use xlink:href=\"#nz-a\" transform=\"rotate(72 0 0)\"/>      <use xlink:href=\"#nz-a\" transform=\"rotate(-72 0 0)\"/>      <use xlink:href=\"#nz-a\" transform=\"scale(-1 1)rotate(72)\"/>    </g>  </defs>  <path fill=\"#00247d\" fill-rule=\"evenodd\" d=\"M0 0h640v480H0z\"/>  <g transform=\"translate(-111 36.1)scale(.66825)\">    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#fff\" transform=\"translate(900 120)scale(45.4)\"/>    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#cc142b\" transform=\"matrix(30 0 0 30 900 120)\"/>  </g>  <g transform=\"rotate(82 525.2 114.6)scale(.66825)\">    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#fff\" transform=\"rotate(-82 519 -457.7)scale(40.4)\"/>    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#cc142b\" transform=\"rotate(-82 519 -457.7)scale(25)\"/>  </g>  <g transform=\"rotate(82 525.2 114.6)scale(.66825)\">    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#fff\" transform=\"rotate(-82 668.6 -327.7)scale(45.4)\"/>    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#cc142b\" transform=\"rotate(-82 668.6 -327.7)scale(30)\"/>  </g>  <g transform=\"translate(-111 36.1)scale(.66825)\">    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#fff\" transform=\"translate(900 480)scale(50.4)\"/>    <use xlink:href=\"#nz-b\" width=\"100%\" height=\"100%\" fill=\"#cc142b\" transform=\"matrix(35 0 0 35 900 480)\"/>  </g>  <path fill=\"#012169\" d=\"M0 0h320v240H0z\"/>  <path fill=\"#fff\" d=\"m37.5 0 122 90.5L281 0h39v31l-120 89.5 120 89V240h-40l-120-89.5L40.5 240H0v-30l119.5-89L0 32V0z\"/>  <path fill=\"#c8102e\" d=\"M212 140.5 320 220v20l-135.5-99.5zm-92 10 3 17.5-96 72H0zM320 0v1.5l-124.5 94 1-22L295 0zM0 0l119.5 88h-30L0 21z\"/>  <path fill=\"#fff\" d=\"M120.5 0v240h80V0zM0 80v80h320V80z\"/>  <path fill=\"#c8102e\" d=\"M0 96.5v48h320v-48zM136.5 0v240h48V0z\"/></svg>", "za": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-za\" viewBox=\"0 0 640 480\">  <defs>    <clipPath id=\"za-a\">      <path fill-opacity=\".7\" d=\"M-71.9 0h682.7v512H-71.9z\"/>    </clipPath>  </defs>  <g clip-path=\"url(#za-a)\" transform=\"translate(67.4)scale(.93748)\">    <g fill-rule=\"evenodd\" stroke-width=\"1pt\">      <path fill=\"#000001\" d=\"M-71.9 407.8V104.4L154 256.1z\"/>      <path fill=\"#000c8a\" d=\"m82.2 512.1 253.6-170.6H696V512H82.2z\"/>      <path fill=\"#e1392d\" d=\"M66 0h630v170.8H335.7S69.3-1.7 66 0\"/>      <path fill=\"#ffb915\" d=\"M-71.9 64v40.4L154 256-72 407.8v40.3l284.5-192z\"/>      <path fill=\"#007847\" d=\"M-71.9 64V0h95l301.2 204h371.8v104.2H324.3L23 512h-94.9v-63.9l284.4-192L-71.8 64z\"/>      <path fill=\"#fff\" d=\"M23 0h59.2l253.6 170.7H696V204H324.3zm0 512.1h59.2l253.6-170.6H696v-33.2H324.3L23 512z\"/>    </g>  </g></svg>", "ie": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-ie\" viewBox=\"0 0 640 480\">  <g fill-rule=\"evenodd\" stroke-width=\"1pt\">    <path fill=\"#fff\" d=\"M0 0h640v480H0z\"/>    <path fill=\"#009A49\" d=\"M0 0h213.3v480H0z\"/>    <path fill=\"#FF7900\" d=\"M426.7 0H640v480H426.7z\"/>  </g></svg>", "gb-eng": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-gb-eng\" viewBox=\"0 0 640 480\">  <path fill=\"#fff\" d=\"M0 0h640v480H0z\"/>  <path fill=\"#ce1124\" d=\"M281.6 0h76.8v480h-76.8z\"/>  <path fill=\"#ce1124\" d=\"M0 201.6h640v76.8H0z\"/></svg>", "gb-sct": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-gb-sct\" viewBox=\"0 0 640 480\">  <path fill=\"#0065bd\" d=\"M0 0h640v480H0z\"/>  <path stroke=\"#fff\" stroke-width=\".6\" d=\"m0 0 5 3M0 3l5-3\" transform=\"scale(128 160)\"/></svg>", "gb-wls": "<svg xmlns=\"http://www.w3.org/2000/svg\" id=\"flag-icons-gb-wls\" viewBox=\"0 0 640 480\">  <path fill=\"#00ab39\" d=\"M0 240h640v240H0z\"/>  <path fill=\"#fff\" d=\"M0 0h640v240H0z\"/>  <g stroke=\"#000\" stroke-width=\"1.4\">    <path fill=\"#d21034\" d=\"M419 70.8h-.1zm-.1 0a694 694 0 0 0-111.8 75c-17 14.9-12.2 26.7-12.9 40 .6 9-1.9 17.4-7.4 22.4l-37.8 7.6-3.6-10.4c1.1-5.4 5.5-8 14.9-4.7.7-6.8-4.9-9.6-11.3-12-2.3-1.8-5-3-4.7-9-1-13.5 20.6 1 20.8 1s-.8-13.7-10.7-16.4c-5.4-1.9-7.7-7.6-5.6-11.8 4.3-8.7 12.5.6 18.7 1-.2-5.7-1.8-9.7-6.7-14.2-2.6-1.7-9-2.9-9.2-5.6-.1-3.6 6-5.2 14.5-4.2-1.8-5.1-7.5-8.4-15.3-10.8l-4.6-8.1c-2.2-4-3.2-4.2 1.9-11.8 4.5-3 10.6-7.2 15.2-10.1l-5-.6c.6-5.5.7-7.4 2-16.5-5 6.7-11 5.5-16.6 8.2 0 0-15.6 2.8-20.7 9.5l-39.4-2c-8.4 1.1-15.5 3.5-16.9 11.6-19.1 2-39.1.3-53.7 18.5 10-.4 18.6-2.8 29.8-1.4 0 0 9.5.2 11.4 10.3.2.4 3.3.4 3.3.4l3.6 2.8 1.4-3.8 3.2 2.2 1-4.2 3.2 2.2.2-5 4.2 3v-6.7s15.6 0 20.4 10c.2.1-43.7 8-86.1 4.3l12.2-6c-15.4-3.2-30-6-43.6-16.7 5.1 19.4 31.7 42.1 37.2 42l-5.2-9.4 46 2c1.7 5.1 1 10.8 5 15.3 0 0-2.5 8.4 3.2 11.8.2.4 6.7-17 6.7-17s2 4.7 4 7.8c3-15 19.4-17.5 19.4-17.5l3.4 8c-5.1.8-11.5 11.2-8 17-3.5 0-9.6 10.1-7.7 15.6-2.9 2.9-10 6.7-8.3 18.8-5.6 1.2-9 11.5-7.2 22.5-8.8 8.1-6.6 23 1.2 29.1-3.2 3-5.2 5.1-5.2 8.7-3.1-1.1-6-.2-7.3 1.8-3.8-3.9-9.2-7.2-13-3.6-1-4.6-7-9.6-13.5-9a12 12 0 0 0-9-13s-1.5-22.6-8.3-30c-.7-4 .4-6.8 6-10.2 5.7-3 6.9-5.3 6.4-13.9 2.3-5.7 4-11.5-3-15.4.2 6.8-1.8 10-4.6 13-3.3-.4-4.4 3.4-6.6 5-3.1-4.1 6.5-10.6-.6-19.9-.4-.4-5-12-16.3-11.8 5.3 3.1 7.6 8.4 7.6 13.9a41 41 0 0 0-1.8 29.3c-4.7-7-7.4-20.4-11.3-22.7-3.4-.7-5-8.7-18.3-6.4 5.7 1.5 7.6 5.9 9 9.8-3.4 1.8-1.7 6.6.9 9.9-.5 7.7 4.1 12.2 11 15L85.6 237c-2.7-.3-7 10.4-8.6 10.7-2.7 1.7-7.4 6.2-2 7.5-1.6 5.7-3.1 9.2-11.7 10.4 0 0 9 5.4 16.6-3.8 8-.2 5.4-9.8 9.3-14 0-.3 2.3-1.7 5.5-10.2 1.4 7.6 9.2 30.8 26.7 42.3 15.3 16.4 28 31.9 27.8 53.7a54 54 0 0 0 12.3-22.7 89 89 0 0 1 30.8-3.6c-1.8 3.9-3.9 7.6-1.3 10-7.4 2.6-9 8-6 13.3-7.8 5.3-8.3 8.7-8.4 17.5-14.5 18.5-23.4 17.9-37.7 13-4.6-2.7-12-6.6-15.3-4.5-6.1-4.2-15-4.8-16.5 4.6 4.7-3.9 7.4-3.1 11.1.6-.7 1.9-1.3 3.7 1.4 4.8l-3.6 4c-6.6-1-15.6-1-17.9 8.7 3.4-2.9 11-3.5 17-.8l3.5 1.2.4 4.6s-9-1.4-11.4 13.3c8.4-9 14.4-6.7 14.4-6.7 3.3 4.8 15.3 4.1 24-3.8 12.1-6.8 15.7 3 23.5-3.4 6.5-4.8 14.2-1.6 19.5 4 6.1 2.3 12.5 4.2 17.5 0 0 0 6.2-3.9 12.3 2.4 0-7-5-10.9-11.8-11l-2-2c-6.5-1.4-13.7-.8-19.4-4a58 58 0 0 1 14.1-27c9.3-10 16.2-14.6 28-29.9-.5 8.7 6.1 18.3 9.6 27 0 0 7-11.1 8-20.3.3 0 8.9-4.4 12.5-8.3 7.8 4.9 20.4-3.8 28.6-11 5 2 8.9 1.8 14.7 0-4.7 9.6 2.7 18.5 14.5 22.2 1 8.4 9.6 10.2 22.5 10.2.6 5 8.3 5.7 8.3 5.7-5 2.2-7.4 4.5-7.3 9.6-5 0-8.7 1.3-10 7-6.9.2-13.9.7-19.8 4-6.3-.9-14-3.5-18.9-8.6-2.5-2.1-3.2-5.2-7.6-6.4-2.8-3.3-6.2-2.6-7.3.6-2.9-2.3-13.8-3.3-15.7 7 5.2-3.7 9.7-5.1 13-.5-1.8 3.1 4.2 5 9.4 6.2 3.7.2 10.2 3.6 12.2 9.2a20 20 0 0 1-16.7-2.6 11 11 0 0 0-13-.8c-4.4-2.8-14.7 2.5-15.1 10.9 4.3-4 8.3-6 12.3-3.4-2 .4-1.3.6-1 1.8l10 5.8c-5 1.3-9.6 3.3-7.4 12.5 0 0 4-8 13-5 .2-.3 1.3 2.8 3.9.7 3.9-4.4 12.8-6.4 20.7-7.2 6.3-.7 12.6-2.6 18 1 5-2.5 10.4-4.2 16-.2 6.6 2 11.4 9.8 19.7 6.3 4.2-3 9.3-3 14.5 2.8 0-7.4-5.5-9.9-13.3-11.5l-5.4-3.2c-5-.8-10 .1-15.1-2.3a92 92 0 0 0 57.7-42.4l12.5 4.4c3 .2 3.2 1.2 9.3 3 .2-8.9-3.7-18.1-19.8-19l-21-8c-4.6-4.8-6.6-14.9-.9-20.8 5.6-5 6.6-4.4 10.3-10.5 4.5-.4 8.7 4.2 12.8 4.2 2 5.9 13.4 11 20.6 9.3 4.5 4 13 6.2 22.5 3a18 18 0 0 0 20.5 3c2.2 2.2 6.8 4 12 2.8.5 0 2.8 5.8 8.5 7.9-2.5 2.4-1 13 1.7 16.9a17 17 0 0 0-.9 12.7c-5.8 3.7-7 6.5-4.4 12.8-7.6 12.3-16.7 13.7-25.3 10l-9.3-6-9.8-9.6c-1.7-1.6-5.2-2-5.9 1.4 0 0-12.6-2.8-13.7 7.9 5.3-5.1 12.7-.6 12.7-.4s-1.8 1.4-.4 3.4c.3-.3 9.3 3.3 17.2 6.7 4.3 1.7 5.3 2.2 7.2 3.2l-7.2-3.2a33 33 0 0 0-11-2.9c-4.4-.4-9.2-1-11.4 2.4-4.8 2-12.4 3.7-12 12.7 3.2-5.4 7.7-5.1 13.4-4.6l-.4 1.2c6.2 2.8 5-.8 10.8-1.3a44 44 0 0 1 15.3 2.5c-4.5 1.3-10.7.7-13.6 4-.6 1-2.5.6-1.6 3.2 0 0-9-.2-11.3 12 9-5.7 15.9-5.5 16-5.5l2.9.6 11-7.3c.3 0 10.6-4.6 15.3.6 4.2 2 8.6 2.2 13-.4 8.4-3.7 16.3-4 24 1.2l7.1 4.2 3-2s8-2.2 13.8 4.9c-2.4-12.3-11.2-12.7-11.2-12.7l-2-1.8-12.4-4.9c-1.9-4.5-6.4-8-1.9-13.4 4.7-23.1 10.2-40.4 1.2-63.8 8.4 3.6 14.7 14.8 25.2 10.9 0-9.4-34.6-27.3-61-41.6C508 264 560 232.1 540 191.5l9.4-29.4c4.5 9 13.5 15.8 21.6 18.7-6.7-12.7-10.5-51.6-6.7-78.4a627 627 0 0 1-57.1 60c10 2.4 18.9.7 28.6-.5l-8.2 17c-26.6-15.7-57.8-4-58 16.8.9 24.2 30.8 27.7 48.1 19.2-3.4 22.1-54.2 14-54.2 14-18-6.2-35.1-5.2-54-5 3.9-12.1 25.7-22.9 42.4-18.1-23.3-26.2 3.3-58.7 35.4-68.6-35-11.6-4.9-38.3 21.3-57.4 0 0-75.3 31.7-82.2 31.6-21.4-1.6-15.6-27-7.4-40.6zm-236.4 30.4q2.8 0 5.5.6c3.4.9 7.5 1.3 7.5 2.4-1.6 2.6-5.5 5.7-9.3 5.6s-6-2.5-7.2-8.2q.8-.4 3.5-.4zm317 89.4c5 0 10.9 2 16.6 8.2-2.7 8-26.8 12-28.4.2-.5-3.6 4.6-8.3 11.8-8.4z\"/>    <path fill=\"none\" stroke-linejoin=\"round\" d=\"m207.4 171.2 3.7 5.3m-.2.1s0 7.2 1.5 7.3m-3.3 3.9 3.8 6.3m-10.5 1.6c.2 0 4.7 5.2 4.7 5.2m3.9-4c0 .2 4.2 8.1 4.5 8.1m-10-2.6s1.4 9.6 2.7 9.3m-9 8.3 4.2 6.5m3.7-13.3s2.3 9.1 4.1 8.3m1.9-13.8c.1.2 4.3 6.1 5.4 5.3m-1 2.3 4 8m-10.6-1.8 3.3 9.4m-11-4.6s3 10.1 5.7 8.5m-6.8 5s.2 5.3 2.8 5.6m1.8-8.3c0 .2 2.7 3.8 2.7 3.8m5-10.1 2.1 3.5m4.9-10 3.3 4.1M206 176.7c.1 4.5 7.2-1.6 10-5.4m-13 21s7.7-5.5 13.7-13.8m-16.3 26.9c5.5-1.5 15.6-13.7 17.6-20.2m-18.7 32.3c1.5.7 20.3-13 20.8-22.9M198.8 228c0-.1 17.2-4.4 24.3-23.3M198 242.3s27.5-16.5 29-28.6M412.4 270s-1.8 14.2-16 16.4m20.5 9c.1-.2 13.6-15 10.1-19.5m21.1 5.2s-.2 10.3-8.6 17.4m25.4-14.4s.3 12.4-5 17.4m20.4-10s-6 11.7-8.1 12.9m7.9 7.8s7.8 2 10.3-3.2m-8.3 20.1s7.2 1.3 10.6-5.6m-11.4 18.7s5.9 5 9.9-1.6m-94-94.4s-.7 25.3 34.8 30.4c39.7 11 58.5 5.2 60.8 49.7-1.5 17-3.6 36-16 28.7m-117.4-85.5s5.7 10.1 12.5 9.4c9-2.6 12.3 2.9 12.3 2.9m-49-2.2s15 7.3 27.7-4.5m-26-6c1.3 17.5-20.1 27.5-28.6 25.8m29.6 41c.1 0 11.6-6.8 9.3-11.6m-32.1 1.5c.3-.4 19.3-2.2 22.8-9m-31.6-19s26.9.2 28.7 5.1m7-21s-26.2 44.9 22.2 44.9m-50-45.5s-5.6 16.7-13.6 22.4m-14.2-28.2s9.7 18.8 0 28.1M261 280.8c.1.3 3.1 26.7-3.5 34.2m-9.2-33.4s1 16.8-4 22.8 1.2 18.4 1.2 18.4m-60.5 8s3.6 6.3 8.5 4.1m-2.5-17.8s8 3.5 10.7 2.2m-2-30.4s-11.8 3.3-7.3 17.3c6.8 5.5 13.4 4.6 13.4 4.6m-29.4 37.4c-.1 0 1.4 11 9 2.7 5.3-11.2 22-42.6 25.9-53.4m7.8-5.1s-8.1-6.3-7.8 2.5c-.2 5.5 2.5 6.8 2.5 6.8.3 4 3.8 9.6 6.6 4.5 1.2-5-.8-7.2-.8-7.2m4.7-9c-7.3-.4-11.3 15.7 2.8 5.6m4.8-11s-1.8 2.5-4.7-.2c-1.5-2.6-6.8 12 2.5 12.5 1.7-4.3 6.8-5.5 6.8-5.5m4.4-13.8s-4.2 2-5.7 1.7c-5 1.1-4 12.8 2.3 12.1 2.2-2.5 4.5-6 4.5-6m-40.3-23c-.2 0-16.5 25.7 9.1 32.5m198-71s-10 8.4-.7 22c-31-.5-47.5 13.8-48.8 23.4-39.4-2.8-32.2 8.8-45 12.6-17.1-14.3-42.2-6.3-40.6 8-11.4-16.1-29-8.3-31.2-4.3s-1.3-19.8-1.3-19.8-11.5 5.2-19.4 14.6v-19.9c-9.6 2-18.9 2-28.8 1.8m-25.9-7.3s14.3 8 32-2.8M166 226.3s11 10 32 6.8m-25-29.7s2.4 8.1 26.3 8.6M181 184.6s9 11 21.2 9.3m-13.5-25s3.5 6 16.8 7m-9-24.5s7 7.6 15 6.3M238 89.3s3.1-3 8.3-1.5m-10.5 17.8s-9.6-.3-9-4c.8-4.4 10.2-7.5 10.2-7.5s12.5-8 14.4-10.8m-56.6 44 12.2 23.3 5.8-8.8 3 6 5-8.7 8.6 5.5-3.2-10.7 7.2-.5s-2-5.1-8.4-6.2c1.7-1.3 7.7-5.3 7.7-5.3s-3.4-4-8.8-4.1c1.8-1.9 4.2-6.5 4-6.5l-5.3-1.2s12.2 4 21.6-1.6M221 89.7c.1.1-.7 4.8-3.3 7.5m-43.7 5.3s7.5-2 13.1-.9 13.1 3.2 13.1 3.2 9-1.2 11.9-3.3m-56.8 6s-1 3.6-1.4 6c0 1.7-5.5 4-5.5 4m10.3-17.4s4.8 6 5 9.5c.1 3.4-3.6 6-3.6 6M109 141l-5-8 4.5-1.6m90.5 121c-4-5.2 3-84.2 17.7-104.8-5.1 37.2 12 75.2 16.3 75m-79-97s6.8 2.5 20.7-8.6m18.9 26.8 10 .1m300.3-62s-166.7 77.8-169.1 82c28.1-8.6 147.5-28.5 150.4-26.8-7 1.7-151.9 35-158.7 43 36.2-1.2 111.9 11.6 123.8 24C424.5 198.3 347.6 187 324 192c17.2 4.1 83.2 46.8 83.2 53.6-10-9.5-89.3-42.2-92.4-39 18.2 10.9 43.9 51.4 43.9 61.3-5.3-8.4-51.2-57.7-53.9-54.5 4.9 6.7 14.5 64.9 9.6 67.6 0-7-17.8-58-19.3-59.4-3.6 1-26.3 62-21.8 67.8-3-20.4.5-63 6-61.3-10 1.5-41.7 43.4-38.3 50 1-10.5 2.4-17.4 20.4-52.1-20 1.2-61.2 27.1-68.2 36.4 5.6-16.5 40.5-44.4 55.8-46.4m72-60.7c17.6-9.8 72-29.7 108.4-44.4m-142.6 97s12-.2 24-32.8c11.8-44.6 105.7-94.3 107.6-103.6M128 252.8s-2.8 6-6.2 7.6m19.7 1.4s-3.7 7.2-4.6 10.6m17.5-7s3 9.8.5 14.4m-36.4-40.1c-9.4 5.3 5.4 39 50.1 42.2m-7.2-18.2s-1.2 6 7.2 18c-2.4 13.4 10.2 23.9 15.2 25.6m-26-164.2 1.4-3.6 1.5 4 2.5-.1 1.6-4 1.4 4h2.4l1.5-4.4 2.3 4.2h2l1.5-5 3 3.6 1.2-.4 1-5.2 3.1 3.6 1-.5 1.4-5 2.5 3.7 1.3-.4 1.2-4.3 2.4 4m-39 6.2 18.8-.3c6 0 15.8-8.3 26.7-5.7m-84.9 46s3.1 6.8 7.4 3m-14.6 1.5s-6 16.2 1.2 20m-9.8-37.8s0 3.8 8-2m-32.5 86.7s6.3 2 5.3 6.7m-3-80.8s4 1.9 7.8-4m34.2 189.7c6.1-.4 7.5 2.4 13 2.4 6.6.2 12.9-2.4 21-4.7m53.1 15c-.2 0-3 5.8-.5 8.7m-87.5-8.2s9.8-8 15-3.1c4.9 1.7 7.6 1.4 7.6 1.4m-17.5-21.3s2.4 6.2-5.6 5.3m-2.4 9s5.1 3.2-.7 7.5m3.8 5.8s7 1 2.9 6.7M346 341.6s19 2 20 3.4c2.2-2.3 19.2-16.2-1.7-18.1a19 19 0 0 1-18.3 14.7zm-6.8 9.5c7.1 5.7 4.2 9.1 26.6-5.9m-36.8 13s10.5 11.4 18.2-2.4m-38.3 6.5-14.3 7.5M269 380.3s8.7-7.4 12.7-3.5 21.3-3.4 21.3-3.4M275.5 348s3 6-2.8 6.7m-8.5 11.9s3 5.6-2.8 7m9.5 8.1s9 .5 5.8 7.3m78.4-8.5s-5 4.2-1.3 9m73-39s5.7 2.8-1.1 7.5m-5.7 9.9s4.3 4.5 1.4 8.2m10.6 9s5.9 1.7 5.2 6.6m77.8-11s-5 3.7-2.3 8.4M427 236.3c11.8-1.4 28.8 25 37.5 30.1m51.9-67.4s6 5.3.7 18m10.4-38.2c1.7 1.3 8.1 4.8 12.4 12.8m4.1-52.2-8.3 22.5m17.6-23.6s-1.6 20-4 24M516 198.8c-2.7 8-26.8 12-28.4.2-.9-6 14.2-15.3 28.4-.2z\"/>    <path stroke-linejoin=\"round\" d=\"m182.3 101.3 9.3 1.7s-6.5 8.8-9.3-1.7z\"/>  </g></svg>"};
+
+function $(id){ return document.getElementById(id); }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function flagSrc(k){ return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(FLAGS[k]); }
+
+/* ---------- Données ---------- */
+var MOODS = [
+  {en:"fine",          fr:"bien, ça va",            e:"🙂", g:"bien"},
+  {en:"great",         fr:"super, en pleine forme", e:"😃", g:"bien"},
+  {en:"happy",         fr:"heureux, content",       e:"😊", g:"bien"},
+  {en:"sad",           fr:"triste",                 e:"😢", g:"sad"},
+  {en:"tired",         fr:"fatigué",                e:"🥱", g:"tired"},
+  {en:"sick",          fr:"malade",                 e:"🤒", g:"sick"},
+  {en:"grumpy",        fr:"grognon, ronchon",       e:"😠", g:"fache"},
+  {en:"in a bad mood", fr:"de mauvaise humeur",     e:"😤", g:"fache"}
+];
+var NATS = [
+  {nat:"Australian",flag:"au"},{nat:"American",flag:"us"},{nat:"English",flag:"gb-eng"},{nat:"Welsh",flag:"gb-wls"},
+  {nat:"Scottish",flag:"gb-sct"},{nat:"Irish",flag:"ie"},{nat:"Canadian",flag:"ca"},{nat:"New Zealander",flag:"nz"},{nat:"South African",flag:"za"}
+];
+var NOMBRES = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
+var NAT_LIBRES = ["French","English","American","Australian","Welsh","Scottish","Irish","Canadian","New Zealander","South African","British","Spanish","German","Italian","Portuguese","Belgian","Swiss","Moroccan","Algerian","Tunisian","Turkish","Polish","Dutch","Chinese","Japanese","Brazilian","Mexican","Indian","Russian","Ukrainian","Romanian","Senegalese","Malian","Ivorian","Cameroonian","Congolese","Greek","Swedish","Norwegian","Danish","Vietnamese","Lebanese","Syrian","Egyptian","Afghan","Haitian","Comorian","Malagasy","Luxembourgish","Austrian","Hungarian","Czech","Croatian","Serbian","Albanian","Bulgarian","Korean","Thai","Colombian","Peruvian","Chilean","Argentinian","Argentine","Cuban"];
+// sujets : pron = pronom de reprise, v = forme de be
+var SUJETS = [
+  {s:"I",v:"am"},{s:"You",v:"are"},{s:"He",v:"is"},{s:"She",v:"is"},{s:"It",v:"is"},{s:"We",v:"are"},{s:"They",v:"are"},
+  {s:"Jenny",v:"is"},{s:"Gary",v:"is"},{s:"Mike and Paul",v:"are"},{s:"Kate and Meg",v:"are"},{s:"My dog",v:"is"},{s:"Tom and I",v:"are"},{s:"Lisa",v:"is"}
+];
+var NEG = {am:"'m not", is:"isn't", are:"aren't"};
+var NEG_LONG = {am:"am not", is:"is not", are:"are not"};
+var QUESTIONS = [
+  {q:"What's your name?",       r:"My name is Dylan.",      fr:"Comment tu t'appelles ?",   mots:["What's","your","name","?"]},
+  {q:"How old are you?",        r:"I'm eleven.",            fr:"Quel âge as-tu ?",          mots:["How","old","are","you","?"]},
+  {q:"What's your nationality?",r:"I'm American.",          fr:"Quelle est ta nationalité ?",mots:["What's","your","nationality","?"]},
+  {q:"How are you?",            r:"I'm fine, thank you.",   fr:"Comment ça va ?",           mots:["How","are","you","?"]},
+  {q:"How do you feel?",       r:"I feel great.",          fr:"Comment te sens-tu ?",      mots:["How","do","you","feel","?"]},
+  {q:"How is Jenny?",           r:"She is grumpy.",         fr:"Comment va Jenny ?",        mots:["How","is","Jenny","?"]},
+  {q:"How are Mike and Paul?",  r:"They are sick.",         fr:"Comment vont Mike et Paul ?",mots:["How","are","Mike","and","Paul","?"]}
+];
+var GARCONS=["Amar","Liam","Dylan","Tom","Jack","Nigel","Eric","Harry","Sam"];
+var FILLES=["Jenny","Matilda","Alice","Amanda","Lucy","Emma","Chloe","Sally","Lisa"];
+var PAIRES=[["Kate","Meg"],["Alex","Jack"],["Mike","Paul"],["Lily","Rose"],["Ben","Sam"]];
+
+/* ---------- Voix ---------- */
+var voix=null;
+function choisirVoix(){ if(!("speechSynthesis" in window)) return; var v=speechSynthesis.getVoices();
+  voix=v.filter(function(x){ return /en[-_]GB/i.test(x.lang); })[0]||v.filter(function(x){ return /^en/i.test(x.lang); })[0]||null; }
+if("speechSynthesis" in window){ choisirVoix(); speechSynthesis.onvoiceschanged=choisirVoix; setTimeout(choisirVoix,500); setTimeout(choisirVoix,1500); }
+var audioPret=false;
+function debloquerAudio(){ if(audioPret||!("speechSynthesis" in window)) return; var u=new SpeechSynthesisUtterance(" "); u.volume=0; speechSynthesis.speak(u); audioPret=true; }
+function dire(t){ if(!("speechSynthesis" in window)) return; speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang="en-GB"; u.rate=.85; if(voix) u.voice=voix; speechSynthesis.speak(u); }
+window.__dire=dire;
+function jsq(t){ return t.replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
+function btnDire(t){ return '<button class="say" type="button" aria-label="Écouter" onclick="__dire(\''+jsq(t)+'\')">🔊</button>'; }
+
+/* ---------- Vérification des phrases ---------- */
+function norm(s){ return s.replace(/[’‘`´]/g,"'").replace(/\s*,\s*/g,", ").replace(/\s+/g," ").trim().replace(/[.!?]+$/,"").trim(); }
+function sansVirgule(s){ return s.replace(/,/g,"").replace(/\s+/g," ").trim(); }
+var APOS = {"im":"i'm","isnt":"isn't","arent":"aren't","hes":"he's","shes":"she's","theyre":"they're","whats":"what's","youre":"you're","were":"we're"};
+function reparerApos(xl){ return xl.split(" ").map(function(w){ return APOS[w]||w; }).join(" "); }
+// modeles : phrases correctes (avec majuscules attendues)
+function verifPhrase(v, modeles){
+  var x=norm(v); if(!x) return {etat:"vide"};
+  var xl=sansVirgule(x.toLowerCase());
+  var trouve=null;
+  for(var i=0;i<modeles.length;i++){ if(sansVirgule(norm(modeles[i]).toLowerCase())===xl){ trouve=modeles[i]; break; } }
+  if(trouve){
+    var mm=sansVirgule(norm(trouve)).split(" "), xx=sansVirgule(x).split(" "), fautes=[];
+    for(var k=0;k<mm.length;k++){
+      var m=mm[k], w=xx[k]||"";
+      var doitMaj = (k>0 && /^[A-Z]/.test(m)) || /^I($|')/.test(m);
+      if(doitMaj && w.charAt(0)!==m.charAt(0)) fautes.push(m);
+    }
+    if(fautes.length){
+      var msg="Presque ! Il manque une <b>majuscule</b> à : <b>"+fautes.join(", ")+"</b>.";
+      if(fautes.some(function(f){ return /^I($|')/.test(f); })) msg+=" (I s'écrit toujours en majuscule.)";
+      else msg+=" (Prénoms et nationalités prennent une majuscule.)";
+      return {etat:"presque", msg:msg+" Corrige et vérifie."};
+    }
+    return {etat:"ok", msg:"Bravo : <b>"+esc(trouve)+".</b>"};
+  }
+  var xr=reparerApos(xl);
+  for(i=0;i<modeles.length;i++){ if(sansVirgule(norm(modeles[i]).toLowerCase())===xr)
+    return {etat:"presque", msg:"Presque ! Il manque une <b>apostrophe</b> (I'm, isn't, aren't, what's…). Corrige et vérifie."}; }
+  if(/\bamn'?t\b/.test(xl)) return {etat:"faux", msg:"« amn't » n'existe pas : on dit <b>I'm not</b>. Une réponse possible : <b>"+esc(modeles[0])+".</b>"};
+  return {etat:"faux", msg:"Une réponse possible : <b>"+esc(modeles[0])+".</b>"};
+}
+function verifMot(v,bon){
+  var x=norm(v).toLowerCase(); if(!x) return {etat:"vide"};
+  if(x===bon.toLowerCase()) return {etat:"ok", msg:"Bravo : <b>"+bon+"</b>."};
+  if(x===bon.toLowerCase().replace(/^in /,"")) return {etat:"presque", msg:"Presque ! Il manque un petit mot au début. Corrige et vérifie."};
+  return {etat:"faux", msg:"La réponse était <b>"+bon+"</b>."};
+}
+// variantes : sujet + be + complément (affirmatif / négatif, contracté ou non)
+function variantes(sujet, v, comp, negatif){
+  var out=[], s=sujet;
+  var pron = {I:1,You:1,He:1,She:1,It:1,We:1,They:1};
+  if(!negatif){
+    out.push(s+" "+v+" "+comp);
+    if(pron[s]) out.push(s+({am:"'m",is:"'s",are:"'re"})[v]+" "+comp);
+  } else {
+    out.push(s+" "+NEG[v].replace(/^'m/,"am").replace(/^am not$/,"am not")+" "+comp);
+    out.push(s+" "+NEG_LONG[v]+" "+comp);
+    if(v==="am") out.push("I'm not "+comp);
+    else if(pron[s]) out.push(s+({is:"'s",are:"'re"})[v]+" not "+comp);
+  }
+  // supprimer doublons et corriger "I am not" / "I 'm not"
+  return out.filter(function(x,i){ return out.indexOf(x)===i && !/ '/.test(x); });
+}
+
+/* ---------- Leçon ---------- */
+function ouvrirLecon(){
+  $("lecon-moods").innerHTML=MOODS.map(function(m){ return '<button class="moodc" onclick="__dire(\''+jsq(m.en)+'\')"><span class="e">'+m.e+'</span><span><b>'+m.en+'</b><small>'+m.fr+'</small></span></button>'; }).join("");
+  $("lecon-qa").innerHTML=QUESTIONS.map(function(q){ return '<li>'+btnDire(q.q+" "+q.r)+' <b>'+q.q+'</b> <span class="r">'+q.r+'</span><br><small style="color:var(--muted)">'+q.fr+'</small></li>'; }).join("");
+  montrer("lecon");
+}
+
+/* ---------- Questions : MOODS ---------- */
+function distracteursMood(m,n){
+  var pris={}; pris[m.g]=1; var res=[];
+  shuffle(MOODS).forEach(function(x){ if(res.length<n && !pris[x.g]){ pris[x.g]=1; res.push(x); } });
+  return res;
+}
+function qMoodEn(m){
+  var ops=shuffle([m].concat(distracteursMood(m,3)));
+  return {type:"qcm", theme:"Moods", enonce:"How is he? Choisis le bon mot.", visuel:'<div class="emo-big">'+m.e+'</div><div style="color:var(--muted)">'+m.fr+'</div>', deux:true,
+    options:ops.map(function(x){ return {html:x.en, ok:x===m}; }), parle:m.en,
+    resume:m.e+" "+m.fr, corr:m.en, explain:m.e+" = <b>"+m.en+"</b> ("+m.fr+")."};
+}
+function qMoodEcoute(m){
+  var ops=shuffle([m].concat(distracteursMood(m,3)));
+  var phrase=pick(["I'm "+m.en+".","She is "+m.en+".","He is "+m.en+".","They are "+m.en+"."]);
+  return {type:"qcm", theme:"Moods", enonce:"Écoute et choisis la bonne humeur.", auto:phrase,
+    visuel:'<button class="btn ecoute" type="button" onclick="__dire(\''+jsq(phrase)+'\')">🔊 Écouter</button>', deux:true,
+    options:ops.map(function(x){ return {html:'<div class="emo">'+x.e+'</div><small>'+x.fr+'</small>', ok:x===m}; }),
+    resume:"Écoute : « "+phrase+" »", corr:m.en+" ("+m.fr+")", explain:"Tu as entendu : <b>"+phrase+"</b> → "+m.fr+"."};
+}
+function qMoodEcrit(m){
+  return {type:"saisie", theme:"Moods", enonce:"Écris le mot en anglais.", visuel:'<div class="emo-big">'+m.e+'</div><div style="font-weight:700">'+m.fr+'</div>',
+    placeholder:"mood…", parle:m.en, resume:m.fr+" → anglais", corr:m.en, verif:function(v){ return verifMot(v,m.en); }};
+}
+
+/* ---------- Questions : BE ---------- */
+function compAlea(){
+  var t=Math.random();
+  if(t<.55) return pick(MOODS).en;
+  if(t<.8) return pick(NATS).nat;
+  return pick(NOMBRES.slice(7,16));
+}
+function qBe(){
+  var S=pick(SUJETS), c=compAlea();
+  var ops=["am","is","are"];
+  return {type:"qcm", theme:"Be (+)", enonce:"Complète avec la bonne forme de be.", visuel:'<div class="gros-mot" style="font-size:1.4rem">'+S.s+" ___ "+c+'.</div>',
+    options:ops.map(function(o){ return {html:'<span class="'+o+'">'+o+'</span>', ok:o===S.v}; }), deux:false,
+    parle:S.s+" "+S.v+" "+c+".", resume:S.s+" ___ "+c+".", corr:S.s+" "+S.v+" "+c+".", explain:explBe(S)+" → <b>"+S.s+" "+S.v+" "+c+".</b>"};
+}
+function explBe(S){
+  if(S.v==="am") return "Avec I, on utilise am";
+  if(S.v==="is") return ({He:1,She:1,It:1}[S.s] ? "Avec "+S.s : S.s+" = une seule personne (he/she/it)")+", on utilise is";
+  return ({You:1,We:1,They:1}[S.s] ? "Avec "+S.s : S.s+" = plusieurs (they/we)")+", on utilise are";
+}
+function qNegQcm(){
+  var S=pick(SUJETS), c=compAlea();
+  var ops=["'m not","isn't","aren't"], bon=NEG[S.v];
+  return {type:"qcm", theme:"Be (−)", enonce:"Mets à la forme négative.", visuel:'<div class="gros-mot" style="font-size:1.4rem">'+S.s+(S.v==="am"?"":" ")+"___ "+c+'. <span style="color:#dc2626">✗</span></div>',
+    options:ops.map(function(o){ return {html:o, ok:o===bon}; }),
+    parle:S.s+(S.v==="am"?"'m not ":" "+bon+" ")+c+".", resume:S.s+" ___ "+c+" (négatif)", corr:S.s+(S.v==="am"?"'m not ":" "+bon+" ")+c+".",
+    explain:"<b>"+S.s+(S.v==="am"?"'m not ":" "+bon+" ")+c+".</b> ("+S.v+" not → "+bon.replace(/^'/,"I'")+")"};
+}
+function qNegEcrit(){
+  var S=pick(SUJETS), c=compAlea();
+  var aff=S.s+" "+S.v+" "+c+".";
+  var mods=variantes(S.s,S.v,c,true);
+  return {type:"saisie", theme:"Be (−)", enonce:"Écris cette phrase à la forme négative.", visuel:'<div class="gros-mot" style="font-size:1.3rem">'+aff+'</div>',
+    placeholder:"phrase négative…", parle:mods[mods.length>1&&S.v!=="am"?0:0], resume:aff+" → négatif", corr:mods.join("  /  "),
+    verif:function(v){ return verifPhrase(v,mods); }};
+}
+function qContraction(){
+  var S=pick(SUJETS.filter(function(x){ return x.s!=="I"; })), c=compAlea();
+  var bon=S.s+" "+NEG[S.v]+" "+c+".";
+  var faux=[S.s+" "+(S.v==="is"?"aren't":"isn't")+" "+c+".", S.s+" "+(S.v==="is"?"isn't not":"aren't not")+" "+c+".", S.s+" "+(S.v==="is"?"is'nt":"are'nt")+" "+c+"."];
+  return {type:"qcm", theme:"Be (−)", enonce:"Quelle est la forme contractée ?", visuel:'<div class="gros-mot" style="font-size:1.3rem">'+S.s+" "+NEG_LONG[S.v]+" "+c+'.</div>',
+    options:shuffle([{html:bon,ok:true}].concat(faux.map(function(f){ return {html:f}; }))),
+    parle:bon, resume:S.s+" "+NEG_LONG[S.v]+" "+c+" → contracté", corr:bon, explain:"<b>"+NEG_LONG[S.v]+" = "+NEG[S.v]+"</b>. L'apostrophe remplace le o de not."};
+}
+
+/* ---------- Questions : QUESTIONS ---------- */
+function qReponseVersQuestion(){
+  var Q=pick(QUESTIONS);
+  var humeur={"How are you?":1,"How do you feel?":1};
+  var autres=shuffle(QUESTIONS.filter(function(x){ return x!==Q && !(humeur[Q.q] && humeur[x.q]); })).slice(0,3);
+  return {type:"qcm", theme:"Questions", enonce:"Quelle question va avec cette réponse ?", visuel:'<div class="gros-mot" style="font-size:1.3rem">« '+Q.r+' » '+btnDire(Q.r)+'</div>',
+    options:shuffle([Q].concat(autres)).map(function(x){ return {html:x.q, ok:x===Q}; }),
+    parle:Q.q+" "+Q.r, resume:"Réponse : "+Q.r, corr:Q.q, explain:"<b>"+Q.q+"</b> ("+Q.fr+") → "+Q.r};
+}
+function qQuestionVersReponse(){
+  var Q=pick(QUESTIONS.slice(0,4));
+  var reps=[{t:"My name is Tom.",k:0},{t:"I'm twelve.",k:1},{t:"I'm Irish.",k:2},{t:"I'm tired.",k:3}];
+  return {type:"qcm", theme:"Questions", enonce:"Choisis la bonne réponse.", auto:Q.q, visuel:'<div class="gros-mot" style="font-size:1.3rem">'+Q.q+' '+btnDire(Q.q)+'</div>',
+    options:shuffle(reps).map(function(r){ return {html:r.t, ok:r.k===QUESTIONS.indexOf(Q)}; }),
+    resume:Q.q, corr:reps[QUESTIONS.indexOf(Q)].t, explain:"<b>"+Q.q+"</b> = "+Q.fr};
+}
+function qOrdre(){
+  var Q=pick(QUESTIONS);
+  return {type:"ordre", theme:"Questions", enonce:"Remets les mots dans l'ordre pour poser la question.", indice:Q.fr, mots:Q.mots, bon:Q.q,
+    parle:Q.q, resume:"Remettre en ordre : "+Q.fr, corr:Q.q};
+}
+function qMoi(){
+  var t=pick(["name","age","nat","mood","feel","intro"]);
+  if(t==="feel") return {type:"saisie", theme:"À toi !", enonce:"How do you feel?", visuel:btnDire("How do you feel?"), auto:"How do you feel?",
+    placeholder:"I feel… / I'm…", resume:"How do you feel?", corr:"I feel great. / I'm tired.", verif:function(v){ return verifMoi(v,"mood"); }};
+  if(t==="intro") return {type:"saisie", theme:"À toi !", enonce:"Présente-toi comme dans le livre.", visuel:'<div class="consigne">Hi. I\'m (ton prénom) and I\'m (ton âge).</div>',
+    placeholder:"Hi. I'm …", resume:"Se présenter : Hi. I'm … and I'm …", corr:"Hi. I'm Paul and I'm eleven.", verif:verifIntro};
+  if(t==="name") return {type:"saisie", theme:"À toi !", enonce:"What's your name?", visuel:btnDire("What's your name?"), auto:"What's your name?",
+    placeholder:"My name is…", resume:"What's your name?", corr:"My name is … / I'm …", verif:function(v){ return verifMoi(v,"name"); }};
+  if(t==="age") return {type:"saisie", theme:"À toi !", enonce:"How old are you?", visuel:btnDire("How old are you?"), auto:"How old are you?",
+    placeholder:"I'm…", resume:"How old are you?", corr:"I'm eleven. / I'm eleven years old.", verif:function(v){ return verifMoi(v,"age"); }};
+  if(t==="nat") return {type:"saisie", theme:"À toi !", enonce:"What's your nationality?", visuel:btnDire("What's your nationality?"), auto:"What's your nationality?",
+    placeholder:"I'm…", resume:"What's your nationality?", corr:"I'm French.", verif:function(v){ return verifMoi(v,"nat"); }};
+  return {type:"saisie", theme:"À toi !", enonce:"How are you?", visuel:btnDire("How are you?"), auto:"How are you?",
+    placeholder:"I'm…", resume:"How are you?", corr:"I'm fine, thank you. / I'm tired.", verif:function(v){ return verifMoi(v,"mood"); }};
+}
+function verifMoi(v,t){
+  var x=norm(v); if(!x) return {etat:"vide"};
+  var w=sansVirgule(x).split(" ");
+  // "I'm" ou "I am" au début
+  var debut, reste;
+  if(t==="name" && /^my$/i.test(w[0])){
+    if(!/^name$/i.test(w[1]||"")||!/^is$/i.test(w[2]||"")||w.length<4) return {etat:"faux", msg:"Une réponse possible : <b>My name is Dylan.</b>"};
+    reste=w.slice(3);
+  } else if(/^i'm$/i.test(w[0])){ debut=w[0]; reste=w.slice(1); }
+  else if(/^i$/i.test(w[0]) && /^am$/i.test(w[1]||"")){ debut=w[0]; reste=w.slice(2); }
+  else if(t==="mood" && /^i$/i.test(w[0]) && /^feel$/i.test(w[1]||"")){ debut=w[0]; reste=w.slice(2); }
+  else if(/^im$/i.test(w[0])) return {etat:"presque", msg:"Presque ! <b>I'm</b> s'écrit avec une apostrophe et un I majuscule. Corrige et vérifie."};
+  else return {etat:"faux", msg:"Commence par <b>"+(t==="name"?"My name is… ou I'm…":"I'm…")+"</b>. Exemple : <b>"+({name:"My name is Dylan.",age:"I'm eleven.",nat:"I'm French.",mood:"I'm fine, thank you."})[t]+"</b>"};
+  if(debut && debut.charAt(0)!=="I") return {etat:"presque", msg:"Presque ! <b>I</b> s'écrit toujours en majuscule. Corrige et vérifie."};
+  var r=reste.join(" "), rl=r.toLowerCase();
+  if(t==="name"){
+    if(!reste.length) return {etat:"faux", msg:"Il manque ton prénom."};
+    if(reste[0].charAt(0)!==reste[0].charAt(0).toUpperCase()) return {etat:"presque", msg:"Presque ! Un prénom prend une <b>majuscule</b>. Corrige et vérifie."};
+    return {etat:"ok", msg:"Bravo, la phrase est correcte."};
+  }
+  if(t==="age"){
+    var m=rl.match(/^([a-z]+|\d+)( years old)?$/);
+    if(m && (NOMBRES.indexOf(m[1])>=0 || /^\d+$/.test(m[1]))){
+      return {etat:"ok", msg:/^\d+$/.test(m[1]) ? "Correct. Au test, écris plutôt le nombre en lettres : <b>I'm "+(NOMBRES[+m[1]]||m[1])+".</b>" : "Bravo, la phrase est correcte."};
+    }
+    if(/old/.test(rl)) return {etat:"faux", msg:"On dit <b>I'm eleven years old</b> (avec years) ou juste <b>I'm eleven</b>."};
+    return {etat:"faux", msg:"Exemple : <b>I'm eleven.</b>"};
+  }
+  if(t==="nat"){
+    for(var i=0;i<NAT_LIBRES.length;i++){
+      if(rl===NAT_LIBRES[i].toLowerCase()){
+        if(r!==NAT_LIBRES[i]) return {etat:"presque", msg:"Presque ! Les nationalités prennent une <b>majuscule</b> : "+NAT_LIBRES[i]+". Corrige et vérifie."};
+        return {etat:"ok", msg:"Bravo, la phrase est correcte."};
+      }
+    }
+    if(rl==="france") return {etat:"faux", msg:"France, c'est le pays. La nationalité, c'est <b>French</b> : I'm French."};
+    return {etat:"faux", msg:"Exemple : <b>I'm French.</b>"};
+  }
+  // mood
+  rl=rl.replace(/ (thank you|thanks)$/,"").replace(/^very /,"");
+  for(i=0;i<MOODS.length;i++) if(rl===MOODS[i].en) return {etat:"ok", msg:"Bravo, la phrase est correcte."};
+  return {etat:"faux", msg:"Utilise un mot de la leçon. Exemple : <b>I'm fine, thank you.</b> / <b>I'm tired.</b>"};
+}
+
+function verifIntro(v){
+  var x=sansVirgule(norm(v).replace(/[.!]/g," ")).replace(/\s+/g," ").trim();
+  if(!x) return {etat:"vide"};
+  if(/\bim\b/i.test(x)) return {etat:"presque", msg:"Presque ! <b>I'm</b> s'écrit avec une apostrophe. Corrige et vérifie."};
+  var m=x.match(/^(?:hi |hello )?(?:i'm|i am) ([^\\s]+) and (?:i'm|i am) ([a-z]+|\d+)(?: years old)?$/i);
+  if(!m) return {etat:"faux", msg:"Modèle : <b>Hi. I'm Paul and I'm eleven.</b>"};
+  if(/(^| )i('m| am)/.test(x)) return {etat:"presque", msg:"Presque ! <b>I</b> s'écrit toujours en majuscule. Corrige et vérifie."};
+  if(m[1].charAt(0)!==m[1].charAt(0).toUpperCase()) return {etat:"presque", msg:"Presque ! Ton prénom prend une <b>majuscule</b>. Corrige et vérifie."};
+  var a=m[2].toLowerCase();
+  if(NOMBRES.indexOf(a)<0 && !/^\d+$/.test(a)) return {etat:"faux", msg:"Après « and I'm », mets ton âge. Modèle : <b>Hi. I'm Paul and I'm eleven.</b>"};
+  return {etat:"ok", msg: /^\d+$/.test(a) ? "Correct. Au test, écris plutôt l'âge en lettres ("+(NOMBRES[+a]||a)+")." : "Bravo, c'est correct."};
+}
+
+/* ---------- Recap : Gabriel is grumpy today ---------- */
+function qRecap(m){
+  var g=Math.random()<.5, nom=g?pick(GARCONS.concat(["Gabriel"])):pick(FILLES), P=g?"He":"She";
+  var mods=[nom+" is "+m.en+" today", nom+" is "+m.en, nom+"'s "+m.en+" today", P+" is "+m.en+" today", P+"'s "+m.en+" today", P+" is "+m.en];
+  if(m.en!=="in a bad mood") mods.push(nom+" feels "+m.en+" today", nom+" feels "+m.en);
+  return {type:"saisie", theme:"Recap", enonce:"Raconte comment il/elle se sent, comme : Gabriel is grumpy today.",
+    visuel:'<div class="emo-big">'+m.e+'</div><div style="font-weight:700;font-size:1.2rem">'+nom+'</div>',
+    placeholder:nom+" is …", parle:mods[0], resume:nom+" "+m.e, corr:mods[0]+".", verif:function(v){ return verifPhrase(v,mods); }};
+}
+
+/* ---------- Présenter un personnage ---------- */
+function perso(){
+  var t=Math.random(), p={};
+  if(t<.4){ p.genre="he"; p.nom=pick(GARCONS); p.av=pick(["👦","🧒🏽","👦🏻","👦🏿"]); }
+  else if(t<.8){ p.genre="she"; p.nom=pick(FILLES); p.av=pick(["👧","👧🏽","👧🏻","👧🏿"]); }
+  else { p.genre="they"; var pr=pick(PAIRES); p.nom=pr[0]+" and "+pr[1]; p.av="🧒🧒"; }
+  var n=shuffle(NATS); p.nat=n[0]; p.pasNat=n[1];
+  p.age=7+Math.floor(Math.random()*9);
+  p.mood=pick(MOODS);
+  return p;
+}
+function fiche(p, montrerPas){
+  return '<div class="id-card"><div class="av">'+p.av+'</div><dl>'+
+    '<dt>Name</dt><dd>'+p.nom+'</dd><dt>Age</dt><dd>'+p.age+'</dd>'+
+    '<dt>Nationality</dt><dd><img alt="" src="'+flagSrc(p.nat.flag)+'"></dd>'+
+    (montrerPas?'<dt>Not</dt><dd><span class="barre-x"><img alt="" src="'+flagSrc(p.pasNat.flag)+'"></span></dd>':'')+
+    '<dt>Mood</dt><dd><span style="font-size:1.5rem">'+p.mood.e+'</span> <small style="color:var(--muted);font-weight:400">'+p.mood.fr+'</small></dd></dl></div>';
+}
+function qPresenter(){
+  var p=perso(), champ=pick(["nom","age","nat","mood","pas"]);
+  var P = p.genre==="he"?"He":p.genre==="she"?"She":"They", v = p.genre==="they"?"are":"is";
+  var sujets=[P]; if(p.genre!=="they") sujets.push(p.nom);
+  var mods=[], consigne, comp;
+  function ajoute(c,neg){ sujets.forEach(function(s){ mods=mods.concat(variantes(s,v,c,neg)); }); }
+  if(champ==="nom"){ consigne= p.genre==="they" ? "Dis qui ils sont." : "Dis comment il/elle s'appelle.";
+    if(p.genre==="they") mods=variantes("They","are",p.nom,false);
+    else { mods=variantes(P,"is",p.nom,false); mods.push((p.genre==="he"?"His":"Her")+" name is "+p.nom); } }
+  if(champ==="age"){ consigne= p.genre==="they" ? "Dis leur âge (ils ont le même âge)." : "Dis son âge.";
+    [NOMBRES[p.age], NOMBRES[p.age]+" years old", String(p.age), p.age+" years old"].forEach(function(c){ ajoute(c,false); }); }
+  if(champ==="nat"){ consigne= p.genre==="they" ? "Dis leur nationalité." : "Dis sa nationalité."; ajoute(p.nat.nat,false); }
+  if(champ==="mood"){ consigne="Dis comment "+(p.genre==="they"?"ils vont":"il/elle va")+"."; ajoute(p.mood.en,false); ajoute(p.mood.en+" today",false); }
+  if(champ==="pas"){ consigne="Dis la nationalité qu'"+(p.genre==="they"?"ils n'ont pas":(p.genre==="he"?"il n'a pas":"elle n'a pas"))+" (drapeau barré)."; ajoute(p.pasNat.nat,true); }
+  mods=mods.filter(function(x,i){ return mods.indexOf(x)===i; });
+  return {type:"saisie", theme:"Présenter", enonce:"Écris une phrase.", visuel:fiche(p, champ==="pas")+'<div class="consigne">'+consigne+'</div>',
+    placeholder:P+" …", parle:mods[0], resume:p.nom+" : "+consigne, corr:mods[0]+".",
+    verif:function(v){ var r=verifPhrase(v,mods);
+      if(r.etat==="faux"){
+        var xl=norm(v).toLowerCase();
+        if(p.genre==="they" && /\bis\b|isn'?t/.test(xl)) r.msg="Ils sont plusieurs : <b>They are</b> / <b>They aren't</b>. Une réponse possible : <b>"+esc(mods[0])+".</b>";
+        else if(p.genre!=="they" && new RegExp("^(he|she|"+p.nom.toLowerCase()+") (are|aren'?t)").test(xl)) r.msg="Une seule personne : <b>"+P+" is</b>. Une réponse possible : <b>"+esc(mods[0])+".</b>";
+        else if(p.genre==="he" && /^she\b/.test(xl)) r.msg="C'est un garçon : <b>He</b>. Une réponse possible : <b>"+esc(mods[0])+".</b>";
+        else if(p.genre==="she" && /^he\b/.test(xl)) r.msg="C'est une fille : <b>She</b>. Une réponse possible : <b>"+esc(mods[0])+".</b>";
+      }
+      return r; }};
+}
+
+/* ---------- Séries ---------- */
+function construire(mode){
+  var M=shuffle(MOODS), i;
+  if(mode==="moods") return shuffle(M.map(function(m,i){ return [qMoodEn,qMoodEcoute,qMoodEcrit][i%3](m); }).concat([qRecap(M[0]),qRecap(M[3])]));
+  if(mode==="be"){ var s=[]; for(i=0;i<10;i++) s.push(qBe()); return s; }
+  if(mode==="neg"){ s=[]; for(i=0;i<10;i++) s.push(i<4?qNegQcm():i<7?qNegEcrit():qContraction()); return shuffle(s); }
+  if(mode==="questions"){ return shuffle([qReponseVersQuestion(),qReponseVersQuestion(),qQuestionVersReponse(),qQuestionVersReponse(),qOrdre(),qOrdre(),qOrdre(),qMoi(),qMoi(),qMoi()]); }
+  if(mode==="presenter"){ s=[]; for(i=0;i<8;i++) s.push(qPresenter()); return s; }
+  // contrôle
+  var c=[qMoodEn(M[0]),qMoodEcoute(M[1]),qMoodEcrit(M[2]),qBe(),qBe(),qNegQcm(),qNegEcrit(),qContraction(),
+         qReponseVersQuestion(),qOrdre(),qMoi(),qRecap(M[3]),qPresenter(),qPresenter(),qPresenter()];
+  return c;
+}
+
+/* ---------- Moteur ---------- */
+var etat=null;
+function montrer(id){ ["accueil","lecon","jeu","fin"].forEach(function(x){ $(x).classList.toggle("hidden",x!==id); }); window.scrollTo(0,0); }
+function demarrer(mode){
+  debloquerAudio();
+  if(mode==="lecon"){ ouvrirLecon(); return; }
+  etat={mode:mode, serie:construire(mode), i:0, score:0, erreurs:[]};
+  montrer("jeu"); question();
+}
+function question(){
+  var q=etat.serie[etat.i], n=etat.serie.length;
+  $("prog").textContent=(etat.i+1)+" / "+n;
+  $("barre").style.width=(etat.i/n*100)+"%";
+  $("fb").innerHTML=""; $("q-suivant").classList.add("hidden");
+  var z=$("q-zone");
+  var h='<div class="theme">'+q.theme+'</div><p class="enonce">'+q.enonce+'</p>';
+  if(q.type==="qcm"){
+    h+='<div class="visuel">'+(q.visuel||"")+'</div><div class="options'+(q.deux?' deux':'')+'">'+
+      q.options.map(function(o,i){ return '<button class="opt" data-i="'+i+'">'+o.html+'</button>'; }).join("")+'</div>';
+    z.innerHTML=h;
+    z.querySelectorAll(".opt").forEach(function(b){
+      b.onclick=function(){
+        var o=q.options[+b.dataset.i];
+        z.querySelectorAll(".opt").forEach(function(x){ x.disabled=true; if(q.options[+x.dataset.i].ok) x.classList.add("bon"); });
+        if(!o.ok) b.classList.add("faux");
+        if(q.parle) dire(q.parle);
+        repondre(o.ok, q.explain);
+      };
+    });
+  }
+  else if(q.type==="saisie"){
+    h+='<div class="visuel">'+(q.visuel||"")+'</div><div class="saisie"><input id="rep" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="'+esc(q.placeholder||"")+'"><button class="btn" id="verif">Vérifier</button></div>';
+    z.innerHTML=h;
+    var inp=$("rep"), fini=false;
+    var go=function(){
+      if(fini) return;
+      var r=q.verif(inp.value);
+      if(r.etat==="vide"){ inp.focus(); return; }
+      if(r.etat==="presque"){ $("fb").innerHTML='<div class="fb presque">'+r.msg+'</div>'; inp.focus(); return; }
+      fini=true; inp.disabled=true; $("verif").disabled=true;
+      if(q.parle) dire(q.parle);
+      repondre(r.etat==="ok", r.msg);
+    };
+    $("verif").onclick=go;
+    inp.onkeydown=function(e){ if(e.key==="Enter") go(); };
+  }
+  else if(q.type==="ordre"){
+    h+='<p style="margin:-6px 0 10px;color:var(--muted)">En français : '+q.indice+'</p><div class="ligne-rep" id="ligne"></div><div class="tuiles" id="tuiles"></div><button class="btn" id="verif">Vérifier</button>';
+    z.innerHTML=h;
+    var tuiles=shuffle(q.mots.map(function(m,i){ return {m:m,i:i}; }));
+    // éviter de donner la bonne réponse toute faite
+    if(tuiles.map(function(t){ return t.m; }).join(" ")===q.mots.join(" ")) tuiles.reverse();
+    var pose=[], fini2=false;
+    var dessiner=function(){
+      $("ligne").innerHTML=pose.map(function(t,k){ return '<button class="tuile posee" data-k="'+k+'">'+esc(t.m)+'</button>'; }).join("");
+      $("tuiles").innerHTML=tuiles.map(function(t,k){ return pose.indexOf(t)>=0 ? "" : '<button class="tuile" data-t="'+k+'">'+esc(t.m)+'</button>'; }).join("");
+      if(fini2) return;
+      $("ligne").querySelectorAll(".tuile").forEach(function(b){ b.onclick=function(){ pose.splice(+b.dataset.k,1); dessiner(); }; });
+      $("tuiles").querySelectorAll(".tuile").forEach(function(b){ b.onclick=function(){ pose.push(tuiles[+b.dataset.t]); dessiner(); }; });
+    };
+    dessiner();
+    $("verif").onclick=function(){
+      if(fini2) return;
+      if(pose.length<q.mots.length){ $("fb").innerHTML='<div class="fb presque">Utilise toutes les étiquettes.</div>'; return; }
+      fini2=true; $("verif").disabled=true; dessiner();
+      var rep=pose.map(function(t){ return t.m; }).join(" ").replace(" ?","?");
+      var ok = rep===q.bon;
+      dire(q.bon);
+      repondre(ok, ok ? "Bravo : <b>"+q.bon+"</b>" : "La question est : <b>"+q.bon+"</b>");
+    };
+  }
+  if(q.auto) setTimeout(function(){ dire(q.auto); },350);
+}
+function repondre(ok,msg){
+  var q=etat.serie[etat.i];
+  if(ok) etat.score++; else etat.erreurs.push({q:q.resume, c:q.corr});
+  $("fb").innerHTML='<div class="fb '+(ok?'ok':'ko')+'">'+(ok?'✔ ':'✘ ')+(msg||"")+'</div>';
+  var b=$("q-suivant"); b.classList.remove("hidden");
+  b.textContent = etat.i+1>=etat.serie.length ? "Voir mon score" : "Suivant";
+  b.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function lireMeilleur(){ try{ return JSON.parse(localStorage.getItem("meilleur:"+FICHIER)||"null"); }catch(e){ return null; } }
+function enregistrerMeilleurScore(bon,total){
+  var b=lireMeilleur();
+  if(!b || bon/total > b.bon/b.total){ b={bon:bon,total:total}; try{ localStorage.setItem("meilleur:"+FICHIER,JSON.stringify(b)); }catch(e){} }
+  return b;
+}
+function majAccueil(){ var b=lireMeilleur(); $("record").textContent = b ? "Meilleur score au contrôle : "+b.bon+" / "+b.total : ""; }
+function terminer(){
+  var n=etat.serie.length, s=etat.score, r=s/n;
+  $("barre").style.width="100%";
+  $("f-score").textContent=s+" / "+n;
+  $("f-msg").textContent = r===1 ? "Sans faute, bravo !" : r>=.75 ? "Très bien, encore un petit effort." : r>=.5 ? "C'est en bonne voie. Relis les corrections puis recommence." : "Relis la leçon, puis recommence : les questions changent à chaque fois.";
+  if(etat.mode==="controle"){ var b=enregistrerMeilleurScore(s,n); $("f-record").textContent="Meilleur score au contrôle : "+b.bon+" / "+b.total; }
+  else $("f-record").textContent="";
+  $("f-erreurs").innerHTML = etat.erreurs.length ? '<h2>À revoir</h2><ul class="erreurs">'+etat.erreurs.map(function(x){ return '<li>'+esc(x.q)+'<span>'+esc(x.c)+'</span></li>'; }).join("")+'</ul>' : "";
+  montrer("fin");
+}
+document.querySelectorAll(".mode").forEach(function(b){ b.onclick=function(){ demarrer(b.dataset.mode); }; });
+document.querySelectorAll("[data-retour]").forEach(function(b){ b.onclick=function(){ majAccueil(); montrer("accueil"); }; });
+$("q-suivant").onclick=function(){ etat.i++; if(etat.i>=etat.serie.length) terminer(); else { question(); window.scrollTo(0,0); } };
+$("quitter").onclick=function(){ majAccueil(); montrer("accueil"); };
+$("f-encore").onclick=function(){ demarrer(etat.mode); };
+$("f-menu").onclick=function(){ majAccueil(); montrer("accueil"); };
+majAccueil();
+window.__test={verifIntro:verifIntro,verifPhrase:verifPhrase,variantes:variantes,verifMoi:verifMoi,construire:construire};
+})();
+</script>
+</body>
+</html>
