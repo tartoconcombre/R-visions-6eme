@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Musique – Stripsody, la musique en dessin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --encre: #000;
+    --papier: #fff;
+    --jaune: #FFE14D;
+    --cyan: #1FA8E0;
+    --magenta: #E5267A;
+    --vert: #2E9E4F;
+    --gris: #5a5a5a;
+    --titre: "Bangers", "Impact", "Arial Black", sans-serif;
+    --texte: "Atkinson Hyperlegible", "Verdana", "Segoe UI", sans-serif;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: calc(70px + env(safe-area-inset-top, 0px)); }
+  body {
+    margin: 0;
+    background: var(--papier);
+    color: var(--encre);
+    font-family: var(--texte);
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+  .page { max-width: 46rem; margin: 0 auto; padding: 0 1rem 4rem; }
+
+  /* ---------- Barre de score ---------- */
+  .barre {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+    background: var(--papier);
+    border-bottom: 3px solid var(--encre);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .5rem 1rem;
+  }
+  .barre a { color: var(--encre); font-weight: 700; }
+  .score { font-family: var(--titre); font-size: 1.6rem; letter-spacing: .03em; }
+
+  /* ---------- En-tête : une case de BD avec les 3 lignes ---------- */
+  .entete {
+    position: relative;
+    margin: 1.5rem 0 2rem;
+    border: 4px solid var(--encre);
+    box-shadow: 6px 6px 0 var(--encre);
+    background:
+      radial-gradient(circle, rgba(0,0,0,.18) 1.2px, transparent 1.6px) 0 0 / 9px 9px,
+      var(--jaune);
+    padding: 1.5rem 1.25rem 1.25rem;
+    overflow: hidden;
+  }
+  .entete h1 {
+    position: relative;
+    font-family: var(--titre);
+    font-weight: 400;
+    font-size: clamp(3rem, 14vw, 6rem);
+    line-height: 1;
+    margin: .2em 0 .35em;
+    letter-spacing: .02em;
+    -webkit-text-stroke: 2px var(--encre);
+    color: var(--papier);
+    text-shadow: 5px 5px 0 var(--magenta);
+    transform: rotate(-3deg);
+  }
+  .entete h1 span { display: inline-block; }
+  .entete h1 span:nth-child(odd) { transform: translateY(-.08em); }
+  .entete h1 span:nth-child(3n) { transform: translateY(.1em); }
+  .entete .lignes {
+    position: absolute; inset: 1.4rem 0 auto 0; height: 7.5rem; pointer-events: none;
+  }
+  .entete .lignes i {
+    position: absolute; left: 0; right: 0; height: 2px; background: var(--encre); opacity: .55;
+  }
+  .entete .lignes i:nth-child(1) { top: 20%; }
+  .entete .lignes i:nth-child(2) { top: 50%; }
+  .entete .lignes i:nth-child(3) { top: 80%; }
+  .entete p { position: relative; margin: 0; max-width: 34rem; font-weight: 700; }
+  .bulle {
+    position: relative; display: inline-block;
+    background: var(--papier); border: 3px solid var(--encre); border-radius: 1.2rem;
+    padding: .5rem .9rem; margin-top: .9rem; font-weight: 400;
+  }
+  .bulle::after {
+    content: ""; position: absolute; left: 1.4rem; bottom: -14px;
+    border: 12px solid transparent; border-top-color: var(--encre); border-bottom: 0;
+  }
+
+  /* ---------- Parties ---------- */
+  section.partie { margin: 2.5rem 0; }
+  .partie > h2 {
+    font-family: var(--titre); font-weight: 400;
+    font-size: 2.2rem; line-height: 1.1; margin: 0 0 .25rem;
+    letter-spacing: .02em;
+  }
+  .partie > p.intro { margin: 0 0 1.2rem; color: var(--gris); }
+  .partie h3 {
+    font-family: var(--titre); font-weight: 400; font-size: 1.5rem;
+    margin: 1.8rem 0 .6rem; letter-spacing: .02em;
+  }
+
+  .question {
+    border: 3px solid var(--encre);
+    box-shadow: 4px 4px 0 var(--encre);
+    padding: 1rem;
+    margin: 0 0 1.2rem;
+    background: var(--papier);
+  }
+  .question.juste { box-shadow: 4px 4px 0 var(--vert); }
+  .question.faux  { box-shadow: 4px 4px 0 var(--magenta); }
+  .question .enonce { font-weight: 700; margin: 0 0 .75rem; }
+  .choix { display: flex; flex-wrap: wrap; gap: .6rem; }
+  button {
+    font: inherit; color: var(--encre); cursor: pointer;
+    background: var(--papier);
+    border: 2px solid var(--encre); border-radius: .5rem;
+    padding: .55rem .9rem; min-height: 2.75rem;
+  }
+  button:hover:not(:disabled) { background: #f3f3f3; }
+  button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid var(--cyan); outline-offset: 2px;
+  }
+  button:disabled { cursor: default; }
+  .choix button.bon  { background: var(--vert); color: #fff; border-color: var(--vert); }
+  .choix button.rate { background: var(--magenta); color: #fff; border-color: var(--magenta); text-decoration: line-through; }
+  .choix button:disabled:not(.bon):not(.rate) { opacity: .5; }
+
+  .retour { margin: .75rem 0 0; padding-left: .8rem; border-left: 4px solid var(--encre); }
+  .retour b.ok { color: var(--vert); }
+  .retour b.ko { color: var(--magenta); }
+
+  /* Mini-partition à 3 lignes (questions de hauteur) */
+  .mini {
+    position: relative; height: 7rem; margin: 0 0 1rem;
+    border: 2px dashed #bbb; border-radius: .4rem; background: #fafafa;
+  }
+  .mini i { position: absolute; left: .6rem; right: .6rem; height: 2px; background: var(--encre); }
+  .mini i:nth-child(1) { top: 20%; } .mini i:nth-child(2) { top: 50%; } .mini i:nth-child(3) { top: 80%; }
+  .mini .mot {
+    position: absolute; transform: translate(-50%, -50%);
+    font-family: var(--titre); font-size: 1.9rem; background: #fafafa; padding: 0 .3rem; line-height: 1;
+  }
+  .onomato { font-family: var(--titre); letter-spacing: .03em; line-height: 1; }
+
+  .champ { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  .champ input {
+    font: inherit; padding: .5rem .7rem; min-height: 2.75rem;
+    border: 2px solid var(--encre); border-radius: .5rem; width: 12rem; max-width: 100%;
+  }
+
+  /* ---------- Atelier ---------- */
+  .atelier {
+    border: 4px solid var(--encre); box-shadow: 6px 6px 0 var(--cyan);
+    padding: 1rem;
+  }
+  .reglages { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .8rem; margin-bottom: 1rem; }
+  .reglages label { display: flex; flex-direction: column; font-weight: 700; font-size: .95rem; gap: .25rem; }
+  .reglages select {
+    font: inherit; font-weight: 400; padding: .45rem; min-height: 2.75rem;
+    border: 2px solid var(--encre); border-radius: .5rem; background: var(--papier); color: var(--encre);
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem; }
+  .actions .principal { background: var(--jaune); font-weight: 700; }
+
+  .bande-scroll { overflow-x: auto; border: 3px solid var(--encre); background: var(--papier); }
+  .bande {
+    position: relative; height: 12rem; min-width: 100%;
+    display: flex; align-items: stretch; padding: 0 1.5rem;
+    width: max-content;
+  }
+  .bande .ligne { position: absolute; left: 0; right: 0; height: 2px; background: var(--encre); }
+  .bande .ligne.l1 { top: 20%; } .bande .ligne.l2 { top: 50%; } .bande .ligne.l3 { top: 80%; }
+  .bande .tag {
+    position: absolute; left: .3rem; font-size: .75rem; color: var(--gris);
+    transform: translateY(-120%); background: var(--papier); padding: 0 .2rem;
+  }
+  .bande .vide {
+    position: relative; align-self: center; color: var(--gris); background: var(--papier);
+    padding: .3rem .6rem; margin: 0 auto;
+  }
+  .element { position: relative; min-width: 7rem; padding: 0 .6rem; }
+  .element .onomato {
+    position: absolute; left: 50%; transform: translate(-50%, -50%);
+    white-space: nowrap; background: var(--papier); padding: 0 .2rem;
+  }
+  .element.joue .onomato { color: var(--magenta); }
+  .aide { font-size: .95rem; color: var(--gris); margin: .8rem 0 0; }
+
+  /* ---------- Bilan ---------- */
+  .bilan {
+    border: 4px solid var(--encre); background: var(--jaune);
+    box-shadow: 6px 6px 0 var(--encre); padding: 1.2rem; text-align: center;
+  }
+  .bilan .grand { font-family: var(--titre); font-size: 3rem; line-height: 1; margin: .2rem 0 .5rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 30rem) {
+    body { font-size: 1.02rem; }
+    .entete .lignes { height: 5.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="barre">
+  <a href="/">← Mes révisions</a>
+  <div class="score" aria-live="polite">Score : <span id="score">0</span> / <span id="total">0</span></div>
+</div>
+
+<main class="page">
+
+  <header class="entete">
+    <div class="lignes" aria-hidden="true"><i></i><i></i><i></i></div>
+    <h1 aria-label="Stripsody">
+      <span>S</span><span>t</span><span>r</span><span>i</span><span>p</span><span>s</span><span>o</span><span>d</span><span>y</span>
+    </h1>
+    <p>Musique, séquence 1 : la musique en dessin</p>
+    <div class="bulle">Peut-on représenter la musique en dessinant ? À toi de jouer !</div>
+  </header>
+
+  <!-- ===== Partie 1 ===== -->
+  <section class="partie" id="p1">
+    <h2>1. L’œuvre</h2>
+    <p class="intro">Qui, quand, quoi ? Une seule réponse par question.</p>
+    <div id="q-oeuvre"></div>
+  </section>
+
+  <!-- ===== Partie 2 ===== -->
+  <section class="partie" id="p2">
+    <h2>2. Lire la partition</h2>
+    <p class="intro">Hauteur, nuances, durée, timbre : regarde bien les dessins.</p>
+    <h3>La hauteur</h3>
+    <div id="q-hauteur"></div>
+    <h3>Les nuances</h3>
+    <div id="q-nuances"></div>
+    <h3>La durée</h3>
+    <div id="q-duree"></div>
+    <h3>Le timbre</h3>
+    <div id="q-timbre"></div>
+    <h3>La portée</h3>
+    <div id="q-portee"></div>
+  </section>
+
+  <!-- ===== Partie 3 ===== -->
+  <section class="partie" id="p3">
+    <h2>3. Le bon mot</h2>
+    <p class="intro">Écris le mot de vocabulaire. Attention à l’orthographe et aux accents !</p>
+    <div id="q-mots"></div>
+  </section>
+
+  <!-- ===== Bilan ===== -->
+  <section class="partie">
+    <div class="bilan" id="bilan">
+      <div>Ton score</div>
+      <div class="grand"><span id="score2">0</span> / <span id="total2">0</span></div>
+      <div id="message">Réponds à toutes les questions pour voir ton bilan.</div>
+      <p><button id="recommencer">Recommencer les questions</button></p>
+    </div>
+  </section>
+
+  <!-- ===== Partie 4 : atelier ===== -->
+  <section class="partie" id="p4">
+    <h2>4. Atelier : compose ta Stripsody</h2>
+    <p class="intro">Comme Cathy Berberian, organise des sons sur les 3 lignes. Écoute le résultat, puis interprète ta partition à la voix !</p>
+
+    <div class="atelier">
+      <div class="reglages">
+        <label>Son
+          <select id="a-son"></select>
+        </label>
+        <label>Hauteur
+          <select id="a-hauteur">
+            <option value="aigu">Aigu (ligne du haut)</option>
+            <option value="medium" selected>Médium (ligne du milieu)</option>
+            <option value="grave">Grave (ligne du bas)</option>
+          </select>
+        </label>
+        <label>Nuance
+          <select id="a-nuance">
+            <option value="piano">Faible (petites lettres)</option>
+            <option value="forte">Fort (grandes lettres)</option>
+          </select>
+        </label>
+        <label>Durée
+          <select id="a-duree">
+            <option value="long">Long, continu</option>
+            <option value="court">Court, piqué</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="a-ajouter" class="principal">Ajouter à ma partition</button>
+        <button id="a-ecouter">▶ Écouter</button>
+        <button id="a-retirer">Retirer le dernier</button>
+        <button id="a-effacer">Tout effacer</button>
+      </div>
+
+      <div class="bande-scroll">
+        <div class="bande" id="bande">
+          <div class="ligne l1"><span class="tag">aigus</span></div>
+          <div class="ligne l2"><span class="tag">médium</span></div>
+          <div class="ligne l3"><span class="tag">graves</span></div>
+        </div>
+      </div>
+      <p class="aide">Chaque son a son propre timbre : écoute la différence entre « Laaa », « Bzzz » ou « Pchhh ». C’est l’identité du son.</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* =========================================================
+   DONNÉES DES QUESTIONS
+   ========================================================= */
+const Q_OEUVRE = [
+  { e: "Comment s’appelle l’œuvre étudiée ?", c: ["Stripsody", "Rhapsodie", "Comicsong", "Bubblesody"], b: 0,
+    x: "Stripsody = « strip » (bande dessinée) + « rhapsody »." },
+  { e: "Quel type d’œuvre est-ce ?", c: ["Une chanson pop", "Une œuvre de musique contemporaine pour voix soliste", "Un opéra pour orchestre", "Une musique de film"], b: 1,
+    x: "C’est de la musique contemporaine, pour une seule voix (voix soliste)." },
+  { e: "En quelle année a-t-elle été composée ?", c: ["1866", "1966", "1996", "2016"], b: 1,
+    x: "Stripsody a été composée en 1966." },
+  { e: "Qui l’a composée ?", c: ["Roberto Zamarin", "Mozart", "Cathy Berberian", "Hergé"], b: 2,
+    x: "La compositrice est Cathy Berberian (1925-1983)." },
+  { e: "Cathy Berberian était…", c: ["une dessinatrice italienne", "une chanteuse mezzo-soprano américaine", "une pianiste française", "une cheffe d’orchestre"], b: 1,
+    x: "Cathy Berberian était une grande mezzo-soprano américaine." },
+  { e: "Qui a dessiné les illustrations de la partition ?", c: ["Cathy Berberian", "Roberto Zamarin", "Picasso", "Goscinny"], b: 1,
+    x: "Les illustrations sont de Roberto Zamarin." },
+  { e: "De quoi est faite la partition ?", c: ["De notes sur une portée uniquement", "D’images et de bulles de bande dessinée", "De paroles de chanson", "De chiffres"], b: 1,
+    x: "La partition est constituée d’images et de bulles de BD." },
+  { e: "En anglais, « strip » veut dire…", c: ["bande dessinée", "chanson", "partition", "dessin animé"], b: 0,
+    x: "Un « comic strip », c’est une bande dessinée." },
+  { e: "Et « sody » vient de « rhapsody », c’est-à-dire…", c: ["un instrument de musique", "une forme musicale assez libre", "une danse rapide", "un chœur d’enfants"], b: 1,
+    x: "La rhapsodie est une forme musicale assez libre." },
+  { e: "Pourquoi dit-on que Stripsody est un « collage de sons » ?", c: ["Parce que la partition est collée dans un cahier", "Parce que les dessins racontent une histoire dans l’ordre", "Parce que les dessins se suivent sans vraie organisation ni lien entre eux", "Parce qu’il y a beaucoup d’instruments"], b: 2,
+    x: "Les dessins se suivent sans véritable organisation et sans lien : c’est un collage de sons." }
+];
+
+/* Hauteur : y = position verticale (20 = aigu, 50 = médium, 80 = grave) */
+const Q_HAUTEUR = [
+  { e: "Sur quelle hauteur se trouve ce son ?", mini: { mot: "Piiip !", y: 20, x: 55 }, c: ["Aigu", "Médium", "Grave"], b: 0,
+    x: "Il est sur la ligne du haut : c’est un son aigu." },
+  { e: "Et celui-ci ?", mini: { mot: "Bloub", y: 80, x: 40 }, c: ["Aigu", "Médium", "Grave"], b: 2,
+    x: "Ligne du bas : c’est un son grave." },
+  { e: "Et celui-là ?", mini: { mot: "Miaou", y: 50, x: 60 }, c: ["Aigu", "Médium", "Grave"], b: 1,
+    x: "Ligne du milieu : c’est le médium." },
+  { e: "Sur la partition, le son « Boinnnggg » part du … pour monter jusqu’au … en vibrant.", c: ["aigu → grave", "grave → médium", "médium → aigu", "grave → aigu"], b: 1,
+    x: "« Boinnnggg » part du grave et monte jusqu’au médium en vibrant." },
+  { e: "Sur combien de lignes la hauteur est-elle répartie dans Stripsody ?", c: ["2", "3", "5"], b: 1,
+    x: "3 lignes : aigus en haut, médium au milieu, graves en bas." }
+];
+
+const Q_NUANCES = [
+  { e: "Les nuances, c’est aussi…", c: ["la hauteur du son", "l’intensité, le volume sonore", "la durée du son", "la vitesse"], b: 1,
+    x: "Les nuances = l’intensité = le volume sonore." },
+  { e: "Lequel de ces deux sons se chante le plus fort ?", tailles: [ { t: "Ding", s: "1rem" }, { t: "DING", s: "2.6rem" } ], b: 1,
+    x: "Plus les lettres sont grandes, plus le volume sonore est fort." },
+  { e: "Et ici, lequel se chante le plus doucement ?", tailles: [ { t: "Zip", s: "2.3rem" }, { t: "Zip", s: ".95rem" } ], b: 1,
+    x: "Plus les lettres sont petites, plus le volume sonore est faible." },
+  { e: "Des lettres toutes petites indiquent un volume sonore…", c: ["fort", "faible", "aigu", "long"], b: 1,
+    x: "Petites lettres = son faible." }
+];
+
+const Q_DUREE = [
+  { e: "Ce son est…", onomato: "Laaaaaaaaaaaa", c: ["court, piqué", "long, continu"], b: 1,
+    x: "Le mot est étiré : c’est un son long, continu." },
+  { e: "Et ce son ?", onomato: "Plomp ! Plomp !", c: ["court, piqué", "long, continu"], b: 0,
+    x: "Le mot est bref et répété : c’est un son court, piqué." },
+  { e: "Un son « piqué », c’est un son…", c: ["très fort", "court et détaché", "très aigu", "qui dure longtemps"], b: 1,
+    x: "Piqué = court et détaché. Le contraire est le son long, continu." }
+];
+
+const Q_TIMBRE = [
+  { e: "Le timbre, c’est…", c: ["le volume du son", "l’identité du son : ce qui permet de le reconnaître", "la hauteur du son", "la durée du son"], b: 1,
+    x: "Le timbre est l’identité du son : on reconnaît une voix, un instrument grâce à lui." },
+  { e: "Dans Stripsody, la voix peut être…", c: ["parlée ou chantée", "seulement chantée", "seulement criée"], b: 0,
+    x: "La voix varie selon l’image et l’écriture des mots : elle peut être parlée ou chantée." },
+  { e: "Sur la partition, les trois lignes de la hauteur disparaissent. La voix est alors…", c: ["chantée", "parlée"], b: 1,
+    x: "Voix parlée : les trois lignes disparaissent." },
+  { e: "Une portée apparaît sur la partition. La voix est alors…", c: ["chantée", "parlée"], b: 0,
+    x: "Voix chantée : une portée apparaît." }
+];
+
+const Q_PORTEE = [
+  { e: "Une portée est faite de combien de lignes ?", c: ["3", "4", "5", "6"], b: 2,
+    x: "Une portée a 5 lignes." },
+  { e: "Et de combien d’interlignes (les espaces entre les lignes) ?", c: ["3", "4", "5", "6"], b: 1,
+    x: "Entre 5 lignes, il y a 4 espaces : 4 interlignes." },
+  { e: "À quoi sert la portée ?", c: ["À indiquer le volume", "À indiquer la hauteur des notes", "À écrire les paroles", "À dessiner"], b: 1,
+    x: "La portée permet d’indiquer la hauteur des notes dans les partitions." }
+];
+
+/* Mots à écrire : r = réponse exacte, d = début donné */
+const Q_MOTS = [
+  { e: "Les sons hauts sont les…", d: "a", r: "aigus" },
+  { e: "Les sons bas sont les…", d: "g", r: "graves" },
+  { e: "Les sons du milieu, c’est le…", d: "m", r: "médium" },
+  { e: "Le volume sonore s’appelle aussi les…", d: "n", r: "nuances" },
+  { e: "L’identité du son, c’est le…", d: "t", r: "timbre" },
+  { e: "Les 5 lignes où l’on écrit les notes : la…", d: "p", r: "portée" }
+];
+
+/* =========================================================
+   MOTEUR DES QUESTIONS
+   ========================================================= */
+let score = 0, repondues = 0;
+const total = Q_OEUVRE.length + Q_HAUTEUR.length + Q_NUANCES.length + Q_DUREE.length +
+              Q_TIMBRE.length + Q_PORTEE.length + Q_MOTS.length;
+
+function majScore() {
+  document.getElementById("score").textContent = score;
+  document.getElementById("score2").textContent = score;
+  document.getElementById("total").textContent = total;
+  document.getElementById("total2").textContent = total;
+  const msg = document.getElementById("message");
+  if (repondues < total) {
+    msg.textContent = "Encore " + (total - repondues) + " question(s) à faire.";
+  } else {
+    const r = score / total;
+    msg.textContent = r === 1 ? "Parfait ! Tu maîtrises Stripsody sur le bout des doigts."
+      : r >= .75 ? "Très bien ! Relis les explications des questions ratées."
+      : r >= .5  ? "C’est un bon début. Relis ta leçon puis recommence."
+      : "Relis ta leçon (surtout la partie II) et réessaie, tu vas progresser !";
+  }
+}
+
+function el(tag, cls, html) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (html !== undefined) n.innerHTML = html;
+  return n;
+}
+
+function questionChoix(q, parent) {
+  const box = el("div", "question");
+  box.appendChild(el("p", "enonce", q.e));
+
+  if (q.mini) {
+    const m = el("div", "mini");
+    m.setAttribute("aria-hidden", "true");
+    m.innerHTML = "<i></i><i></i><i></i>";
+    const mot = el("span", "mot", q.mini.mot);
+    mot.style.top = q.mini.y + "%";
+    mot.style.left = q.mini.x + "%";
+    m.appendChild(mot);
+    box.appendChild(m);
+  }
+  if (q.onomato) {
+    const o = el("p", "onomato", q.onomato);
+    o.style.fontSize = "2rem";
+    o.style.margin = "0 0 .8rem";
+    box.appendChild(o);
+  }
+
+  const zone = el("div", "choix");
+  const boutons = [];
+  const options = q.tailles ? q.tailles : q.c;
+  options.forEach((opt, i) => {
+    const b = el("button");
+    if (q.tailles) {
+      b.innerHTML = '<span class="onomato" style="font-size:' + opt.s + '">' + opt.t + "</span>";
+      b.setAttribute("aria-label", opt.t + (i === 0 ? " (premier)" : " (second)") + (parseFloat(opt.s) > 1.5 ? ", grandes lettres" : ", petites lettres"));
+      b.style.minWidth = "6rem";
+    } else {
+      b.textContent = opt;
+    }
+    b.addEventListener("click", () => {
+      boutons.forEach(x => x.disabled = true);
+      const juste = i === q.b;
+      boutons[q.b].classList.add("bon");
+      if (!juste) b.classList.add("rate");
+      box.classList.add(juste ? "juste" : "faux");
+      if (juste) score++;
+      repondues++;
+      const r = el("p", "retour", (juste ? '<b class="ok">Bravo !</b> ' : '<b class="ko">Pas tout à fait.</b> ') + q.x);
+      r.setAttribute("role", "status");
+      box.appendChild(r);
+      majScore();
+    });
+    boutons.push(b);
+    zone.appendChild(b);
+  });
+  box.appendChild(zone);
+  parent.appendChild(box);
+}
+
+function sansAccent(s) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+function questionMot(q, parent) {
+  const box = el("div", "question");
+  box.appendChild(el("p", "enonce", q.e));
+  const champ = el("div", "champ");
+  const input = el("input");
+  input.type = "text";
+  input.autocomplete = "off";
+  input.autocapitalize = "off";
+  input.spellcheck = false;
+  input.placeholder = q.d + "…";
+  input.setAttribute("aria-label", q.e);
+  const ok = el("button", "", "Valider");
+  champ.append(input, ok);
+  box.appendChild(champ);
+
+  function valider() {
+    const v = input.value.trim().toLowerCase();
+    if (!v) { input.focus(); return; }
+    input.disabled = true; ok.disabled = true;
+    let html, juste = false;
+    if (v === q.r) {
+      juste = true; html = '<b class="ok">Bravo !</b> « ' + q.r + " » est bien écrit.";
+    } else if (sansAccent(v) === sansAccent(q.r)) {
+      juste = true; html = '<b class="ok">Juste !</b> Attention à l’accent : on écrit « ' + q.r + " ».";
+    } else {
+      html = '<b class="ko">Pas tout à fait.</b> La bonne réponse est « ' + q.r + " ».";
+    }
+    box.classList.add(juste ? "juste" : "faux");
+    if (juste) score++;
+    repondues++;
+    const r = el("p", "retour", html);
+    r.setAttribute("role", "status");
+    box.appendChild(r);
+    majScore();
+  }
+  ok.addEventListener("click", valider);
+  input.addEventListener("keydown", e => { if (e.key === "Enter") valider(); });
+  parent.appendChild(box);
+}
+
+function melanger(q) {
+  /* mélange les choix (sauf questions à 2-3 choix ordonnés) en gardant la bonne réponse */
+  if (!q.c || q.c.length < 4) return q;
+  const bonne = q.c[q.b];
+  const c = q.c.slice().sort(() => Math.random() - .5);
+  return Object.assign({}, q, { c, b: c.indexOf(bonne) });
+}
+
+function construire() {
+  score = 0; repondues = 0;
+  const blocs = [
+    ["q-oeuvre", Q_OEUVRE], ["q-hauteur", Q_HAUTEUR], ["q-nuances", Q_NUANCES],
+    ["q-duree", Q_DUREE], ["q-timbre", Q_TIMBRE], ["q-portee", Q_PORTEE]
+  ];
+  blocs.forEach(([id, liste]) => {
+    const p = document.getElementById(id);
+    p.innerHTML = "";
+    liste.forEach(q => questionChoix(melanger(q), p));
+  });
+  const pm = document.getElementById("q-mots");
+  pm.innerHTML = "";
+  Q_MOTS.forEach(q => questionMot(q, pm));
+  majScore();
+}
+
+document.getElementById("recommencer").addEventListener("click", () => {
+  construire();
+  document.getElementById("p1").scrollIntoView({ behavior: "smooth" });
+});
+
+construire();
+
+/* =========================================================
+   ATELIER : COMPOSER ET ÉCOUTER
+   ========================================================= */
+const SONS = {
+  "Laaa":  { onde: "sine",     long: "Laaaaaaa",  court: "La ! La !" },
+  "Ouuuh": { onde: "triangle", long: "Ouuuuuuh",  court: "Ou ! Ou !" },
+  "Ding":  { onde: "triangle", long: "Diiiiing",  court: "Ding ! Ding !", cloche: true },
+  "Bzzz":  { onde: "sawtooth", long: "Bzzzzzzz",  court: "Bz ! Bz !" },
+  "Grrr":  { onde: "square",   long: "Grrrrrrr",  court: "Gr ! Gr !" },
+  "Plomp": { onde: "square",   long: "Plooooomp", court: "Plomp ! Plomp !" },
+  "Boïng": { onde: "sine",     long: "Boïnnnngg", court: "Boïng ! Boïng !", ressort: true },
+  "Pchhh": { onde: "bruit",    long: "Pchhhhhhh", court: "Pch ! Pch !" }
+};
+const FREQ = { aigu: 784, medium: 392, grave: 165 };
+const POS = { aigu: 20, medium: 50, grave: 80 };
+const VOL = { piano: 0.07, forte: 0.32 };
+
+const selSon = document.getElementById("a-son");
+Object.keys(SONS).forEach(k => { const o = document.createElement("option"); o.value = k; o.textContent = k; selSon.appendChild(o); });
+
+let partition = [];
+const bande = document.getElementById("bande");
+
+function dessiner() {
+  bande.querySelectorAll(".element, .vide").forEach(n => n.remove());
+  if (!partition.length) {
+    bande.appendChild(el("div", "vide", "Ta partition est vide : choisis un son et ajoute-le."));
+    return;
+  }
+  partition.forEach((p, i) => {
+    const d = el("div", "element");
+    d.dataset.i = i;
+    const s = SONS[p.son];
+    const mot = el("span", "onomato", p.duree === "long" ? s.long : s.court);
+    mot.style.top = POS[p.hauteur] + "%";
+    mot.style.fontSize = p.nuance === "forte" ? "2.4rem" : "1rem";
+    if (p.duree === "long") mot.style.letterSpacing = ".12em";
+    d.style.minWidth = p.duree === "long" ? "11rem" : "8rem";
+    d.appendChild(mot);
+    d.setAttribute("aria-label", p.son + ", " + p.hauteur + ", " + (p.nuance === "forte" ? "fort" : "faible") + ", " + (p.duree === "long" ? "long" : "court"));
+    bande.appendChild(d);
+  });
+  bande.parentElement.scrollLeft = bande.scrollWidth;
+}
+
+document.getElementById("a-ajouter").addEventListener("click", () => {
+  if (partition.length >= 12) { alert("Ta partition est pleine (12 sons maximum)."); return; }
+  partition.push({
+    son: selSon.value,
+    hauteur: document.getElementById("a-hauteur").value,
+    nuance: document.getElementById("a-nuance").value,
+    duree: document.getElementById("a-duree").value
+  });
+  dessiner();
+});
+document.getElementById("a-retirer").addEventListener("click", () => { partition.pop(); dessiner(); });
+document.getElementById("a-effacer").addEventListener("click", () => { partition = []; dessiner(); });
+
+let ctx = null, lecture = false;
+function joueNote(p, t0, dur) {
+  const s = SONS[p.son];
+  const g = ctx.createGain();
+  const vol = VOL[p.nuance];
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.02);
+  if (s.cloche) g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  else { g.gain.setValueAtTime(vol, t0 + dur - 0.04); g.gain.linearRampToValueAtTime(0, t0 + dur); }
+  g.connect(ctx.destination);
+
+  let src;
+  if (s.onde === "bruit") {
+    const buf = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    src = ctx.createBufferSource(); src.buffer = buf;
+    const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = FREQ[p.hauteur] * 4; f.Q.value = 0.8;
+    src.connect(f); f.connect(g);
+  } else {
+    src = ctx.createOscillator(); src.type = s.onde;
+    const f = FREQ[p.hauteur];
+    if (s.ressort) {
+      src.frequency.setValueAtTime(f / 2, t0);
+      src.frequency.exponentialRampToValueAtTime(f, t0 + dur * 0.8);
+      const lfo = ctx.createOscillator(), lg = ctx.createGain();
+      lfo.frequency.value = 12; lg.gain.value = f * 0.06;
+      lfo.connect(lg); lg.connect(src.frequency); lfo.start(t0); lfo.stop(t0 + dur);
+    } else {
+      src.frequency.setValueAtTime(f, t0);
+    }
+    src.connect(g);
+  }
+  src.start(t0); src.stop(t0 + dur + 0.02);
+}
+
+document.getElementById("a-ecouter").addEventListener("click", () => {
+  if (!partition.length || lecture) return;
+  try {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === "suspended") ctx.resume();
+  } catch (e) { alert("Le son n’est pas disponible sur cet appareil."); return; }
+  lecture = true;
+  let t = ctx.currentTime + 0.1;
+  const debuts = [];
+  partition.forEach(p => {
+    debuts.push(t - ctx.currentTime);
+    if (p.duree === "long") { joueNote(p, t, 1.1); t += 1.3; }
+    else { joueNote(p, t, 0.13); joueNote(p, t + 0.25, 0.13); t += 0.65; }
+  });
+  const elements = bande.querySelectorAll(".element");
+  debuts.forEach((d, i) => {
+    setTimeout(() => {
+      elements.forEach(e => e.classList.remove("joue"));
+      if (elements[i]) elements[i].classList.add("joue");
+    }, d * 1000);
+  });
+  setTimeout(() => { elements.forEach(e => e.classList.remove("joue")); lecture = false; }, (t - ctx.currentTime) * 1000);
+});
+
+dessiner();
+</script>
+</body>
+</html>
