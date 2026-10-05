@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fde047">
+<title>Les paramètres du son</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papier:#fffdf3; --encre:#1f2340; --gris:#5b5f78; --jaune:#fde047; --jaune-fonce:#a16207;
+    --hauteur:#2f6fdb; --timbre:#c2367a; --nuance:#e3631c; --duree:#138a62;
+    --bon:#15803d; --faux:#b91c1c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papier);color:var(--encre);
+    font-family:"Nunito",system-ui,-apple-system,sans-serif;font-size:17px;line-height:1.5}
+  .wrap{max-width:620px;margin:0 auto;padding:0 16px 48px}
+  h1,h2,h3{font-family:"Baloo 2","Nunito",system-ui,sans-serif;line-height:1.15;margin:0}
+  .hidden{display:none !important}
+
+  header{background:var(--jaune);padding:14px 16px 0;border-bottom:3px solid var(--encre)}
+  header .in{max-width:620px;margin:0 auto}
+  .retour{display:inline-block;color:var(--encre);text-decoration:none;font-weight:700;font-size:15px;padding:4px 0}
+  header h1{font-size:2rem;margin:6px 0 2px}
+  header p{margin:0 0 6px;color:#3b3f58;font-size:15px}
+  .hero{display:block;width:100%;height:auto;margin-top:4px}
+
+  nav{display:flex;gap:6px;margin:16px 0 18px}
+  nav button{flex:1;font:inherit;font-weight:700;font-size:16px;padding:10px 6px;border-radius:12px;
+    border:2px solid var(--encre);background:#fff;color:var(--encre);cursor:pointer}
+  nav button[aria-selected="true"]{background:var(--encre);color:#fff}
+
+  .carte{background:#fff;border:2px solid var(--encre);border-radius:16px;padding:16px;margin-bottom:14px}
+  .param{border-left-width:10px}
+  .param h2{font-size:1.45rem;display:flex;align-items:center;gap:10px}
+  .param .num{font-size:1rem;width:30px;height:30px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center}
+  .param p{margin:8px 0}
+  .ex{color:var(--gris);font-style:italic;font-size:15px}
+  .note{background:#fef9c3;border-radius:10px;padding:8px 12px;font-size:15px;margin-top:8px}
+  .ecoutes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+
+  .btn{font:inherit;font-weight:700;border:2px solid var(--encre);border-radius:12px;padding:10px 14px;
+    background:#fff;color:var(--encre);cursor:pointer;font-size:16px}
+  .btn:active{transform:translateY(1px)}
+  .btn.plein{background:var(--encre);color:#fff}
+  .btn.jaune{background:var(--jaune)}
+  .btn:disabled{opacity:.45;cursor:default}
+  button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--hauteur);outline-offset:2px}
+
+  .dessin{display:block;width:100%;height:auto;background:#fffef7;border:1.5px dashed #c9c6b4;border-radius:12px;margin-top:10px}
+  .legende{font-size:14px;color:var(--gris);margin-top:6px}
+
+  .progres{height:8px;background:#ece9d8;border-radius:6px;overflow:hidden;margin:10px 0 14px}
+  .progres span{display:block;height:100%;width:0;background:var(--encre);transition:width .25s}
+  .compteur{font-size:14px;color:var(--gris);display:flex;justify-content:space-between}
+  .question{font-size:1.2rem;font-weight:700;margin:4px 0 12px}
+  .choix{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .choix .btn{text-align:left;min-height:52px}
+  .choix .btn.ok{background:#dcfce7;border-color:var(--bon)}
+  .choix .btn.ko{background:#fee2e2;border-color:var(--faux)}
+  input[type=text]{font:inherit;font-size:18px;width:100%;padding:10px 12px;border:2px solid var(--encre);border-radius:12px}
+  .retour-msg{margin:12px 0 0;font-weight:700;min-height:1.5em}
+  .retour-msg.ok{color:var(--bon)} .retour-msg.ko{color:var(--faux)}
+  .explic{font-size:15px;color:var(--gris);margin-top:4px}
+  .actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .fin{text-align:center}
+  .fin .gros{font-family:"Baloo 2",sans-serif;font-size:2.6rem;font-weight:700}
+  .son-hs{font-size:14px;color:var(--gris);margin:0 0 12px}
+  @media (max-width:420px){ .choix{grid-template-columns:1fr} header h1{font-size:1.7rem} }
+  @media (prefers-reduced-motion:reduce){ .progres span{transition:none} }
+</style>
+</head>
+<body>
+<header>
+  <div class="in">
+    <a class="retour" href="./">‹ Mes révisions</a>
+    <h1>Les paramètres du son</h1>
+    <p>Musique · Séquence 1 : la musique en dessin</p>
+    <svg class="hero" viewBox="0 0 600 70" aria-hidden="true">
+      <path d="M10 18 H150" stroke="#2f6fdb" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M170 40 l10 -10 l10 10 l10 -10 l10 10 l10 -10 l10 10 l10 -10 l10 10 l10 -10 l10 10 l10 -10 l10 10" stroke="#c2367a" stroke-width="4" stroke-linejoin="round" fill="none"/>
+      <path d="M320 50 H440" stroke="#e3631c" stroke-width="13" stroke-linecap="round"/>
+      <g fill="#138a62"><circle cx="470" cy="28" r="6"/><circle cx="500" cy="28" r="6"/><circle cx="530" cy="28" r="6"/><circle cx="560" cy="28" r="6"/></g>
+    </svg>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav role="tablist">
+    <button role="tab" aria-selected="true" data-vue="lecon">Leçon</button>
+    <button role="tab" aria-selected="false" data-vue="oreille">Écouter</button>
+    <button role="tab" aria-selected="false" data-vue="controle">Contrôle</button>
+  </nav>
+
+  <!-- ================= LEÇON ================= -->
+  <section id="vue-lecon">
+    <div class="carte">
+      <p style="margin:0">Le son est comme une recette : il y a toujours <strong>4 ingrédients</strong>, qu'on appelle <strong>les paramètres du son</strong>. Appuie sur les boutons pour les entendre, et regarde comment on peut les dessiner.</p>
+    </div>
+
+    <div class="carte param" style="border-left-color:var(--hauteur)">
+      <h2><span class="num" style="background:var(--hauteur)">1</span>La hauteur</h2>
+      <p>Un son peut être <strong>aigu</strong>, <strong>médium</strong> ou <strong>grave</strong>.</p>
+      <p class="ex">Exemple : le chant des oiseaux est aigu.</p>
+      <div class="ecoutes">
+        <button class="btn" data-demo="aigu">Aigu</button>
+        <button class="btn" data-demo="medium">Médium</button>
+        <button class="btn" data-demo="grave">Grave</button>
+      </div>
+      <svg class="dessin" id="d-hauteur" viewBox="0 0 320 120" role="img" aria-label="Un son aigu est dessiné en haut, un son grave en bas"></svg>
+      <p class="legende">Dessin : plus le son est aigu, plus le trait est haut.</p>
+    </div>
+
+    <div class="carte param" style="border-left-color:var(--timbre)">
+      <h2><span class="num" style="background:var(--timbre)">2</span>Le timbre</h2>
+      <p>C'est <strong>l'identité</strong> d'un son. On reconnaît quelqu'un au timbre de sa voix ; on reconnaît une trompette d'une guitare grâce à leur timbre.</p>
+      <p class="ex">Exemple : les deux pianos de la classe sont des pianos, mais leur timbre est très différent.</p>
+      <div class="ecoutes">
+        <button class="btn" data-demo="timbreA">Timbre doux</button>
+        <button class="btn" data-demo="timbreB">Timbre nasillard</button>
+        <button class="btn" data-demo="timbreC">Timbre cuivré</button>
+      </div>
+      <svg class="dessin" id="d-timbre" viewBox="0 0 320 120" role="img" aria-label="Trois timbres dessinés avec trois formes de traits différentes"></svg>
+      <p class="legende">Ce sont trois fois la même note : seul le timbre change. Dessin : chaque timbre a sa forme de trait.</p>
+    </div>
+
+    <div class="carte param" style="border-left-color:var(--nuance)">
+      <h2><span class="num" style="background:var(--nuance)">3</span>La nuance</h2>
+      <p>C'est <strong>le volume sonore</strong>. On utilise des mots italiens :</p>
+      <p><strong>piano</strong> = faible · <strong>mezzo forte</strong> = moyennement fort · <strong>forte</strong> = fort</p>
+      <div class="ecoutes">
+        <button class="btn" data-demo="p">Piano</button>
+        <button class="btn" data-demo="mf">Mezzo forte</button>
+        <button class="btn" data-demo="f">Forte</button>
+      </div>
+      <svg class="dessin" id="d-nuance" viewBox="0 0 320 120" role="img" aria-label="Plus le son est fort, plus le trait est épais"></svg>
+      <p class="legende">Dessin : plus le son est fort, plus le trait est épais.</p>
+    </div>
+
+    <div class="carte param" style="border-left-color:var(--duree)">
+      <h2><span class="num" style="background:var(--duree)">4</span>La durée</h2>
+      <p>La note dure longtemps ou peu de temps.</p>
+      <p class="ex">Une note très longue réalise un son <strong>continu</strong>. Une note très courte réalise un son <strong>court</strong> (ou <strong>piqué</strong>).</p>
+      <div class="ecoutes">
+        <button class="btn" data-demo="long">Son continu</button>
+        <button class="btn" data-demo="court">Sons piqués</button>
+      </div>
+      <svg class="dessin" id="d-duree" viewBox="0 0 320 120" role="img" aria-label="Un son long est un long trait, des sons piqués sont des points"></svg>
+      <p class="legende">Dessin : un son long fait un long trait, un son piqué fait un point.</p>
+    </div>
+
+    <p class="son-hs">Pas de son ? Monte le volume « médias » et vérifie que le téléphone n'est pas en mode silencieux.</p>
+    <button class="btn plein" data-aller="oreille" style="width:100%">Je m'entraîne à l'oreille</button>
+  </section>
+
+  <!-- ================= ÉCOUTER ================= -->
+  <section id="vue-oreille" class="hidden">
+    <div class="carte" id="o-jeu">
+      <div class="compteur"><span id="o-num"></span><span id="o-score"></span></div>
+      <div class="progres"><span id="o-barre"></span></div>
+      <p class="question" id="o-question"></p>
+      <button class="btn jaune" id="o-play" style="width:100%;margin-bottom:12px">▶ Écouter</button>
+      <div class="choix" id="o-choix"></div>
+      <p class="retour-msg" id="o-msg" aria-live="polite"></p>
+      <svg class="dessin hidden" id="o-dessin" viewBox="0 0 320 120" role="img" aria-label="Dessin des sons entendus"></svg>
+      <p class="legende hidden" id="o-legende">Voilà comment on pourrait dessiner ces sons.</p>
+      <div class="actions"><button class="btn plein hidden" id="o-suivant">Suivant ›</button></div>
+    </div>
+    <div class="carte fin hidden" id="o-fin">
+      <div class="gros" id="o-final"></div>
+      <p id="o-final-msg"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn plein" id="o-rejouer">Recommencer</button>
+        <button class="btn" data-aller="controle">Passer au contrôle</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTRÔLE ================= -->
+  <section id="vue-controle" class="hidden">
+    <div class="carte" id="c-jeu">
+      <div class="compteur"><span id="c-num"></span><span id="c-score"></span></div>
+      <div class="progres"><span id="c-barre"></span></div>
+      <p class="question" id="c-question"></p>
+      <div class="choix" id="c-choix"></div>
+      <div id="c-ecrit" class="hidden">
+        <input type="text" id="c-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Écris ta réponse">
+        <div class="actions"><button class="btn plein" id="c-valider">Vérifier</button></div>
+      </div>
+      <p class="retour-msg" id="c-msg" aria-live="polite"></p>
+      <p class="explic" id="c-explic"></p>
+      <div class="actions"><button class="btn plein hidden" id="c-suivant">Suivant ›</button></div>
+    </div>
+    <div class="carte fin hidden" id="c-fin">
+      <div class="gros" id="c-final"></div>
+      <p id="c-final-msg"></p>
+      <p id="c-record" style="font-weight:700"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn plein" id="c-rejouer">Recommencer</button>
+        <button class="btn" data-aller="lecon">Relire la leçon</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+/* ====== Meilleur score (lu par la page d'accueil) ====== */
+function cleScore(){ return "meilleur:" + (location.pathname.split("/").pop() || "index.html"); }
+function meilleurConnu(){ try{ return JSON.parse(localStorage.getItem(cleScore())); }catch(e){ return null; } }
+function enregistrerMeilleurScore(bon, total){
+  try{
+    var prev = meilleurConnu();
+    var mieux = !prev || (bon/total) > (prev.bon/prev.total) ||
+                ((bon/total) === (prev.bon/prev.total) && bon > prev.bon);
+    if(mieux) localStorage.setItem(cleScore(), JSON.stringify({bon:bon, total:total}));
+  }catch(e){}
+  return meilleurConnu();
+}
+
+/* ====== Outils ====== */
+function melange(t){ t = t.slice(); for(var i=t.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var x=t[i]; t[i]=t[j]; t[j]=x; } return t; }
+function auHasard(t){ return t[Math.floor(Math.random()*t.length)]; }
+function normalise(s){
+  return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[’'`]/g," ").replace(/[^a-z ]/g," ")
+    .replace(/\b(un|une|le|la|les|l|des|son|sons|c est|est|du|de)\b/g," ")
+    .replace(/\s+/g," ").trim();
+}
+
+/* ====== Moteur sonore (Web Audio) ======
+   Un son = {h: hauteur, t: timbre, n: nuance, d: durée} */
+var FREQ = {aigu: 988, medium: 440, grave: 131};
+var GAIN = {p: 0.05, mf: 0.17, f: 0.5};
+var DUREE = {long: 1.3, court: 0.13};
+var CORR_TIMBRE = {sine: 1, square: 0.32, sawtooth: 0.38, triangle: 0.9};
+var ctx = null;
+function audio(){
+  if(!ctx){
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    ctx = new AC();
+  }
+  if(ctx.state === "suspended") ctx.resume();
+  return ctx;
+}
+function jouerSon(s, debut){
+  var a = audio(); if(!a) return 0;
+  var t0 = a.currentTime + (debut || 0) + 0.03;
+  var dur = DUREE[s.d];
+  var osc = a.createOscillator(), g = a.createGain();
+  osc.type = s.t; osc.frequency.value = FREQ[s.h];
+  var vol = GAIN[s.n] * CORR_TIMBRE[s.t];
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+  g.gain.setValueAtTime(vol, t0 + Math.max(0.02, dur - 0.04));
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g); g.connect(a.destination);
+  osc.start(t0); osc.stop(t0 + dur + 0.02);
+  return dur;
+}
+function jouerSuite(sons, pause){
+  var t = 0;
+  sons.forEach(function(s){ t += jouerSon(s, t) + (pause || 0.45); });
+}
+var BASE = {h:"medium", t:"triangle", n:"mf", d:"long"};
+function son(modif){ var s = {}; for(var k in BASE) s[k]=BASE[k]; for(var m in modif) s[m]=modif[m]; return s; }
+
+/* ====== Dessin des sons (comme dans Stripsody) ====== */
+var Y = {aigu: 28, medium: 62, grave: 96};
+var EPAIS = {p: 2.5, mf: 6, f: 12};
+var COUL = {sine:"#2f6fdb", square:"#c2367a", sawtooth:"#e3631c", triangle:"#1f2340"};
+function trait(s, x, larg){
+  var y = Y[s.h], w = EPAIS[s.n], c = COUL[s.t];
+  if(s.d === "court"){
+    return '<circle cx="'+(x+8)+'" cy="'+y+'" r="'+(w/2+3)+'" fill="'+c+'"/>';
+  }
+  var d = "M"+x+" "+y, i, pas = 10;
+  if(s.t === "square"){
+    for(i=0;i<larg;i+=pas){ var hy = (i/pas)%2 ? y-6 : y+6; d += " V"+hy+" H"+Math.min(x+i+pas, x+larg); }
+  } else if(s.t === "sawtooth"){
+    for(i=pas;i<=larg;i+=pas){ d += " L"+(x+i)+" "+(((i/pas)%2)? y-7 : y+7); }
+  } else if(s.t === "sine"){
+    for(i=pas;i<=larg;i+=pas){ d += " Q"+(x+i-pas/2)+" "+(((i/pas)%2)? y-12 : y+12)+" "+(x+i)+" "+y; }
+  } else {
+    d += " H"+(x+larg);
+  }
+  return '<path d="'+d+'" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+}
+function dessiner(svg, sons){
+  var n = sons.length, zone = 300/n, html = "";
+  html += '<g stroke="#e6e2cf" stroke-width="1"><line x1="0" y1="28" x2="320" y2="28"/><line x1="0" y1="62" x2="320" y2="62"/><line x1="0" y1="96" x2="320" y2="96"/></g>';
+  sons.forEach(function(s, i){
+    var x = 10 + i*zone + 6, larg = s.d === "long" ? zone - 24 : 16;
+    html += trait(s, x, larg);
+    if(n > 1) html += '<text x="'+(x)+'" y="116" font-size="11" fill="#5b5f78" font-family="Nunito,sans-serif">son '+(i+1)+'</text>';
+  });
+  svg.innerHTML = html;
+}
+
+/* ====== Leçon : démonstrations ====== */
+var DEMOS = {
+  aigu: [son({h:"aigu"})], medium: [son({h:"medium"})], grave: [son({h:"grave"})],
+  timbreA: [son({t:"sine"})], timbreB: [son({t:"square"})], timbreC: [son({t:"sawtooth"})],
+  p: [son({n:"p"})], mf: [son({n:"mf"})], f: [son({n:"f"})],
+  long: [son({d:"long"})], court: [son({d:"court"}), son({d:"court"}), son({d:"court"}), son({d:"court"})]
+};
+dessiner(document.getElementById("d-hauteur"), [son({h:"aigu"}), son({h:"medium"}), son({h:"grave"})]);
+dessiner(document.getElementById("d-timbre"), [son({t:"sine"}), son({t:"square"}), son({t:"sawtooth"})]);
+dessiner(document.getElementById("d-nuance"), [son({n:"p"}), son({n:"mf"}), son({n:"f"})]);
+dessiner(document.getElementById("d-duree"), [son({d:"long"}), son({d:"court"}), son({d:"court"})]);
+[].forEach.call(document.querySelectorAll("[data-demo]"), function(b){
+  b.addEventListener("click", function(){
+    var k = b.getAttribute("data-demo");
+    jouerSuite(DEMOS[k], k === "court" ? 0.22 : 0.4);
+  });
+});
+
+/* ====== Navigation ====== */
+function montrer(vue){
+  ["lecon","oreille","controle"].forEach(function(v){
+    document.getElementById("vue-"+v).classList.toggle("hidden", v !== vue);
+  });
+  [].forEach.call(document.querySelectorAll("nav button"), function(b){
+    b.setAttribute("aria-selected", b.getAttribute("data-vue") === vue ? "true" : "false");
+  });
+  if(vue === "oreille" && !O.qs) lancerOreille();
+  if(vue === "controle" && !C.qs) lancerControle();
+  window.scrollTo(0,0);
+}
+[].forEach.call(document.querySelectorAll("nav button, [data-aller]"), function(b){
+  b.addEventListener("click", function(){ montrer(b.getAttribute("data-vue") || b.getAttribute("data-aller")); });
+});
+
+/* ====== Mode « Écouter » ====== */
+var PARAMS = ["La hauteur","Le timbre","La nuance","La durée"];
+function autre(liste, sauf){ return auHasard(liste.filter(function(x){ return x !== sauf; })); }
+function qChangement(){
+  var p = auHasard(["h","t","n","d"]);
+  var a = son({h: auHasard(["aigu","medium","grave"]), t: auHasard(["triangle","sine"])});
+  var b = son(a);
+  if(p === "h") b.h = autre(["aigu","medium","grave"], a.h);
+  if(p === "t") { a.t = "sine"; b = son(a); b.t = auHasard(["square","sawtooth"]); }
+  if(p === "n") { a.n = auHasard(["p","f"]); b.n = a.n === "p" ? "f" : "p"; }
+  if(p === "d") { a.d = auHasard(["long","court"]); b.d = a.d === "long" ? "court" : "long"; }
+  var bonne = {h:"La hauteur", t:"Le timbre", n:"La nuance", d:"La durée"}[p];
+  var expl = {h:"Un son est plus aigu ou plus grave que l'autre.", t:"C'est la même note, au même volume, mais pas le même « instrument ».", n:"Un son est piano (faible), l'autre forte (fort).", d:"Un son est long (continu), l'autre court (piqué)."}[p];
+  return {texte:"Écoute les deux sons. Quel paramètre change ?", sons:[a,b], choix:PARAMS, bonne:bonne, expl:expl};
+}
+function qHauteur(){
+  var a = son({h:"medium"}), b = son({h: auHasard(["aigu","grave"])});
+  return {texte:"Le 2e son est-il plus aigu ou plus grave que le 1er ?", sons:[a,b], choix:["Plus aigu","Plus grave"],
+    bonne: b.h === "aigu" ? "Plus aigu" : "Plus grave", expl:"C'est un paramètre de hauteur."};
+}
+function qNuance(){
+  var a = son({n:"mf"}), b = son({n: auHasard(["p","f"])});
+  return {texte:"Le 2e son est-il plus fort ou plus faible que le 1er ?", sons:[a,b], choix:["Plus fort (forte)","Plus faible (piano)"],
+    bonne: b.n === "f" ? "Plus fort (forte)" : "Plus faible (piano)", expl:"C'est un paramètre de nuance."};
+}
+function qDuree(){
+  var d = auHasard(["long","court"]);
+  return {texte:"Ce son est-il continu ou piqué ?", sons:[son({d:d, h:auHasard(["aigu","medium","grave"])})], choix:["Continu (long)","Piqué (court)"],
+    bonne: d === "long" ? "Continu (long)" : "Piqué (court)", expl:"C'est un paramètre de durée."};
+}
+var O = {qs:null, i:0, bon:0, ecoute:false, repondu:false};
+function lancerOreille(){
+  var qs = [qChangement(), qChangement(), qChangement(), qChangement(), qChangement(), qHauteur(), qNuance(), qDuree()];
+  O.qs = melange(qs); O.i = 0; O.bon = 0;
+  document.getElementById("o-jeu").classList.remove("hidden");
+  document.getElementById("o-fin").classList.add("hidden");
+  afficherO();
+}
+function afficherO(){
+  var q = O.qs[O.i]; O.ecoute = false; O.repondu = false;
+  document.getElementById("o-num").textContent = "Question " + (O.i+1) + " / " + O.qs.length;
+  document.getElementById("o-score").textContent = O.bon + " bonne" + (O.bon>1?"s":"");
+  document.getElementById("o-barre").style.width = (O.i/O.qs.length*100) + "%";
+  document.getElementById("o-question").textContent = q.texte;
+  document.getElementById("o-msg").textContent = "Appuie d'abord sur « Écouter ».";
+  document.getElementById("o-msg").className = "retour-msg";
+  document.getElementById("o-dessin").classList.add("hidden");
+  document.getElementById("o-legende").classList.add("hidden");
+  document.getElementById("o-suivant").classList.add("hidden");
+  var box = document.getElementById("o-choix"); box.innerHTML = "";
+  q.choix.forEach(function(c){
+    var b = document.createElement("button"); b.className = "btn"; b.textContent = c; b.disabled = true;
+    b.addEventListener("click", function(){ repondreO(b, c); });
+    box.appendChild(b);
+  });
+}
+document.getElementById("o-play").addEventListener("click", function(){
+  var q = O.qs[O.i];
+  jouerSuite(q.sons, 0.6);
+  if(!O.ecoute){
+    O.ecoute = true;
+    [].forEach.call(document.querySelectorAll("#o-choix .btn"), function(b){ if(!O.repondu) b.disabled = false; });
+    if(!O.repondu) document.getElementById("o-msg").textContent = "";
+  }
+});
+function repondreO(btn, c){
+  if(O.repondu) return; O.repondu = true;
+  var q = O.qs[O.i], ok = c === q.bonne;
+  if(ok) O.bon++;
+  [].forEach.call(document.querySelectorAll("#o-choix .btn"), function(b){
+    b.disabled = true;
+    if(b.textContent === q.bonne) b.classList.add("ok");
+    else if(b === btn) b.classList.add("ko");
+  });
+  var m = document.getElementById("o-msg");
+  m.className = "retour-msg " + (ok ? "ok" : "ko");
+  m.textContent = (ok ? "Bravo ! " : "Pas tout à fait : c'était « " + q.bonne + " ». ") + q.expl;
+  dessiner(document.getElementById("o-dessin"), q.sons);
+  document.getElementById("o-dessin").classList.remove("hidden");
+  document.getElementById("o-legende").classList.remove("hidden");
+  document.getElementById("o-suivant").classList.remove("hidden");
+  document.getElementById("o-score").textContent = O.bon + " bonne" + (O.bon>1?"s":"");
+}
+document.getElementById("o-suivant").addEventListener("click", function(){
+  O.i++;
+  if(O.i < O.qs.length) { afficherO(); return; }
+  document.getElementById("o-jeu").classList.add("hidden");
+  document.getElementById("o-fin").classList.remove("hidden");
+  document.getElementById("o-final").textContent = O.bon + " / " + O.qs.length;
+  document.getElementById("o-final-msg").textContent = O.bon >= 7 ? "Super oreille !" : O.bon >= 5 ? "Bien ! Recommence pour progresser." : "Réécoute les exemples de la leçon, puis réessaie.";
+});
+document.getElementById("o-rejouer").addEventListener("click", lancerOreille);
+
+/* ====== Mode « Contrôle » (score enregistré) ======
+   type "qcm" : choix + bonne ; type "ecrit" : accepte (réponses normalisées) */
+var BANQUE = [
+  {type:"qcm", q:"Combien y a-t-il de paramètres (d'ingrédients) dans le son ?", choix:["2","3","4","5"], bonne:"4", expl:"Hauteur, timbre, nuance, durée : 4 paramètres."},
+  {type:"qcm", q:"La hauteur, c'est quand un son est…", choix:["aigu, médium ou grave","fort ou faible","long ou court","reconnaissable"], bonne:"aigu, médium ou grave", expl:"La hauteur : aigu, médium, grave."},
+  {type:"qcm", q:"Le chant des oiseaux est…", choix:["aigu","grave","forte","piqué"], bonne:"aigu", expl:"C'est l'exemple de la leçon pour la hauteur."},
+  {type:"qcm", q:"Je sais qui a bavardé sans l'avoir vu : je reconnais…", choix:["le timbre de sa voix","la nuance de sa voix","la durée de sa voix","le chant des oiseaux"], bonne:"le timbre de sa voix", expl:"Le timbre, c'est l'identité d'un son."},
+  {type:"qcm", q:"Je reconnais une trompette d'une guitare grâce à…", choix:["leur timbre","leur nuance","leur durée","leur hauteur"], bonne:"leur timbre", expl:"Deux instruments différents n'ont pas le même timbre."},
+  {type:"qcm", q:"Les deux pianos de la classe ne sonnent pas pareil. Qu'est-ce qui est différent ?", choix:["Le timbre","La nuance","La durée","Le nombre de notes"], bonne:"Le timbre", expl:"Ce sont deux pianos, mais leur timbre est différent."},
+  {type:"qcm", q:"La nuance, c'est…", choix:["le volume sonore","l'identité d'un son","si le son est aigu ou grave","la longueur d'une note"], bonne:"le volume sonore", expl:"Nuance = volume sonore."},
+  {type:"qcm", q:"Les mots piano, mezzo forte et forte sont des mots…", choix:["italiens","anglais","allemands","latins"], bonne:"italiens", expl:"Ce sont des mots italiens."},
+  {type:"qcm", q:"Range du plus faible au plus fort :", choix:["piano, mezzo forte, forte","forte, mezzo forte, piano","mezzo forte, piano, forte","piano, forte, mezzo forte"], bonne:"piano, mezzo forte, forte", expl:"Piano (faible) < mezzo forte (moyennement fort) < forte (fort)."},
+  {type:"qcm", q:"« Chante plus fort ! » Quel paramètre change ?", choix:["La nuance","La hauteur","Le timbre","La durée"], bonne:"La nuance", expl:"Le volume, c'est la nuance."},
+  {type:"qcm", q:"« Tiens la note très longtemps ! » Quel paramètre change ?", choix:["La durée","La nuance","Le timbre","La hauteur"], bonne:"La durée", expl:"Note longue ou courte : c'est la durée."},
+  {type:"qcm", q:"Une note très longue réalise un son…", choix:["continu","piqué","grave","piano"], bonne:"continu", expl:"Note très longue = son continu."},
+  {type:"ecrit", q:"Une note très courte réalise un son court, ou…", accepte:["pique","piquee"], rep:"piqué", expl:"Note très courte = son court (ou piqué)."},
+  {type:"ecrit", q:"« Piano » veut dire un son…", accepte:["faible","doux"], rep:"faible", expl:"Piano = faible."},
+  {type:"ecrit", q:"« Forte » veut dire un son…", accepte:["fort","forte"], rep:"fort", expl:"Forte = fort."},
+  {type:"ecrit", q:"« Mezzo forte » veut dire un son…", accepte:["moyennement fort","moyennement forte","moyen fort","moyennement fortement"], rep:"moyennement fort", expl:"Mezzo forte = moyennement fort."},
+  {type:"ecrit", q:"Les sons peuvent être aigus, médiums ou…", accepte:["grave","graves"], rep:"graves", expl:"Aigus, médiums, graves : c'est la hauteur."},
+  {type:"ecrit", q:"Quel paramètre permet de reconnaître un instrument ?", accepte:["timbre"], rep:"le timbre", expl:"Le timbre, c'est l'identité du son."}
+];
+var NB_CONTROLE = 12;
+var C = {qs:null, i:0, bon:0, repondu:false};
+function lancerControle(){
+  var ecrits = melange(BANQUE.filter(function(q){ return q.type === "ecrit"; })).slice(0, 4);
+  var qcms = melange(BANQUE.filter(function(q){ return q.type === "qcm"; })).slice(0, NB_CONTROLE - ecrits.length);
+  C.qs = melange(ecrits.concat(qcms)); C.i = 0; C.bon = 0;
+  document.getElementById("c-jeu").classList.remove("hidden");
+  document.getElementById("c-fin").classList.add("hidden");
+  afficherC();
+}
+function afficherC(){
+  var q = C.qs[C.i]; C.repondu = false;
+  document.getElementById("c-num").textContent = "Question " + (C.i+1) + " / " + C.qs.length;
+  document.getElementById("c-score").textContent = C.bon + " bonne" + (C.bon>1?"s":"");
+  document.getElementById("c-barre").style.width = (C.i/C.qs.length*100) + "%";
+  document.getElementById("c-question").textContent = q.q;
+  document.getElementById("c-msg").textContent = ""; document.getElementById("c-msg").className = "retour-msg";
+  document.getElementById("c-explic").textContent = "";
+  document.getElementById("c-suivant").classList.add("hidden");
+  var box = document.getElementById("c-choix"); box.innerHTML = "";
+  var ecrit = document.getElementById("c-ecrit");
+  if(q.type === "qcm"){
+    ecrit.classList.add("hidden");
+    melange(q.choix).forEach(function(c){
+      var b = document.createElement("button"); b.className = "btn"; b.textContent = c;
+      b.addEventListener("click", function(){ repondreC(c === q.bonne, b); });
+      box.appendChild(b);
+    });
+  } else {
+    ecrit.classList.remove("hidden");
+    var inp = document.getElementById("c-input"); inp.value = ""; inp.disabled = false;
+    document.getElementById("c-valider").disabled = false;
+    setTimeout(function(){ inp.focus(); }, 50);
+  }
+}
+function validerEcrit(){
+  if(C.repondu) return;
+  var q = C.qs[C.i], v = document.getElementById("c-input").value;
+  if(!v.trim()){
+    var m = document.getElementById("c-msg"); m.className = "retour-msg ko"; m.textContent = "Écris d'abord une réponse.";
+    return;
+  }
+  var n = normalise(v);
+  var ok = q.accepte.some(function(a){ return n === a; });
+  document.getElementById("c-input").disabled = true;
+  document.getElementById("c-valider").disabled = true;
+  repondreC(ok, null);
+}
+document.getElementById("c-valider").addEventListener("click", validerEcrit);
+document.getElementById("c-input").addEventListener("keydown", function(e){ if(e.key === "Enter") validerEcrit(); });
+document.getElementById("c-input").addEventListener("input", function(){ if(!C.repondu) document.getElementById("c-msg").textContent = ""; });
+function repondreC(ok, btn){
+  if(C.repondu) return; C.repondu = true;
+  var q = C.qs[C.i];
+  if(ok) C.bon++;
+  if(q.type === "qcm"){
+    [].forEach.call(document.querySelectorAll("#c-choix .btn"), function(b){
+      b.disabled = true;
+      if(b.textContent === q.bonne) b.classList.add("ok");
+      else if(b === btn) b.classList.add("ko");
+    });
+  }
+  var m = document.getElementById("c-msg");
+  m.className = "retour-msg " + (ok ? "ok" : "ko");
+  m.textContent = ok ? "Bravo !" : "Réponse attendue : « " + (q.type === "qcm" ? q.bonne : q.rep) + " ».";
+  document.getElementById("c-explic").textContent = q.expl;
+  document.getElementById("c-score").textContent = C.bon + " bonne" + (C.bon>1?"s":"");
+  document.getElementById("c-suivant").classList.remove("hidden");
+}
+document.getElementById("c-suivant").addEventListener("click", function(){
+  C.i++;
+  if(C.i < C.qs.length){ afficherC(); return; }
+  document.getElementById("c-jeu").classList.add("hidden");
+  document.getElementById("c-fin").classList.remove("hidden");
+  document.getElementById("c-final").textContent = C.bon + " / " + C.qs.length;
+  document.getElementById("c-final-msg").textContent = C.bon === C.qs.length ? "Parfait, la leçon est sue !" : C.bon >= 9 ? "Très bien ! Encore un essai pour le sans-faute ?" : "Relis la leçon et recommence : chaque essai fait progresser.";
+  var rec = enregistrerMeilleurScore(C.bon, C.qs.length);
+  document.getElementById("c-record").textContent = rec ? "Ton record : " + rec.bon + " / " + rec.total : "";
+});
+document.getElementById("c-rejouer").addEventListener("click", lancerControle);
+</script>
+</body>
+</html>
