@@ -1,0 +1,210 @@
+/* =============================================================
+   KIT COMMUN « Mes révisions »
+   Une seule feuille de style pour tous les exercices.
+   La couleur de la matière arrive dans --matiere (posée par kit.js).
+   ============================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@500;600;700&display=swap");
+
+:root{
+  --matiere:#2563eb;        /* remplacée par kit.js */
+  --matiere-encre:#ffffff;  /* texte posé sur la couleur */
+  --matiere-fort:#2563eb;   /* version lisible sur papier (foncée si la couleur est claire) */
+  --matiere-voile:#2563eb1a;
+
+  --papier:#fbfcfe;
+  --carte:#ffffff;
+  --encre:#1f2a44;          /* bleu-noir de stylo */
+  --encre-douce:#55607a;
+  --trait:#dde3ee;
+  --marge:#f1a7a7;          /* la marge rouge du cahier */
+  --juste:#15803d;  --juste-voile:#dcfce7;
+  --presque:#b45309; --presque-voile:#fef3c7;
+  --faux:#b42318;   --faux-voile:#fee4e2;
+
+  --titre:"Fredoka", "Trebuchet MS", sans-serif;
+  --texte:"Atkinson Hyperlegible", Verdana, sans-serif;
+  --rayon:14px;
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0; background:var(--papier); color:var(--encre);
+  font-family:var(--texte); font-size:18px; line-height:1.5;
+}
+button, input{ font:inherit; color:inherit; }
+button{ cursor:pointer; }
+:focus-visible{ outline:3px solid var(--matiere-fort); outline-offset:2px; }
+.cache{ display:none !important; }
+
+/* ---------- Couverture : le protège-cahier de la matière ---------- */
+.couverture{
+  background:var(--matiere); color:var(--matiere-encre);
+  padding:12px 16px 26px;
+  border-bottom:4px solid var(--matiere-fort);
+}
+.couverture .barre-haut{
+  display:flex; justify-content:space-between; align-items:center;
+  max-width:640px; margin:0 auto 14px; font-size:15px;
+}
+.couverture a, .couverture button.lien{
+  color:inherit; text-decoration:none; background:none; border:0; padding:6px 0;
+  font-weight:700;
+}
+.etiquette{
+  max-width:640px; margin:0 auto; background:#fff; color:var(--encre);
+  border-radius:10px; padding:14px 18px 16px;
+  box-shadow:0 2px 0 rgba(31,42,68,.18);
+  border:1px solid rgba(31,42,68,.12);
+}
+.etiquette .matiere-nom{ font-size:15px; color:var(--encre-douce); margin:0 0 2px; }
+.etiquette h1{
+  font-family:var(--titre); font-weight:600; font-size:28px; line-height:1.15;
+  margin:0; text-wrap:balance;
+}
+
+/* ---------- Page : feuille de cahier avec marge rouge ---------- */
+main{
+  max-width:640px; margin:0 auto; padding:20px 16px 48px 28px;
+  position:relative;
+}
+main::before{
+  content:""; position:absolute; top:0; bottom:0; left:14px;
+  width:2px; background:var(--marge); opacity:.7;
+}
+h2{ font-family:var(--titre); font-weight:600; font-size:23px; margin:8px 0 12px; }
+h3{ font-family:var(--titre); font-weight:600; font-size:20px; margin:18px 0 6px; }
+p{ margin:0 0 10px; }
+.doux{ color:var(--encre-douce); }
+
+/* ---------- Boutons ---------- */
+.btn{
+  display:block; width:100%; text-align:left;
+  background:var(--carte); border:2px solid var(--trait); border-radius:var(--rayon);
+  padding:14px 16px; margin:0 0 10px; font-weight:700;
+}
+.btn small{ display:block; font-weight:400; color:var(--encre-douce); font-size:15px; }
+.btn.plein{ background:var(--matiere); color:var(--matiere-encre); border-color:var(--matiere-fort); }
+.btn.plein small{ color:inherit; opacity:.85; }
+.btn:active{ transform:translateY(1px); }
+.btn.centre{ text-align:center; }
+.rangee{ display:flex; gap:10px; }
+.rangee .btn{ text-align:center; }
+
+/* ---------- Carnet de progrès : une échelle de 3 marches par notion ---------- */
+.carnet{ list-style:none; padding:0; margin:0 0 8px; }
+.carnet li{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-bottom:1px dashed var(--trait);
+}
+.carnet .nom{ flex:1; font-size:16px; }
+.marches{ display:flex; align-items:flex-end; gap:3px; flex:none; }
+.marches i{
+  display:block; width:12px; border-radius:3px 3px 0 0;
+  background:var(--trait);
+}
+.marches i:nth-child(1){ height:8px; }
+.marches i:nth-child(2){ height:14px; }
+.marches i:nth-child(3){ height:20px; }
+.marches i.fait{ background:var(--matiere-fort); }
+.tampon{
+  font-family:var(--titre); font-weight:700; font-size:13px;
+  color:var(--matiere-fort); border:2px solid var(--matiere-fort);
+  border-radius:6px; padding:0 6px; transform:rotate(-6deg); flex:none;
+}
+.legende{ font-size:15px; color:var(--encre-douce); }
+
+/* ---------- Écran question ---------- */
+.entete-q{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.jauge{ flex:1; height:10px; background:var(--trait); border-radius:5px; overflow:hidden; }
+.jauge span{ display:block; height:100%; width:0; background:var(--matiere-fort); transition:width .3s; }
+.compteur{ font-size:15px; color:var(--encre-douce); white-space:nowrap; }
+
+.etape{
+  display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:15px;
+}
+.etape .marches i{ width:10px; }
+.etape b{ font-weight:700; }
+
+.carte-q{
+  background:var(--carte); border:2px solid var(--trait); border-radius:var(--rayon);
+  padding:16px; margin-bottom:14px;
+}
+.carte-q .theme{ font-size:15px; color:var(--encre-douce); margin:0 0 4px; }
+.carte-q .enonce{ font-size:21px; font-weight:700; margin:0; }
+.carte-q .enonce .grand{ font-family:var(--titre); font-size:30px; display:block; margin-top:6px; letter-spacing:.02em; }
+.carte-q img, .carte-q svg{ max-width:100%; height:auto; display:block; margin:10px auto 0; border-radius:8px; }
+
+.choix .btn{ font-weight:400; }
+.choix .btn.juste{ border-color:var(--juste); background:var(--juste-voile); }
+.choix .btn.faux{ border-color:var(--faux); background:var(--faux-voile); }
+.choix .btn:disabled{ cursor:default; color:var(--encre); }
+
+.saisie{ display:flex; gap:8px; }
+.saisie input{
+  flex:1; min-width:0; padding:14px; border:2px solid var(--trait); border-radius:var(--rayon);
+  background:#fff; font-size:20px;
+}
+.saisie input:focus{ border-color:var(--matiere-fort); outline:none; }
+.saisie .btn{ width:auto; margin:0; text-align:center; }
+.aide{
+  margin:10px 0 0; padding:10px 12px; border-radius:10px;
+  background:var(--matiere-voile); font-size:17px;
+}
+.aide .masque{ display:block; margin-top:2px; font-family:ui-monospace, Menlo, monospace; letter-spacing:.12em; font-size:19px; word-break:break-word; }
+.touches{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.touches button{
+  min-width:44px; padding:8px 10px; border:2px solid var(--trait); border-radius:10px; background:#fff;
+}
+
+/* ---------- Retour après réponse ---------- */
+.retour{
+  border-radius:var(--rayon); padding:14px 16px; margin:14px 0;
+  border-left:6px solid; animation:apparait .25s ease-out;
+}
+.retour.juste{ background:var(--juste-voile); border-color:var(--juste); }
+.retour.presque{ background:var(--presque-voile); border-color:var(--presque); }
+.retour.faux{ background:var(--faux-voile); border-color:var(--faux); }
+.retour .verdict{ font-family:var(--titre); font-weight:600; font-size:21px; margin:0 0 4px; }
+.retour .monte{ font-size:15px; margin-top:6px; }
+@keyframes apparait{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+
+/* ---------- Le moment « Acquis » ---------- */
+.acquis{
+  display:inline-block; margin-top:8px;
+  font-family:var(--titre); font-weight:700; font-size:20px;
+  color:var(--matiere-fort); border:3px solid var(--matiere-fort); border-radius:8px;
+  padding:2px 12px; transform:rotate(-5deg);
+  animation:tamponne .45s cubic-bezier(.2,1.6,.4,1);
+}
+@keyframes tamponne{ from{ transform:rotate(-5deg) scale(2.2); opacity:0; } to{ transform:rotate(-5deg) scale(1); opacity:1; } }
+
+/* ---------- Fin de série ---------- */
+.score{ font-family:var(--titre); font-weight:700; font-size:44px; margin:0; color:var(--matiere-fort); }
+.revoir{ list-style:none; padding:0; }
+.revoir li{ padding:10px 0; border-bottom:1px dashed var(--trait); }
+.revoir li span{ display:block; color:var(--juste); font-weight:700; }
+
+/* ---------- Leçon ---------- */
+.lecon{ background:var(--carte); border:2px solid var(--trait); border-radius:var(--rayon); padding:4px 16px 12px; margin-bottom:14px; }
+.lecon b, .lecon strong{ color:var(--matiere-fort); }
+.lecon table{ border-collapse:collapse; width:100%; font-size:16px; margin:8px 0; }
+.lecon td, .lecon th{ border:1px solid var(--trait); padding:6px; text-align:center; }
+.lecon th{ background:var(--matiere-voile); }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+@media (max-width:380px){
+  body{ font-size:17px; }
+  .etiquette h1{ font-size:24px; }
+}
+
+/* ---------- Bilan « suis-je prêt ? » ---------- */
+.bilan{ border:2px solid var(--trait); border-radius:var(--rayon); padding:12px 16px; margin:0 0 16px; background:var(--carte); }
+.bilan p{ margin:0; }
+.bilan .bilan-titre{ font-family:var(--titre); font-weight:600; font-size:20px; margin-bottom:4px; }
+.bilan.travail{ border-color:var(--presque); background:var(--presque-voile); }
+.bilan.tester{ border-color:var(--matiere-fort); background:var(--matiere-voile); }
+.bilan.pret{ border-color:var(--juste); background:var(--juste-voile); }
+.bilan.pret .bilan-titre::before{ content:"✓ "; color:var(--juste); }
