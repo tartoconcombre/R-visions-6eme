@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les nombres de 13 à 19</title>
+<link rel="stylesheet" href="kit.css">
+<style>
+  /* Boutons d'écoute propres à cet exercice */
+  .ecoute{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  .ecoute button, button.son{
+    border:2px solid var(--matiere-fort); background:var(--matiere-voile); color:var(--encre);
+    border-radius:12px; padding:10px 14px; font-weight:700;
+  }
+  .ecoute button.gros{ font-size:20px; padding:12px 18px; }
+  button.son{ padding:2px 8px; border-radius:8px; font-size:15px; }
+  .propositions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+  .propositions button{
+    border:2px solid var(--trait); background:#fff; border-radius:12px; padding:12px; font-weight:700; font-size:18px;
+  }
+  .propositions button.joue{ border-color:var(--matiere-fort); background:var(--matiere-voile); }
+  .lecon .dit{ color:var(--encre-douce); font-style:italic; }
+  .avertissement{ font-size:15px; background:var(--presque-voile); border-left:4px solid var(--presque); padding:8px 10px; border-radius:8px; }
+</style>
+</head>
+<body>
+<script src="kit.js"></script>
+<script>
+/* ---------------- La voix allemande (synthèse vocale de l'appareil) ---------------- */
+var voixDe = null;
+function chercherVoix(){
+  if(!window.speechSynthesis) return;
+  var v = speechSynthesis.getVoices().filter(function(x){ return /^de/i.test(x.lang); });
+  voixDe = v.filter(function(x){ return /de[-_]DE/i.test(x.lang); })[0] || v[0] || null;
+}
+if(window.speechSynthesis){ chercherVoix(); speechSynthesis.onvoiceschanged = chercherVoix; }
+var prevenu = false;
+function dire(mot, lent){
+  if(!window.speechSynthesis){
+    if(!prevenu){ prevenu=true; alert("Cet appareil ne sait pas lire à voix haute. Essaie avec un autre navigateur (Chrome, Safari)."); }
+    return;
+  }
+  speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(mot);
+  u.lang = "de-DE"; if(voixDe) u.voice = voixDe;
+  u.rate = lent ? 0.55 : 0.85;
+  speechSynthesis.speak(u);
+}
+/* Un seul écouteur pour tous les boutons « data-dire » */
+document.addEventListener("click", function(ev){
+  var b = ev.target.closest && ev.target.closest("[data-dire]");
+  if(!b) return;
+  ev.preventDefault();
+  dire(b.getAttribute("data-dire"), b.hasAttribute("data-lent"));
+  [].forEach.call(document.querySelectorAll(".propositions button"), function(x){ x.classList.remove("joue"); });
+  if(b.parentNode.classList.contains("propositions")) b.classList.add("joue");
+});
+/* Question d'écoute : le nombre est dit tout seul quand elle s'affiche */
+new MutationObserver(function(){
+  var a = document.querySelector(".carte-q [data-auto]:not([data-fait])");
+  if(a){ a.setAttribute("data-fait",""); setTimeout(function(){ dire(a.getAttribute("data-dire")); }, 350); }
+}).observe(document.documentElement, {childList:true, subtree:true});
+
+/* ---------------- Les nombres ---------------- */
+var NOMBRES = [
+  /* chiffre, mot, « ça se dit à peu près », chiffres proches (écoute), fautes d'écriture, fausses façons de dire */
+  {c:14, m:"vierzehn", dit:"fir-tsén",  proches:["40","4","13"], ecrit:["vierzen","zehnvier","vierzig"], oral:["zehnvier","vierzig","vier zehn"]},
+  {c:18, m:"achtzehn", dit:"art-tsén (ch raclé au fond de la gorge)", proches:["80","8","19"], ecrit:["achtzen","zehnacht","achtzig"], oral:["zehnacht","achtzig","acht"]},
+  {c:19, m:"neunzehn", dit:"noïn-tsén", proches:["90","9","18"], ecrit:["neunzen","zehnneun","neunzig"], oral:["zehnneun","neunzig","neun"]},
+  {c:13, m:"dreizehn", dit:"draï-tsén", proches:["30","3","14"], ecrit:["dreizen","zehndrei","dreißig"], oral:["zehndrei","dreißig","drei"]},
+  {c:15, m:"fünfzehn", dit:"funnf-tsén (ü = le « u » français)", proches:["50","5","16"], ecrit:["funfzehn","zehnfünf","fünfzig"], oral:["zehnfünf","fünfzig","fünf"], aussi:["fuenfzehn"]},
+  {c:16, m:"sechzehn", dit:"zèch-tsén (ch doux, comme un chat qui souffle)", proches:["60","6","17"], ecrit:["sechszehn","zehnsechs","sechzig"], oral:["sechszehn","zehnsechs","sechzig"],
+   piege:"<b>sechs</b> perd son <b>s</b> : on écrit <b>sechzehn</b>, pas « sechszehn »."},
+  {c:17, m:"siebzehn", dit:"zîp-tsén", proches:["70","7","16"], ecrit:["siebenzehn","zehnsieben","siebzig"], oral:["siebenzehn","zehnsieben","siebzig"],
+   piege:"<b>sieben</b> perd son <b>en</b> : on écrit <b>siebzehn</b>, pas « siebenzehn »."}
+];
+function son(mot){ return ' <button type="button" class="son" data-dire="'+mot+'" aria-label="Écouter '+mot+'">🔊</button>'; }
+
+var notions = [];
+NOMBRES.forEach(function(x){
+  var regle = (x.piege || "On dit d'abord l'unité (<b>"+x.m.replace("zehn","")+"</b>), puis <b>zehn</b>, collés en un seul mot.");
+
+  /* 1. Reconnaître le nombre à l'oral */
+  notions.push({
+    id:"entendre-"+x.c, nom:"Entendre "+x.c, theme:"J'écoute", chiffres:true,
+    q:"Écoute et trouve le nombre.",
+    image:'<div class="ecoute"><button type="button" class="gros" data-dire="'+x.m+'" data-auto>🔊 Réécouter</button>'+
+          '<button type="button" data-dire="'+x.m+'" data-lent>🐢 Plus lentement</button></div>',
+    r:[String(x.c)], autres:x.proches,
+    explication:"Tu as entendu <b>"+x.m+"</b>"+son(x.m)+" = "+x.c+". "+
+      (/^[3-9]0$/.test(x.proches[0]) ? "Fin en <b>-zehn</b> : entre 13 et 19. Fin en <b>-zig</b> (ou -ßig) : une dizaine comme "+x.proches[0]+"." : "")
+  });
+
+  /* 2. Écrire le nombre en lettres */
+  notions.push({
+    id:"ecrire-"+x.c, nom:"Écrire "+x.c+" en lettres", theme:"J'écris", strict:true,
+    q:"Écris ce nombre en lettres, en allemand.", grand:String(x.c),
+    r:[x.m].concat(x.aussi||[]), autres:x.ecrit,
+    aide:"L'unité d'abord, puis zehn, en un seul mot."+(x.piege?" Attention au piège de ce nombre !":""),
+    explication:regle+son(x.m)
+  });
+
+  /* 3. Savoir dire le nombre : on le dit à voix haute, puis on reconnaît la bonne prononciation */
+  notions.push({
+    id:"dire-"+x.c, nom:"Dire "+x.c, theme:"Je dis", qcmSeul:true,
+    gen:function(){
+      var lettres=["A","B","C","D"];
+      var props=Revision.melange([x.m].concat(x.oral));
+      var bonne=lettres[props.indexOf(x.m)];
+      return {
+        q:"Dis ce nombre à voix haute en allemand. Puis écoute les 4 propositions : laquelle est juste ?",
+        grand:String(x.c),
+        image:'<div class="propositions">'+props.map(function(p,k){
+          return '<button type="button" data-dire="'+p+'">🔊 '+lettres[k]+'</button>'; }).join("")+'</div>',
+        r:bonne, autres:lettres.filter(function(l){ return l!==bonne; }),
+        explication:"On dit <b>"+x.m+"</b>"+son(x.m)+", à peu près « "+x.dit+" ». Répète-le deux fois à voix haute."
+      };
+    }
+  });
+});
+
+Revision.lancer({
+  matiere:"Allemand",
+  titre:"Les nombres de 13 à 19",
+  intro:"Trois savoir-faire : <b>entendre</b> un nombre, le <b>dire</b> et l'<b>écrire</b>. Monte le son !",
+  serie:12, controle:12,
+  accents:"exiges",
+  clavier:["ü","ß"],
+  lecon:
+    '<h3>La règle : l\'unité d\'abord, puis zehn</h3>'+
+    '<p>En allemand, on dit « trois-dix » : <b>drei</b> + <b>zehn</b> = <b>dreizehn</b>. Tout est collé en un seul mot. C\'est comme en anglais : <i>four</i> + <i>teen</i> = <i>fourteen</i>.</p>'+
+    '<table><tr><th>Nombre</th><th>En allemand</th><th>Ça se dit à peu près</th></tr>'+
+    NOMBRES.slice().sort(function(a,b){ return a.c-b.c; }).map(function(x){
+      return '<tr><td><b>'+x.c+'</b></td><td>'+x.m+son(x.m)+'</td><td class="dit">'+x.dit.replace(/ \(.*\)/,"")+'</td></tr>';
+    }).join("")+'</table>'+
+    '<p class="doux">La prononciation entre guillemets est une approximation avec des sons français : écoute toujours le 🔊.</p>'+
+    '<h3>Deux pièges à l\'écrit</h3>'+
+    '<p><b>16 = sechzehn</b> : sechs perd son s.'+son("sechzehn")+'<br><b>17 = siebzehn</b> : sieben perd son en.'+son("siebzehn")+'</p>'+
+    '<h3>Ne pas confondre -zehn et -zig</h3>'+
+    '<p><b>vierzehn</b> = 14'+son("vierzehn")+' mais <b>vierzig</b> = 40'+son("vierzig")+'. Écoute bien la fin du mot !</p>'+
+    '<h3>Bien prononcer</h3>'+
+    '<p><b>z</b> se dit « ts » (zehn = « tsén »). <b>ei</b> se dit « aï » (drei). <b>eu</b> se dit « oï » (neun). <b>ü</b> se dit comme le « u » français.</p>'+
+    '<p class="avertissement">Pour t\'entraîner à <b>dire</b> les nombres : dis-le d\'abord tout haut, puis écoute les propositions. Sois honnête avec toi-même !</p>',
+  notions:notions
+});
+</script>
+</body>
+</html>
