@@ -134,9 +134,10 @@ function etat(n){ return maitrise[n.id] || (maitrise[n.id] = {n:0, acq:false, vu
 function sauver(){ ecrire("maitrise:"+fichier, maitrise); }
 function nomNotion(n){ return n.nom || n.theme || texteSeul(n.q||"").slice(0,50); }
 
-/* Fabrique une question concrète à partir d'une notion (fixe ou générée). */
-function instance(n){
-  var it={}, p, g = n.gen ? n.gen() : {};
+/* Fabrique une question concrète à partir d'une notion (fixe ou générée).
+   gen reçoit l'étape (1, 2 ou 3) : une notion peut donc changer de question selon l'étape. */
+function instance(n, niv){
+  var it={}, p, g = n.gen ? n.gen(niv) : {};
   for(p in n) if(p!=="gen") it[p]=n[p];
   for(p in g) it[p]=g[p];
   it.r = [].concat(it.r).map(String);
@@ -159,9 +160,10 @@ function prochaine(){
   var file=serie.file, i;
   for(i=0;i<file.length;i++){ file[i].dans--; }
   for(i=0;i<file.length;i++){ if(file[i].dans<=0){ return {n:file.splice(i,1)[0].n, rappel:true}; } }
-  var enCours = notions.filter(function(n){ var e=etat(n); return !e.acq && e.vu>0; });
-  var neuves  = notions.filter(function(n){ return etat(n).vu===0; });
-  var acquises= notions.filter(function(n){ return etat(n).acq; });
+  var liste = serie.liste;   /* toutes les notions, ou celles de la partie choisie */
+  var enCours = liste.filter(function(n){ var e=etat(n); return !e.acq && e.vu>0; });
+  var neuves  = liste.filter(function(n){ return etat(n).vu===0; });
+  var acquises= liste.filter(function(n){ return etat(n).acq; });
   /* Au plus 4 notions travaillées en même temps, pour ne pas surcharger. */
   var groupe = enCours.slice();
   while(groupe.length<4 && neuves.length){ groupe.push(neuves.shift()); }
@@ -170,7 +172,7 @@ function prochaine(){
     var a=acquises.filter(function(n){ return n!==serie.derniere; });
     if(a.length) return {n:unDe(a), revision:true};
   }
-  if(!candidats.length) candidats = groupe.length ? groupe : notions;
+  if(!candidats.length) candidats = groupe.length ? groupe : liste;
   /* Priorité aux notions les moins avancées. */
   candidats.sort(function(x,y){ return etat(x).n-etat(y).n || etat(x).vu-etat(y).vu; });
   var bas = candidats.filter(function(n){ return etat(n).n===etat(candidats[0]).n; });
@@ -232,7 +234,47 @@ function carteBilan(){
   return '<div class="bilan '+b.niveau+'"><p class="bilan-titre">'+b.titre+'</p><p>'+b.texte+'</p></div>';
 }
 
+function deLaPartie(p){ return notions.filter(function(n){ return n.theme===p.theme; }); }
+function compteAcquises(l){ return l.filter(function(n){ return etat(n).acq; }).length; }
+/* Parcours en points numérotés : 1. leçon, puis une partie par thème, puis le bilan. */
+function accueilParcours(){
+  serie=null;
+  var P=cfg.parties, rec=lire("meilleur:"+fichier), h='', k=1, suivante=-1;
+  P.forEach(function(p,i){ var l=deLaPartie(p); if(suivante<0 && compteAcquises(l)<l.length) suivante=i; });
+  if(cfg.intro) h+='<p>'+cfg.intro+'</p>';
+  if(cfg.lecon){
+    h+='<h2>'+(k++)+'. La leçon</h2><button class="btn" id="k-lecon">Lire la leçon<small>L\'essentiel à savoir, avec le son</small></button>';
+  }
+  P.forEach(function(p,i){
+    var l=deLaPartie(p), a=compteAcquises(l);
+    h+='<h2>'+(k++)+'. '+echappe(p.titre)+'</h2><button class="btn'+(i===suivante?' plein':'')+'" id="k-p'+i+'">'+
+       (a===l.length ? 'Réviser' : a ? 'Continuer' : 'Commencer')+
+       '<small>'+(p.sous ? echappe(p.sous)+' · ' : '')+(a===l.length ? 'tout est acquis' : a+' acquis sur '+l.length)+'</small></button>';
+  });
+  var b=bilan();
+  h+='<h2>'+(k++)+'. Bilan</h2>'+carteBilan();
+  h+='<button class="btn'+(suivante<0?' plein':'')+'" id="k-ctrl">Faire le contrôle<small>'+
+     (rec ? "Meilleur score : "+rec.bon+" / "+rec.total : (cfg.controle||10)+" questions sur tout, sans aide")+'</small></button>';
+  h+='<h2>Mon carnet de progrès</h2>';
+  P.forEach(function(p){
+    h+='<h3>'+echappe(p.titre)+'</h3><ul class="carnet">';
+    deLaPartie(p).forEach(function(n){ var e=etat(n);
+      h+='<li><span class="nom">'+echappe(nomNotion(n))+'</span>'+(e.acq ? '<span class="tampon">Acquis</span>' : marches(niveauAtteint(e)))+'</li>'; });
+    h+='</ul>';
+  });
+  h+='<p class="legende">Chaque notion monte trois marches : je reconnais, je complète, j\'écris seul.</p>';
+  h+='<button class="btn centre" id="k-zero" style="font-weight:400">Recommencer la progression à zéro</button>';
+  page(h,false);
+  if(cfg.lecon) $("k-lecon").onclick=lecon;
+  P.forEach(function(p,i){ $("k-p"+i).onclick=function(){ demarrer("entrainement", p); }; });
+  $("k-ctrl").onclick=function(){ demarrer("controle"); };
+  $("k-zero").onclick=function(){
+    if(confirm("Effacer la progression de cet exercice ? (le meilleur score au contrôle est gardé)")){ maitrise={}; sauver(); accueil(); }
+  };
+}
+
 function accueil(){
+  if(cfg.parties) return accueilParcours();
   serie=null;
   var acquises=notions.filter(function(n){ return etat(n).acq; }).length;
   var rec=lire("meilleur:"+fichier);
@@ -263,13 +305,14 @@ function accueil(){
 }
 
 function lecon(){
-  page('<div class="lecon">'+cfg.lecon+'</div><button class="btn plein centre" id="k-go">S\'entraîner</button>', true);
-  $("k-go").onclick=function(){ demarrer("entrainement"); };
+  page('<div class="lecon">'+cfg.lecon+'</div><button class="btn plein centre" id="k-go">'+(cfg.parties ? 'Passer au point 2 : '+echappe(cfg.parties[0].titre) : 'S\'entraîner')+'</button>', true);
+  $("k-go").onclick=function(){ demarrer("entrainement", cfg.parties ? cfg.parties[0] : null); };
 }
 
-function demarrer(mode){
+function demarrer(mode, partie){
   serie={mode:mode, total: mode==="controle" ? (cfg.controle||10) : (cfg.serie||12),
-         i:0, bon:0, erreurs:[], file:[], derniere:null, tirage:null};
+         i:0, bon:0, erreurs:[], file:[], derniere:null, tirage:null,
+         partie:partie||null, liste: partie ? deLaPartie(partie) : notions};
   if(mode==="controle"){
     var t=[]; while(t.length<serie.total){ t=t.concat(melange(notions)); }
     serie.tirage=t.slice(0,serie.total);
@@ -287,7 +330,7 @@ function question(){
     niv = niveauPour(n, choix.revision ? 3 : Math.min(3,Math.max(1,e.n)));
   }
   serie.derniere=n;
-  var it=instance(n);
+  var it=instance(n, niv);
   serie.courant={n:n, it:it, niv:niv, revision:choix.revision, rappel:choix.rappel};
 
   var pct=Math.round(serie.i/serie.total*100);
@@ -342,7 +385,7 @@ function masque(r){
     if(!m) return "";
     if(/^\s+$/.test(m)) return " &nbsp; ";
     if(m==="-"||m==="'") return m+"<wbr>";
-    return '<span style="white-space:nowrap">'+echappe(m[0])+m.slice(1).replace(/./g,"_ ")+'</span>';
+    return '<span style="white-space:nowrap">'+echappe(m[0])+m.slice(1).replace(/./g,"_ ")+'</span>';
   }).join("");
 }
 function optionsQcm(it, combien){
@@ -430,8 +473,14 @@ function fin(){
   h+='<p class="score">'+s+' / '+n+'</p>';
   h+='<p>'+(r===1?"Sans faute, bravo !":r>=.75?"Très bien. Encore un petit effort.":r>=.5?"C'est en bonne voie. Relis les corrections, puis recommence.":"Relis la leçon, puis recommence : les questions s'adaptent à toi.")+'</p>';
   if(rec) h+='<p class="doux">Meilleur score au contrôle : '+rec.bon+' / '+rec.total+'</p>';
-  var acquises=notions.filter(function(x){ return etat(x).acq; }).length;
-  h+='<p class="doux">Notions acquises : '+acquises+' sur '+notions.length+'.</p>';
+  var liste=serie.liste, acquises=compteAcquises(liste), apres=null;
+  h+='<p class="doux">Notions acquises'+(serie.partie?' dans cette partie':'')+' : '+acquises+' sur '+liste.length+'.</p>';
+  if(serie.partie && acquises===liste.length){
+    var ip=cfg.parties.indexOf(serie.partie);
+    apres = cfg.parties[ip+1] || "bilan";
+    h+='<button class="btn plein" id="k-apres">'+(apres==="bilan" ? 'Passer au bilan : faire le contrôle' : 'Passer au point '+(ip+3)+' : '+echappe(apres.titre))+
+       '<small>Cette partie est acquise</small></button>';
+  }
   h+=carteBilan();
   if(serie.erreurs.length){
     h+='<h3>À revoir</h3><ul class="revoir">';
@@ -440,8 +489,9 @@ function fin(){
   }
   h+='<div class="rangee"><button class="btn plein" id="k-encore">Recommencer</button><button class="btn" id="k-som">Sommaire</button></div>';
   page(h,true);
-  var mode=serie.mode;
-  $("k-encore").onclick=function(){ demarrer(mode); };
+  var mode=serie.mode, partie=serie.partie;
+  $("k-encore").onclick=function(){ demarrer(mode, partie); };
+  if($("k-apres")) $("k-apres").onclick=function(){ apres==="bilan" ? demarrer("controle") : demarrer("entrainement", apres); };
   $("k-som").onclick=accueil;
 }
 
@@ -465,5 +515,5 @@ R.lancer = function(c){
 R.melange = melange; R.unDe = unDe;
 R._serie = function(){ return serie; };   /* pour les tests */
 R.entier = function(a,b){ return a+Math.floor(Math.random()*(b-a+1)); };
-R.espaces = function(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," "); };
+R.espaces = function(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," "); };
 })();
