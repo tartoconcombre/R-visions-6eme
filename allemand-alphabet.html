@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Alphabet</title>
+<link rel="stylesheet" href="kit.css">
+<style>
+  .ecouter{ display:inline-block; width:auto; margin:12px 0 0; padding:8px 14px; font-weight:700; }
+  .mini{ border:2px solid var(--trait); background:#fff; border-radius:8px; padding:2px 8px; font-size:15px; }
+  .lecon td:first-child{ font-family:var(--titre); font-size:20px; }
+  .lecon tr.piege td{ background:var(--presque-voile); }
+</style>
+</head>
+<body>
+<script src="kit.js"></script>
+<script>
+/* ---------- Audio : les lettres lues par une voix allemande ---------- */
+window.Dire = function(t){
+  if(!("speechSynthesis" in window)){ alert("Cet appareil ne sait pas lire à voix haute."); return; }
+  speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(t);
+  u.lang = "de-DE"; u.rate = 0.8;
+  var v = speechSynthesis.getVoices().filter(function(x){ return /^de/i.test(x.lang); })[0];
+  if(v) u.voice = v;
+  speechSynthesis.speak(u);
+};
+if("speechSynthesis" in window) speechSynthesis.getVoices(); /* précharge les voix */
+function ecouter(t, petit){
+  return '<button type="button" class="'+(petit?'mini':'btn ecouter')+'" data-t="'+t+'" onclick="Dire(this.dataset.t)">🔊'+(petit?'':' Écouter')+'</button>';
+}
+
+/* ---------- Les lettres : [prononciation à la française, nom allemand pour la voix] ---------- */
+var L = {
+  A:["a","A"], B:["bé","Be"], C:["tsé","Tse"], D:["dé","De"], E:["é","E"], F:["èf","Ef"],
+  G:["gué","Ge"], H:["ha","Ha"], I:["i","I"], J:["yott","Jott"], K:["ka","Ka"], L:["èl","El"],
+  M:["èm","Em"], N:["èn","En"], O:["o","O"], P:["pé","Pe"], Q:["kou","Ku"], R:["èr","Er"],
+  S:["èss","Es"], T:["té","Te"], U:["ou","U"], V:["faou","Vau"], W:["vé","We"], X:["iks","Ix"],
+  Y:["upsilonn","Ypsilon"], Z:["tsètt","Zett"], "Ä":["è","Ä"], "Ö":["eu","Ö"], "Ü":["u","Ü"], "ß":["èss-tsètt","Eszett"]
+};
+var FACILES = ["A","B","D","F","K","L","M","N","O","P","R","S","T","X"];
+/* Les lettres pièges, avec ce qu'un élève français a tendance à dire à la place */
+var PIEGES = [
+  {l:"C", faux:["sé","ké","zèd"],        lettres:["S","Z","K"], aide:"En français, cette lettre se dit « sé »."},
+  {l:"E", faux:["eu","i","è"],           lettres:["I","Ä","A"], aide:"Une voyelle qui, en français, se dit « eu »."},
+  {l:"G", faux:["jé","ké","yé"],         lettres:["J","Q","K"], aide:"En français, cette lettre se dit « jé »."},
+  {l:"H", faux:["ache","hé","hi"],       lettres:["A","R","K"], aide:"En français, on l'appelle « ache »."},
+  {l:"I", faux:["é","aï","eu"],          lettres:["E","Y","J"], aide:"Elle se dit comme en français. Attention : ce n'est pas le E !"},
+  {l:"J", faux:["ji","jé","gué"],        lettres:["G","I","Y"], aide:"En français, cette lettre se dit « ji »."},
+  {l:"Q", faux:["ku","ké","kvé"],        lettres:["U","K","Ü"], aide:"En français, elle se dit « ku » ; elle est presque toujours suivie d'un U."},
+  {l:"U", faux:["u","iou","eu"],         lettres:["Ü","O","Q"], aide:"Une voyelle qui, en français, se dit « u »."},
+  {l:"V", faux:["vé","fé","ou"],         lettres:["W","F","U"], aide:"Ce n'est pas le F ! En français, cette lettre se dit « vé »."},
+  {l:"W", faux:["double vé","ouvé","faou"], lettres:["V","B","U"], aide:"Ce n'est pas le V ! En français, on dit « double vé »."},
+  {l:"Y", faux:["i grec","ya","yott"],   lettres:["J","I","Ü"], aide:"En français, on l'appelle « i grec »."},
+  {l:"Z", faux:["zèd","tsé","sètt"],     lettres:["C","S","ß"], aide:"C'est la dernière lettre de l'alphabet."},
+  {l:"Ä", faux:["a","eu","é"],           lettres:["E","A","Ö"], aide:"Une lettre avec un Umlaut (les deux points)."},
+  {l:"Ö", faux:["o","ou","è"],           lettres:["O","Ü","E"], aide:"Une lettre avec un Umlaut (les deux points)."},
+  {l:"Ü", faux:["ou","i","eu"],          lettres:["U","I","Y"], aide:"Une lettre avec un Umlaut. Attention : ce n'est pas le U !"},
+  {l:"ß", faux:["bé","tsètt","èss-ha"],  lettres:["S","Z","B"], aide:"Une lettre qui n'existe qu'en allemand ; on l'appelle aussi « scharfes S »."}
+];
+/* Ce qu'on dit à tort en épelant à la française */
+var FR = {C:"sé",E:"eu",G:"jé",H:"ache",J:"ji",Q:"ku",U:"u",V:"vé",W:"double vé",Y:"i grec",Z:"zèd","Ä":"a","Ö":"o","Ü":"ou","ß":"èss"};
+
+/* ---------- Épeler ---------- */
+var MOTS = ["Wie","Vogel","Zug","Junge","Uhr","Hallo","Wasser","Zebra","Juli","Eis","Hund","Vater","Zimmer","Jacke"];
+var MOTS_UMLAUT = ["Käse","Bär","Mädchen","Brötchen","schön","Tschüs","Bücher","grün","groß","Fuß","Straße","Fußball"];
+function lettres(mot){ return mot.split("").map(function(c){ return c==="ß" ? "ß" : c.toUpperCase(); }); }
+function epeler(mot){ return lettres(mot).map(function(c){ return L[c][0]; }).join(" – "); }
+function voix(mot){ return lettres(mot).map(function(c){ return L[c][1]; }).join(", "); }
+var ECHANGES = [["w","v"],["v","w"],["z","c"],["j","g"],["ie","ei"],["ei","ie"],["e","i"],["u","ü"],["ü","u"],["ä","e"],["ä","a"],["ö","o"],["ß","ss"],["ss","ß"],["ch","sch"],["ll","l"],["ä","ö"],["a","ä"]];
+function variantes(mot, liste){
+  var bas=mot.toLowerCase(), maj=mot[0]!==mot[0].toLowerCase(), out=[];
+  Revision.melange(ECHANGES).forEach(function(e){
+    if(bas.indexOf(e[0])<0) return;
+    var v=bas.replace(e[0],e[1]); if(maj) v=v[0].toUpperCase()+v.slice(1);
+    if(v!==mot && out.indexOf(v)<0) out.push(v);
+  });
+  Revision.melange(liste).forEach(function(m){ if(m!==mot && out.length<3) out.push(m); });
+  return out.slice(0,3);
+}
+function epelerFaux(mot){
+  var ls=lettres(mot), pos=[], out=[];
+  ls.forEach(function(c,i){ if(FR[c]) pos.push(i); });
+  Revision.melange(pos).forEach(function(p){
+    var v=ls.map(function(c,i){ return i===p ? FR[c] : L[c][0]; }).join(" – ");
+    if(out.indexOf(v)<0) out.push(v);
+  });
+  if(out.length<3){ /* tout à la française */
+    var v=ls.map(function(c){ return FR[c]||L[c][0]; }).join(" – ");
+    if(out.indexOf(v)<0) out.push(v);
+  }
+  /* compléter avec l'épellation d'un mot mal orthographié (ex. Bär → B-E-R) */
+  variantes(mot, []).forEach(function(m){ var v=epeler(m); if(out.length<3 && out.indexOf(v)<0 && v!==epeler(mot)) out.push(v); });
+  return out.slice(0,3);
+}
+
+/* ---------- Les notions ---------- */
+var notions = [
+  { id:"dire-faciles", nom:"Dire les lettres « comme en français »", theme:"Dire une lettre", qcmSeul:true,
+    q:"Comment dit-on cette lettre en allemand ? <small class='doux'>(Dis-la à voix haute, puis choisis.)</small>",
+    gen:function(){ var l=Revision.unDe(FACILES);
+      return {grand:l, r:L[l][0], autres:Revision.melange(FACILES.filter(function(x){ return x!==l; })).slice(0,3).map(function(x){ return L[x][0]; }),
+              explication:"En allemand, "+l+" se dit « "+L[l][0]+" », presque comme en français. "+ecouter(L[l][1])}; } },
+  { id:"rec-faciles", nom:"Reconnaître les lettres « comme en français »", theme:"Reconnaître une lettre", strict:true,
+    aide:"Cette lettre se dit comme en français.",
+    gen:function(){ var l=Revision.unDe(FACILES);
+      return {q:"Quelle lettre se dit <b>« "+L[l][0]+" »</b> ?", image:ecouter(L[l][1]), r:l,
+              autres:Revision.melange(FACILES.filter(function(x){ return x!==l; })).slice(0,3)}; } }
+];
+PIEGES.forEach(function(p){
+  var fr=L[p.l][0], de=L[p.l][1];
+  notions.push({ id:"dire-"+p.l, nom:"Dire la lettre "+p.l, theme:"Dire une lettre", qcmSeul:true,
+    q:"Comment dit-on cette lettre en allemand ? <small class='doux'>(Dis-la à voix haute, puis choisis.)</small>",
+    grand:p.l, r:[fr], autres:p.faux,
+    explication:"En allemand, "+p.l+" se dit « "+fr+" ». "+ecouter(de) });
+  notions.push({ id:"rec-"+p.l, nom:"Reconnaître « "+fr+" »", theme:"Reconnaître une lettre", strict:true,
+    q:"Quelle lettre se dit <b>« "+fr+" »</b> ?", image:ecouter(de),
+    r:[p.l].concat(p.l==="ß"?["ẞ"]:[]), autres:p.lettres, aide:p.aide,
+    explication:"« "+fr+" », c'est la lettre "+p.l+"." });
+});
+notions.push(
+  { id:"ecrire-mot", nom:"Écrire un mot qu'on m'épelle", theme:"Épeler", strict:true,
+    aide:"Repère les lettres pièges : « faou » = V, « vé » = W, « yott » = J, « tsètt » = Z.",
+    gen:function(){ var m=Revision.unDe(MOTS);
+      return {q:"Écris le mot qu'on épelle :", grand:epeler(m), image:ecouter(voix(m)), r:m, autres:variantes(m,MOTS),
+              explication:"« "+epeler(m)+" » : "+m+"."}; } },
+  { id:"ecrire-umlaut", nom:"Écrire un mot épelé avec ä, ö, ü ou ß", theme:"Épeler", strict:true,
+    aide:"« è » = Ä, « eu » = Ö, « u » = Ü, « èss-tsètt » = ß. Utilise les touches sous la case.",
+    gen:function(){ var m=Revision.unDe(MOTS_UMLAUT);
+      return {q:"Écris le mot qu'on épelle :", grand:epeler(m), image:ecouter(voix(m)), r:m, autres:variantes(m,MOTS_UMLAUT),
+              explication:"« "+epeler(m)+" » : "+m+"."}; } },
+  { id:"epeler-mot", nom:"Épeler un mot à voix haute", theme:"Épeler", qcmSeul:true,
+    q:"Comment épelle-t-on ce mot en allemand ? <small class='doux'>(Épelle-le à voix haute, puis choisis.)</small>",
+    gen:function(){ var m=Revision.unDe(MOTS.concat(MOTS_UMLAUT));
+      return {grand:m, r:epeler(m), autres:epelerFaux(m), explication:ecouter(voix(m))}; } }
+);
+
+/* ---------- La leçon ---------- */
+var lignes = Object.keys(L).map(function(l){
+  var piege = PIEGES.some(function(p){ return p.l===l; });
+  return '<tr'+(piege?' class="piege"':'')+'><td>'+l+'</td><td>'+L[l][0]+'</td><td>'+ecouter(L[l][1],true)+'</td></tr>';
+}).join("");
+var lecon =
+  "<h3>Das Alphabet</h3>"+
+  "<p>L'alphabet allemand a les mêmes 26 lettres que le français, plus <b>ä, ö, ü</b> (les voyelles avec <i>Umlaut</i>) et <b>ß</b>.</p>"+
+  "<p>Beaucoup de lettres se disent comme en français. Les <b>lettres pièges</b> sont surlignées : apprends-les en priorité. Touche 🔊 pour entendre.</p>"+
+  "<table><tr><th>Lettre</th><th>Se dit</th><th></th></tr>"+lignes+"</table>"+
+  "<h3>Les 4 pièges à ne pas confondre</h3>"+
+  "<p><b>V</b> se dit « faou » et <b>W</b> se dit « vé ».<br><b>E</b> se dit « é » et <b>I</b> se dit « i ».<br><b>J</b> se dit « yott » et <b>G</b> se dit « gué ».<br><b>Z</b> se dit « tsètt » et <b>C</b> se dit « tsé ».</p>"+
+  "<h3>Pour épeler</h3>"+
+  "<p>On te demandera souvent : <i>Wie schreibt man das?</i> (Comment ça s'écrit ?). Exemple : <b>Wie</b> → vé – i – é. "+ecouter("We, I, E",true)+"</p>";
+
+Revision.lancer({
+  matiere: "Allemand",
+  titre: "L'alphabet allemand",
+  intro: "Apprends à dire les lettres, à les reconnaître quand on te les dit, et à épeler des mots.",
+  lecon: lecon,
+  controle: 10, serie: 12,
+  clavier: ["ä","ö","ü","ß"],
+  accents: "exiges",
+  notions: notions
+});
+</script>
+</body>
+</html>
