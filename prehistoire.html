@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Révisions Préhistoire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: une colonne calme, un exercice à la fois ; ocre = Paléolithique, vert = Néolithique */
+:root{
+  --bg:#EDF0EB; --surface:#FFFFFF; --line:#CDD3CB; --ink:#1D231F; --muted:#56605A;
+  --paleo:#A9541F; --paleo-soft:#F6E3D5; --neo:#2F6E3E; --neo-soft:#DCEEDD;
+  --ok:#2F6E3E; --ok-soft:#DCEEDD; --bad:#B3261E; --bad-soft:#F8DEDB; --focus:#1F5FA8;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141814; --surface:#1E241F; --line:#36403A; --ink:#E7ECE6; --muted:#A9B3AC;
+  --paleo:#E39158; --paleo-soft:#3A2618; --neo:#7DC48C; --neo-soft:#1C3322;
+  --ok:#7DC48C; --ok-soft:#1C3322; --bad:#F08A80; --bad-soft:#3D1F1C; --focus:#8AB8F0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141814; --surface:#1E241F; --line:#36403A; --ink:#E7ECE6; --muted:#A9B3AC;
+  --paleo:#E39158; --paleo-soft:#3A2618; --neo:#7DC48C; --neo-soft:#1C3322;
+  --ok:#7DC48C; --ok-soft:#1C3322; --bad:#F08A80; --bad-soft:#3D1F1C; --focus:#8AB8F0; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:2rem;font-weight:800}
+h2{font-size:1.45rem;font-weight:800}
+.lead{margin:0;color:var(--muted)}
+.band{display:flex;height:12px;border-radius:6px;overflow:hidden}
+.band span:first-child{flex:7;background:var(--paleo)} .band span:last-child{flex:3;background:var(--neo)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
+.legend b{color:var(--ink)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.progress{display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
+.bar{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--neo);transition:width .3s}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:.95rem;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-current="true"]{border-color:var(--ink);font-weight:700}
+nav button.done::after{content:" ✓";color:var(--ok);font-weight:700}
+section.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.consigne{margin:0;font-size:1.05rem}
+.hint{margin:0;color:var(--muted);font-size:.95rem}
+.btn{font:inherit;font-weight:700;padding:12px 18px;border-radius:10px;border:2px solid var(--ink);background:var(--ink);color:var(--surface);cursor:pointer;min-height:48px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+button:focus-visible,select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.choice{font:inherit;text-align:left;padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;min-height:48px;width:100%}
+.choice:hover:not(:disabled){border-color:var(--muted)}
+.choice.ok{border-color:var(--ok);background:var(--ok-soft)}
+.choice.bad{border-color:var(--bad);background:var(--bad-soft)}
+.choice:disabled{cursor:default}
+.feedback{margin:0;padding:10px 12px;border-radius:8px;font-size:.98rem}
+.feedback.ok{background:var(--ok-soft)} .feedback.bad{background:var(--bad-soft)}
+.q{display:flex;flex-direction:column;gap:8px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.q:last-of-type{border-bottom:0}
+.q p.ask{margin:0;font-weight:700}
+.opts{display:grid;gap:8px}
+@media (min-width:560px){.opts.two{grid-template-columns:1fr 1fr}}
+/* tri */
+.card{display:flex;flex-direction:column;gap:8px;padding:12px;border:2px solid var(--line);border-radius:10px}
+.card.ok{border-color:var(--ok);background:var(--ok-soft)} .card.bad{border-color:var(--bad);background:var(--bad-soft)}
+.card p{margin:0}
+.pill{font:inherit;font-weight:700;padding:10px 14px;border-radius:999px;border:2px solid;cursor:pointer;min-height:44px;flex:1}
+.pill.p{border-color:var(--paleo);color:var(--paleo);background:var(--paleo-soft)}
+.pill.n{border-color:var(--neo);color:var(--neo);background:var(--neo-soft)}
+.pill:disabled{opacity:.55;cursor:default}
+/* frise */
+.seq{display:flex;flex-direction:column;gap:6px;padding:0;margin:0;list-style:none;counter-reset:s}
+.seq li{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:8px;background:var(--bg)}
+.seq li b{font-variant-numeric:tabular-nums;min-width:1.6em}
+.seq li.ok{background:var(--ok-soft)} .seq li.bad{background:var(--bad-soft)}
+.seq li small{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* vocabulaire */
+.match{display:grid;gap:12px}
+@media (min-width:560px){.match{grid-template-columns:2fr 3fr}}
+.col{display:flex;flex-direction:column;gap:8px}
+.choice.sel{border-color:var(--focus)}
+.choice.locked{border-color:var(--ok);background:var(--ok-soft)}
+/* menus */
+.menus{display:grid;gap:12px}
+@media (min-width:560px){.menus{grid-template-columns:1fr 1fr}}
+.menu{border:1px dashed var(--muted);border-radius:10px;padding:12px 14px}
+.menu h3{margin:0 0 6px;font-family:var(--display);font-size:1.1rem}
+.menu ul{margin:0;padding-left:20px}
+/* texte à trous */
+.trous{line-height:2.4;margin:0}
+.trous select{font:inherit;font-size:1rem;padding:4px 6px;border-radius:6px;border:2px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.trous select.ok{border-color:var(--ok);background:var(--ok-soft)}
+.trous select.bad{border-color:var(--bad);background:var(--bad-soft)}
+.score{font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Révisions Préhistoire</h1>
+    <p class="lead">Du Paléolithique au Néolithique : 7 petits jeux pour réviser pendant les vacances. Fais-en un ou deux par jour.</p>
+    <div class="band" aria-hidden="true"><span></span><span></span></div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--paleo)"></span><b>Paléolithique</b> : chasseurs-cueilleurs nomades</span>
+      <span><span class="dot" style="background:var(--neo)"></span><b>Néolithique</b> (à partir de -10 000) : agriculteurs sédentaires</span>
+    </div>
+    <div class="progress"><span>Jeux terminés</span><div class="bar"><i id="bar"></i></div><span id="count">0 / 7</span></div>
+  </header>
+
+  <nav id="nav" aria-label="Choisir un jeu"></nav>
+
+  <main id="main"></main>
+
+  <div class="row"><button class="btn ghost" id="resetAll" type="button">Tout recommencer à zéro</button></div>
+</div>
+
+<script>
+(function(){
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const k in a){if(k==="class")e.className=a[k];else if(k.startsWith("on"))e.addEventListener(k.slice(2),a[k]);else e.setAttribute(k,a[k])}kids.flat().forEach(c=>e.append(c instanceof Node?c:document.createTextNode(c)));return e};
+let done={};
+try{done=JSON.parse(localStorage.getItem("prehist-done")||"{}")}catch(e){done={}}
+const save=()=>{try{localStorage.setItem("prehist-done",JSON.stringify(done))}catch(e){}};
+
+const GAMES=[
+ {id:"frise",nom:"1. La frise",render:frise},
+ {id:"tri",nom:"2. Paléo ou Néo ?",render:tri},
+ {id:"objets",nom:"3. Les objets",render:objets},
+ {id:"vocab",nom:"4. Le vocabulaire",render:vocab},
+ {id:"menus",nom:"5. Menus et maisons",render:menus},
+ {id:"vf",nom:"6. Vrai ou faux",render:vraifaux},
+ {id:"bilan",nom:"7. Le bilan",render:bilan},
+];
+let current=GAMES[0].id;
+const main=document.getElementById("main"), nav=document.getElementById("nav");
+
+function finish(id,msg){done[id]=true;save();drawNav();updateBar();return msg}
+function updateBar(){const n=GAMES.filter(g=>done[g.id]).length;document.getElementById("bar").style.width=(n/GAMES.length*100)+"%";document.getElementById("count").textContent=n+" / "+GAMES.length}
+function drawNav(){nav.innerHTML="";GAMES.forEach(g=>{nav.append(el("button",{type:"button",class:done[g.id]?"done":"","aria-current":String(g.id===current),onclick:()=>{current=g.id;draw()}},g.nom))})}
+function draw(){drawNav();main.innerHTML="";const g=GAMES.find(x=>x.id===current);main.append(g.render())}
+function panel(titre,consigne,...kids){return el("section",{class:"panel"},el("h2",{},titre),el("p",{class:"consigne"},consigne),...kids)}
+function restartBtn(){return el("button",{class:"btn ghost",type:"button",onclick:draw},"Recommencer ce jeu")}
+
+/* ---------- 1. Frise ---------- */
+function frise(){
+  const evts=[
+    {t:"Peintures de la grotte Chauvet",d:"vers -35 000",v:-35000},
+    {t:"Campement de chasseurs de rennes à Pincevent",d:"vers -12 000",v:-12000},
+    {t:"Invention de l'agriculture au Proche-Orient",d:"vers -10 000",v:-10000},
+    {t:"Village de Jerf el Ahmar (Syrie)",d:"vers -9 500",v:-9500},
+    {t:"Premiers paysans dans l'Aisne (Cuiry-lès-Chaudardes)",d:"vers -5 000",v:-5000},
+    {t:"Invention de l'écriture : fin de la Préhistoire",d:"vers -3 300",v:-3300},
+  ];
+  const pool=el("div",{class:"opts"}), seq=el("ol",{class:"seq"}), fb=el("p",{class:"feedback",hidden:""});
+  let order=[];
+  shuffle(evts).forEach(e=>{
+    const b=el("button",{class:"choice",type:"button",onclick:()=>{
+      b.disabled=true;b.hidden=true;order.push(e);
+      seq.append(el("li",{},el("b",{},order.length+"."),e.t));
+      if(order.length===evts.length)check();
+    }},e.t);pool.append(b)});
+  function check(){
+    let good=0;const right=evts.slice().sort((a,b)=>a.v-b.v);
+    [...seq.children].forEach((li,i)=>{const ok=order[i]===right[i];if(ok)good++;li.className=ok?"ok":"bad";li.append(el("small",{},order[i].d))});
+    fb.hidden=false;
+    if(good===evts.length){fb.className="feedback ok";fb.textContent=finish("frise","Bravo, tout est dans l'ordre ! Le Paléolithique est très long : il dure environ 3 millions d'années.")}
+    else{fb.className="feedback bad";fb.textContent=good+" sur 6 bien placés. Regarde les dates en vert et en rouge, puis recommence : le plus petit nombre après le « - » est le plus récent."}
+  }
+  return panel("La frise chronologique","Touche les événements du plus ancien au plus récent.",
+    el("p",{class:"hint"},"Astuce : avec « avant J.-C. », plus le nombre est grand, plus c'est ancien."),
+    pool,seq,fb,el("div",{class:"row"},restartBtn()));
+}
+
+/* ---------- 2. Tri ---------- */
+function tri(){
+  const items=[
+    ["Peindre des chevaux et des lions sur les parois d'une grotte","P","Les peintures de Chauvet datent du Paléolithique (vers -35 000)."],
+    ["Suivre les troupeaux de rennes pour les chasser","P","Les chasseurs de Pincevent se déplacent selon les saisons : ils sont nomades."],
+    ["Dormir sous une tente en peaux de renne","P","À Pincevent, on dort sous des tentes qu'on peut démonter."],
+    ["Lancer sa sagaie avec un propulseur","P","Le propulseur est une invention du Paléolithique (vers -15 000)."],
+    ["Cultiver du blé et de l'orge","N","L'agriculture apparaît au Néolithique, vers -10 000."],
+    ["Élever des moutons et des chèvres","N","L'élevage commence au Néolithique."],
+    ["Habiter une maison dans un village","N","Au Néolithique, les humains deviennent sédentaires."],
+    ["Couper les épis avec une faucille","N","La faucille sert à récolter les céréales cultivées."],
+    ["Cuire sa bouillie dans un pot en terre cuite","N","La poterie est inventée au Néolithique."],
+    ["Dresser des menhirs à Carnac","N","Les mégalithes sont construits au Néolithique."],
+  ];
+  const list=shuffle(items), wrap=el("div",{class:"opts two"}), fb=el("p",{class:"feedback",hidden:""});
+  let answered=0,good=0;
+  list.forEach(([t,a,why])=>{
+    const card=el("div",{class:"card"}), msg=el("p",{class:"hint",hidden:""},why);
+    const pick=v=>{answered++;const ok=v===a;if(ok)good++;card.classList.add(ok?"ok":"bad");
+      card.querySelectorAll("button").forEach(b=>b.disabled=true);msg.hidden=false;
+      if(!ok)msg.textContent="Non : "+why;
+      if(answered===list.length){fb.hidden=false;fb.className="feedback "+(good===list.length?"ok":"bad");
+        fb.textContent=good===list.length?finish("tri","Parfait : 10 sur 10 !"):good+" sur 10. Relis les explications en rouge et recommence."}};
+    card.append(el("p",{},t),el("div",{class:"row"},
+      el("button",{class:"pill p",type:"button",onclick:()=>pick("P")},"Paléolithique"),
+      el("button",{class:"pill n",type:"button",onclick:()=>pick("N")},"Néolithique")),msg);
+    wrap.append(card)});
+  return panel("Paléolithique ou Néolithique ?","Pour chaque activité, choisis la bonne période.",wrap,fb,el("div",{class:"row"},restartBtn()));
+}
+
+/* ---------- QCM générique ---------- */
+function qcm(id,questions,okMsg){
+  const box=el("div",{class:"col"}), fb=el("p",{class:"feedback",hidden:""});
+  let answered=0,good=0;
+  questions.forEach(q=>{
+    const opts=el("div",{class:"opts"+(q.o.length===2||q.o.length===4?" two":"")}), exp=el("p",{class:"hint",hidden:""},q.e||"");
+    shuffle(q.o.map((o,i)=>({o,i}))).forEach(({o,i})=>{
+      const b=el("button",{class:"choice",type:"button",onclick:()=>{
+        answered++;const ok=i===0;if(ok)good++;b.classList.add(ok?"ok":"bad");
+        opts.querySelectorAll("button").forEach(x=>{x.disabled=true;if(x.dataset.r==="0")x.classList.add("ok")});
+        if(q.e)exp.hidden=false;
+        if(answered===questions.length){fb.hidden=false;fb.className="feedback "+(good===questions.length?"ok":"bad");
+          fb.textContent=good===questions.length?finish(id,okMsg):good+" sur "+questions.length+". La bonne réponse est en vert. Tu peux recommencer."}
+      }},o);b.dataset.r=String(i);opts.append(b)});
+    box.append(el("div",{class:"q"},el("p",{class:"ask"},q.q),...(q.extra?[q.extra]:[]),opts,exp));
+  });
+  return [box,fb];
+}
+
+/* ---------- 3. Objets ---------- */
+function objets(){
+  const Q=[
+    {q:"La faucille sert à…",o:["couper les épis de céréales","chasser le renne","coudre des vêtements"],e:"Néolithique : une lame de silex fixée sur un manche en bois."},
+    {q:"La meule et la molette servent à…",o:["moudre le grain pour faire de la farine","tailler le silex","allumer le feu"],e:"Néolithique : on écrase les grains entre deux pierres."},
+    {q:"Le vase en terre cuite sert à…",o:["cuire et conserver les aliments","peindre les grottes","pêcher"],e:"Néolithique : la poterie est faite avec de l'argile cuite."},
+    {q:"La hache en pierre polie sert à…",o:["abattre les arbres pour faire des champs","moudre le grain","coudre le cuir"],e:"Néolithique : on défriche la forêt pour cultiver."},
+    {q:"Le propulseur sert à…",o:["lancer la sagaie plus vite et plus loin","récolter le blé","cuire la bouillie"],e:"Paléolithique : la sagaie va trois fois plus vite qu'à la main."},
+    {q:"L'aiguille en os sert à…",o:["coudre des morceaux de cuir","creuser la terre","polir les haches"],e:"Paléolithique : on fabrique des vêtements chauds."},
+    {q:"Le harpon en os sert à…",o:["pêcher","moissonner","construire des maisons"],e:"Paléolithique : il a des crochets pour retenir le poisson."},
+    {q:"Le galet lissoir de Pincevent sert à…",o:["assouplir les peaux","moudre le grain","dessiner"],e:"Paléolithique : les peaux de renne deviennent des vêtements et des tentes."},
+  ];
+  const [box,fb]=qcm("objets",Q,"Bravo, tu connais tous les objets !");
+  return panel("À quoi sert cet objet ?","Choisis la bonne réponse. Regarde ensuite de quelle période vient l'objet.",box,fb,el("div",{class:"row"},restartBtn()));
+}
+
+/* ---------- 4. Vocabulaire ---------- */
+function vocab(){
+  const V=[
+    ["Nomade","qui se déplace souvent, sans habitat fixe"],
+    ["Sédentaire","qui a un habitat fixe"],
+    ["Domestication","passage de l'état sauvage au contrôle de l'homme"],
+    ["Défricher","détruire la forêt pour cultiver"],
+    ["Le troc","échanger un produit contre un autre"],
+    ["Un mégalithe","un monument fait de très grandes pierres"],
+    ["Un foyer","un endroit aménagé pour faire du feu"],
+    ["L'art pariétal","les peintures et gravures sur les parois des grottes"],
+  ];
+  const left=el("div",{class:"col"}), right=el("div",{class:"col"}), fb=el("p",{class:"feedback",hidden:""}), info=el("p",{class:"hint"},"Touche un mot, puis sa définition.");
+  let sel=null,found=0,errors=0;
+  const words=shuffle(V), defs=shuffle(V);
+  words.forEach(([w])=>{const b=el("button",{class:"choice",type:"button",onclick:()=>{if(b.disabled)return;left.querySelectorAll(".sel").forEach(x=>x.classList.remove("sel"));sel={w,b};b.classList.add("sel")}},w);left.append(b)});
+  defs.forEach(([w,d])=>{const b=el("button",{class:"choice",type:"button",onclick:()=>{
+    if(!sel){info.textContent="Choisis d'abord un mot à gauche.";return}
+    if(sel.w===w){[b,sel.b].forEach(x=>{x.classList.remove("sel");x.classList.add("locked");x.disabled=true});found++;sel=null;info.textContent="Oui !";
+      if(found===V.length){fb.hidden=false;fb.className="feedback ok";fb.textContent=finish("vocab",errors===0?"Parfait, aucune erreur !":"Terminé ! Tu as fait "+errors+" erreur(s). Recommence pour faire un sans-faute.")}}
+    else{errors++;b.classList.add("bad");setTimeout(()=>b.classList.remove("bad"),600);info.textContent="Pas cette définition. Essaie encore."}
+  }},d);right.append(b)});
+  return panel("Le vocabulaire","Associe chaque mot à sa définition.",info,el("div",{class:"match"},left,right),fb,el("div",{class:"row"},restartBtn()));
+}
+
+/* ---------- 5. Menus et maisons ---------- */
+function menus(){
+  const m=el("div",{class:"menus"},
+    el("div",{class:"menu"},el("h3",{},"Menu A"),el("ul",{},el("li",{},"Bouillie de céréales"),el("li",{},"Côtes de mouton grillées"),el("li",{},"Pommes"))),
+    el("div",{class:"menu"},el("h3",{},"Menu B"),el("ul",{},el("li",{},"Racines et feuilles"),el("li",{},"Cuisse de renne grillée"),el("li",{},"Myrtilles"))));
+  const Q=[
+    {q:"Quel menu date du Néolithique ?",extra:m,o:["Le menu A","Le menu B"],e:"Les céréales sont cultivées et le mouton est élevé : c'est le Néolithique. Le renne est chassé : le menu B est celui des chasseurs du Paléolithique."},
+    {q:"Quel objet a servi à préparer la bouillie de céréales ?",o:["La meule","Le propulseur","Le harpon"],e:"On moud le grain sur la meule pour faire de la farine."},
+    {q:"Où les gens du Néolithique ont-ils mangé leur menu ?",o:["Dans une maison du village","Sous un dolmen","Au fond d'une grotte"],e:"Piège ! Le dolmen est une tombe, pas une maison. Et on n'habitait pas au fond des grottes."},
+    {q:"Et les chasseurs de rennes de Pincevent, où dormaient-ils ?",o:["Sous une tente en peaux","Dans une maison en pierre","Dans un dolmen"],e:"Ils sont nomades : la tente se démonte et se transporte."},
+  ];
+  const [box,fb]=qcm("menus",Q,"Bravo, tu as déjoué tous les pièges !");
+  return panel("Menus et maisons","Lis les deux menus, puis réponds aux questions.",box,fb,el("div",{class:"row"},restartBtn()));
+}
+
+/* ---------- 6. Vrai / faux ---------- */
+function vraifaux(){
+  const raw=[
+    ["L'agriculture est née au Proche-Orient vers -10 000.",true,"C'est là que l'on cultive d'abord le blé et l'orge."],
+    ["Au Paléolithique, les hommes habitaient au fond des grottes.",false,"Ils vivaient sous des tentes ou des huttes. Les grottes servaient surtout à peindre."],
+    ["Les peintures de Chauvet représentent surtout des animaux.",true,"Chevaux, lions, rhinocéros… presque aucun humain."],
+    ["Au Néolithique, on arrête complètement de chasser.",false,"On continue à chasser, par exemple le cerf à Chalain."],
+    ["À Jerf el Ahmar, les céréales étaient rangées dans des silos.",true,"Le grand bâtiment collectif contenait des silos."],
+    ["Les menhirs et les dolmens datent du Paléolithique.",false,"Ce sont des monuments du Néolithique."],
+    ["Au Néolithique, la population de la Terre augmente fortement.",true,"Elle passe de quelques millions à environ 20 millions d'habitants."],
+    ["Au Néolithique, certaines personnes deviennent plus riches que d'autres.",true,"Les tombes très riches, comme celle de Varna, le montrent."],
+  ];
+  const Q=shuffle(raw).map(([q,v,e])=>({q,o:v?["Vrai","Faux"]:["Faux","Vrai"],e}));
+  const [box,fb]=qcm("vf",Q,"Excellent, 8 sur 8 !");
+  return panel("Vrai ou faux ?","Lis chaque phrase et choisis Vrai ou Faux.",box,fb,el("div",{class:"row"},restartBtn()));
+}
+
+/* ---------- 7. Bilan ---------- */
+function bilan(){
+  const parts=[
+    "Au Paléolithique, les humains sont ",["nomades","sédentaires"],". Ils se nourrissent grâce à la ",["chasse","culture"],", à la pêche et à la cueillette. ",
+    "Vers ",["-10 000","-1 000"],", au ",["Proche-Orient","Japon"],", les humains inventent l'",["agriculture","écriture"]," et l'élevage. ",
+    "Ils deviennent ",["sédentaires","nomades"]," et construisent les premiers ",["villages","châteaux"],". ",
+    "Ils inventent de nouveaux objets : la ",["poterie","télévision"]," pour cuire et conserver, la hache en pierre ",["polie","taillée"]," pour couper les arbres. ",
+    "La population ",["augmente","diminue"],". Ce grand changement s'appelle la « révolution ",["néolithique","industrielle"]," »."
+  ];
+  const p=el("p",{class:"trous"}), sels=[];
+  parts.forEach(x=>{
+    if(typeof x==="string"){p.append(x);return}
+    const s=el("select",{"aria-label":"mot manquant"}); s.append(el("option",{value:""},"…"));
+    shuffle(x).forEach(w=>s.append(el("option",{value:w},w)));
+    s.dataset.ans=x[0]; s.id="t"+sels.length; s.addEventListener("change",()=>s.className="");
+    sels.push(s); p.append(s);
+  });
+  const fb=el("p",{class:"feedback",hidden:""});
+  const check=()=>{let good=0;sels.forEach(s=>{const ok=s.value===s.dataset.ans;if(ok)good++;s.className=s.value?(ok?"ok":"bad"):"bad"});
+    fb.hidden=false;
+    if(good===sels.length){fb.className="feedback ok";fb.textContent=finish("bilan","Bravo, tu sais raconter la révolution néolithique ! Tu peux recopier ce texte dans ton cahier.")}
+    else{fb.className="feedback bad";fb.textContent=good+" sur "+sels.length+". Corrige les cases rouges puis vérifie à nouveau."}};
+  return panel("Le bilan : texte à trous","Choisis le bon mot dans chaque case, puis touche « Vérifier ».",p,
+    el("div",{class:"row"},el("button",{class:"btn",type:"button",onclick:check},"Vérifier"),restartBtn()),fb);
+}
+
+document.getElementById("resetAll").addEventListener("click",()=>{done={};save();current=GAMES[0].id;draw();updateBar()});
+updateBar();draw();
+})();
+</script>
+
+</body>
+</html>
