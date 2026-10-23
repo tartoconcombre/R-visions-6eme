@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's in your schoolbag?</title>
+<meta name="theme-color" content="#2563eb">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer d'une matière à l'autre ====== */
+:root{ --matiere:#2563eb; --matiere-encre:#ffffff; --matiere-fort:#1d4ed8; }
+
+/* ====== Style commun « Mes révisions » (identique dans tous les exercices) ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee; --marge:#f1a7a7;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18)}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 28px/1.15 var(--titre);margin:0}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px 28px;position:relative}
+main::before{content:"";position:absolute;top:0;bottom:0;left:14px;width:2px;background:var(--marge);opacity:.7}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere);color:var(--matiere-encre);border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte)}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.grand{display:block;font:700 30px var(--titre);margin-top:6px}
+.choix .btn{font-weight:400}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:10px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon table{border-collapse:collapse;width:100%;font-size:16px;margin:8px 0}
+.lecon td,.lecon th{border:1px solid var(--trait);padding:6px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ====== Ajouts propres aux langues : images, écoute ====== */
+.visuel{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.visuel svg{width:110px;height:110px}
+.visuel.deux svg{width:88px;height:88px}
+.choix.images{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px}
+.choix.images .btn{margin:0;padding:8px;display:flex;justify-content:center;align-items:center}
+.choix.images svg{width:100%;max-width:110px;height:auto}
+.ecoute{background:#eef3ff;border:2px solid var(--matiere);color:var(--matiere-fort);border-radius:999px;padding:8px 16px;font-weight:700;margin:10px 0 0}
+.note{background:#fffbea;border:2px dashed #e5d38a;border-radius:10px;padding:10px 14px;margin-top:10px;font:400 18px/1.5 var(--texte)}
+.vocab{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:8px 0}
+.vocab div{border:1px solid var(--trait);border-radius:10px;padding:6px;text-align:center;font-size:16px;line-height:1.3}
+.vocab svg{width:56px;height:56px;display:block;margin:0 auto 2px}
+.vocab button{background:none;border:0;padding:2px 6px;font-size:18px}
+.pastille{display:inline-block;width:18px;height:18px;border-radius:50%;border:1.5px solid #1f2a44;vertical-align:-3px;margin-right:6px}
+.phrases p{margin:0 0 8px}
+.phrases button{background:none;border:0;padding:0 4px;font-size:18px}
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Menu</button></div>
+  <div class="etiquette"><p>Anglais · le matériel scolaire</p><h1>What's in your schoolbag?</h1></div>
+</header>
+<main id="page"></main>
+
+<script>
+/* --- Voix (synthèse vocale) et micro (reconnaissance vocale) de l'appareil --- */
+var SYNTHESE = ("speechSynthesis" in window) && ("SpeechSynthesisUtterance" in window);
+var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+var MICRO_KO = false;   /* devient vrai si le micro est refusé : on passe à l'auto-vérification */
+function voixAnglaise(){ if(!SYNTHESE) return null; var v=speechSynthesis.getVoices();
+  return v.filter(function(x){ return /^en[-_]GB/i.test(x.lang); })[0] || v.filter(function(x){ return /^en/i.test(x.lang); })[0] || null; }
+if(SYNTHESE){ try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=function(){}; }catch(e){ SYNTHESE=false; } }
+function tais(){ try{ if(SYNTHESE && (speechSynthesis.speaking||speechSynthesis.pending)) speechSynthesis.cancel(); }catch(e){} }
+function dire(t){
+  if(!SYNTHESE) return;
+  try{ tais(); var u=new SpeechSynthesisUtterance(t), v=voixAnglaise(); u.lang="en-GB"; u.rate=.85; if(v) u.voice=v; speechSynthesis.speak(u); }catch(e){}
+}
+/* Écoute l'élève une fois ; cb(erreur, [transcriptions possibles]) */
+function ecouterEleve(cb){
+  var fini=false, r;
+  function fin(e,a){ if(!fini){ fini=true; cb(e,a); } }
+  try{ tais(); r=new Reco(); r.lang="en-GB"; r.interimResults=false; r.maxAlternatives=5; r.continuous=false; }catch(e){ return fin("not-allowed"); }
+  r.onresult=function(e){ var a=[]; for(var i=0;i<e.results[0].length;i++) a.push(e.results[0][i].transcript); fin(null,a); };
+  r.onerror=function(e){ fin(e.error||"no-speech"); };
+  r.onend=function(){ fin("no-speech"); };
+  try{ r.start(); }catch(e){ fin("not-allowed"); }
+  setTimeout(function(){ try{ r.stop(); }catch(e){} },7000);
+}
+/* Une des transcriptions correspond-elle à une réponse admise ? (articles et espaces ignorés) */
+function oralJuste(alts,q){
+  function net(x){ return norm(x).replace(/^(a|an|the|it's|it is) /,"").replace(/^(a|an|the) /,""); }
+  for(var i=0;i<alts.length;i++){
+    var n=net(alts[i]);
+    for(var j=0;j<q.r.length;j++){ var m=net(q.r[j]);
+      if(n===m || n.replace(/ /g,"")===m.replace(/ /g,"") || (" "+n+" ").indexOf(" "+m+" ")>=0) return alts[i]; }
+  }
+  return null;
+}
+
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;    /* questions par entraînement (une sous-notion) */
+var Q_PAR_NOTION_CONTROLE = 3; /* le test pose 3 questions par sous-notion */
+var SEUIL_PRET = 0.8;          /* 80 % au test → « prêt pour l'évaluation » */
+
+/* --- Le vocabulaire (manuel p. 26, workbook p. 10, fiche « Read the text and colour »).
+   mot : forme affichée ; r : écritures acceptées (sans article, l'article a/the est accepté en plus)
+   proches : objets qu'on confond facilement ; fautes : erreurs d'orthographe fréquentes (leurres) --- */
+var OBJETS = {
+  schoolbag:      {pron:"school se prononce « skoul ».", mot:"a schoolbag",       r:["schoolbag","school bag"],        fr:"le cartable",         un:"un cartable",         g:0, c:"#2563eb", proches:["pencilcase","book","diary"],          fautes:["a schoolback"],
+                   astuce:"school (l'école) + bag (le sac). On l'écrit aussi en deux mots : school bag."},
+  diary:          {pron:"on dit « daï-eu-ri ».", mot:"a diary",           r:["diary"],                         fr:"l'agenda",            un:"un agenda",           g:0, c:"#e64980", proches:["notebook","book","calculator"],            fautes:["a dairy"],
+                   astuce:"diary = l'agenda, celui où l'on note les devoirs et les dates."},
+  pencilcase:     {mot:"a pencil case",     r:["pencil case"],                   fr:"la trousse",          un:"une trousse",         g:1, c:"#2f9e44", proches:["schoolbag","colouringpencil","pen"], fautes:["a pencilcase"],
+                   astuce:"pencil case s'écrit en deux mots : pencil (le crayon) + case (l'étui)."},
+  pen:            {mot:"a pen",             r:["pen"],                           fr:"le stylo",            un:"un stylo",            g:0, c:"#1c7ed6", proches:["colouringpencil","highlighter","gluestick"], fautes:["a pencil"],
+                   astuce:"pen = le stylo. Ne pas confondre avec pencil = le crayon."},
+  gluestick:      {pron:"glue se prononce « glou ».", mot:"a glue stick",      r:["glue stick","stick of glue"],    fr:"le bâton de colle",   un:"un bâton de colle",   g:0, c:"#fcc419", proches:["highlighter","rubber","pen"],       fautes:["a blue stick"],
+                   astuce:"glue (la colle) commence par g : glue stick. On dit aussi a stick of glue."},
+  calculator:     {pron:"on appuie sur le début : « CAL-kiou-lé-teu ».", mot:"a calculator",      r:["calculator"],                    fr:"la calculatrice",     un:"une calculatrice",    g:1, c:"#8f969e", proches:["notebook","diary","book"],           fautes:["a calculater"],
+                   astuce:"calculator se termine par -or."},
+  paint:          {mot:"paint",             r:["paint","paints","paint box","paintbox"], fr:"la peinture", un:"de la peinture",   g:1, c:"#ffffff", proches:["colouringpencil","highlighter","pencilcase"], fautes:["a painting"], sansArticle:true,
+                   astuce:"paint = la peinture (a painting = un tableau)."},
+  colouringpencil:{mot:"a colouring pencil",r:["colouring pencil","coloring pencil"], fr:"le crayon de couleur", un:"un crayon de couleur", g:0, c:"#7048e8", proches:["pen","highlighter","paint"], fautes:["a colour pencil"],
+                   astuce:"colouring s'écrit avec « ou », comme colour."},
+  scissors:       {pron:"le c ne se prononce pas : « si-zeuz ».", mot:"scissors",          r:["scissors","pair of scissors","a pair of scissors"], fr:"les ciseaux", un:"des ciseaux", g:0, c:"#e03131", proches:["setsquare","ruler","rubber"], fautes:["sissors","scisors"], sansArticle:true, pluriel:true,
+                   astuce:"scissors : sc au début, ss au milieu, s à la fin. Ce mot est toujours au pluriel (on dit aussi a pair of scissors)."},
+  rubber:         {pron:"le u se prononce comme « eu » : « reu-beu ».", mot:"a rubber",          r:["rubber"],                        fr:"la gomme",            un:"une gomme",           g:1, c:"#ff8787", proches:["ruler","gluestick","setsquare"],          fautes:[],
+                   astuce:"rubber (deux b) = la gomme. Ne pas confondre avec ruler = la règle."},
+  setsquare:      {mot:"a set square",      r:["set square"],                    fr:"l'équerre",           un:"une équerre",         g:1, c:"#74c0fc", proches:["ruler","scissors","rubber"],           fautes:["a square"],
+                   astuce:"set square s'écrit en deux mots (square seul = un carré)."},
+  ruler:          {mot:"a ruler",           r:["ruler"],                         fr:"la règle",            un:"une règle",           g:1, c:"#fd7e14", proches:["rubber","setsquare","scissors"],         fautes:[],
+                   astuce:"ruler = la règle. Ne pas confondre avec rubber = la gomme."},
+  highlighter:    {pron:"le gh ne se prononce pas : « haï-laï-teu ».", mot:"a highlighter",     r:["highlighter"],                   fr:"le surligneur",       un:"un surligneur",       g:0, c:"#a9e34b", proches:["pen","gluestick","colouringpencil"],            fautes:["a hightlighter"],
+                   astuce:"highlighter : le gh ne se prononce pas, comme dans light (la lumière)."},
+  notebook:       {mot:"a notebook",        r:["notebook","exercise book"],      fr:"le cahier",           un:"un cahier",           g:0, c:"#f08c00", proches:["book","diary","calculator"],               fautes:[],
+                   astuce:"notebook ou exercise book = le cahier (on dit an exercise book)."},
+  book:           {mot:"a book",            r:["book"],                          fr:"le livre",            un:"un livre",            g:0, c:"#8d5a3b", proches:["notebook","diary","schoolbag"],           fautes:[],
+                   astuce:"book = le livre ; notebook = le cahier."}
+};
+var IDS = Object.keys(OBJETS);
+var COLORABLES = ["schoolbag","diary","pencilcase","pen","gluestick","calculator","rubber","setsquare","ruler","highlighter","notebook","book","colouringpencil"];
+var PLURIELS = {pen:"pens", colouringpencil:"colouring pencils", highlighter:"highlighters", ruler:"rulers", rubber:"rubbers", book:"books", notebook:"notebooks"};
+
+var COULEURS = [
+  {en:"red",    fr:["rouge","rouge"],     h:"#e03131"},
+  {en:"blue",   fr:["bleu","bleue"],      h:"#1c7ed6"},
+  {en:"white",  fr:["blanc","blanche"],   h:"#ffffff"},
+  {en:"pink",   fr:["rose","rose"],       h:"#f783ac", astuce:"rose = pink (a rose, c'est la fleur)."},
+  {en:"orange", fr:["orange","orange"],   h:"#fd7e14", voyelle:true},
+  {en:"grey",   fr:["gris","grise"],      h:"#8f969e", alt:["gray"], astuce:"grey (avec e en anglais britannique ; gray en américain)."},
+  {en:"purple", fr:["violet","violette"], h:"#7048e8", astuce:"violet = purple."},
+  {en:"black",  fr:["noir","noire"],      h:"#212529"},
+  {en:"green",  fr:["vert","verte"],      h:"#2f9e44"},
+  {en:"brown",  fr:["marron","marron"],   h:"#8d5a3b", astuce:"marron = brown."},
+  {en:"yellow", fr:["jaune","jaune"],     h:"#fcc419"}
+];
+
+/* --- Dessins des objets (SVG intégrés : aucune image externe) --- */
+var T = 'stroke="#1f2a44" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+var DESSINS = {
+  schoolbag:function(c){ return '<path d="M24 17v-3a8 8 0 0 1 16 0v3" fill="none" '+T+'/><rect x="13" y="17" width="38" height="41" rx="9" fill="'+c+'" '+T+'/><rect x="20" y="36" width="24" height="15" rx="4" fill="#fff" fill-opacity=".5" '+T+'/><path d="M25 41h14" '+T+'/>'; },
+  diary:function(c){ return '<rect x="15" y="6" width="34" height="50" rx="3" fill="'+c+'" '+T+'/><path d="M22 6v50" '+T+'/><rect x="25" y="14" width="20" height="13" rx="2" fill="#fff" '+T+'/><text x="35" y="23.5" font-size="7.5" font-family="Verdana,sans-serif" font-weight="700" text-anchor="middle" fill="#1f2a44">2026</text><path d="M40 56v6l-2.5-2.5L35 62v-6" fill="#e03131" '+T+'/>'; },
+  pencilcase:function(c){ return '<rect x="5" y="21" width="54" height="26" rx="13" fill="'+c+'" '+T+'/><path d="M13 29h36" stroke="#1f2a44" stroke-width="2" stroke-dasharray="3 3"/><circle cx="51" cy="29" r="3" fill="#fff" '+T+'/><path d="M51 32v7" '+T+'/>'; },
+  pen:function(c){ return '<g transform="rotate(35 32 32)"><rect x="28" y="6" width="8" height="38" rx="2" fill="'+c+'" '+T+'/><path d="M36 9h3v15h-3" fill="none" '+T+'/><path d="M28 44h8l-3 10h-2z" fill="#cfd6e0" '+T+'/><path d="M32 54v4" '+T+'/></g>'; },
+  colouringpencil:function(c){ return '<g transform="rotate(35 32 32)"><rect x="27" y="4" width="10" height="40" fill="'+c+'" '+T+'/><path d="M30.5 4v40M33.5 4v40" stroke="#1f2a44" stroke-width="1" opacity=".4"/><path d="M27 44h10l-5 14z" fill="#f3d2a2" '+T+'/><path d="M30.3 53.5h3.4L32 58z" fill="'+c+'" stroke="#1f2a44" stroke-width="1.5" stroke-linejoin="round"/></g>'; },
+  highlighter:function(c){ return '<g transform="rotate(35 32 32)"><rect x="24" y="3" width="16" height="12" rx="3" fill="'+c+'" '+T+'/><rect x="24" y="13" width="16" height="30" rx="2" fill="'+c+'" '+T+'/><rect x="27.5" y="20" width="9" height="16" rx="1.5" fill="#fff" fill-opacity=".6"/><path d="M26 43h12l-2 7h-8z" fill="#e9edf3" '+T+'/><path d="M29 50h6l-1 7h-4z" fill="'+c+'" '+T+'/></g>'; },
+  gluestick:function(c){ return '<rect x="21" y="5" width="22" height="15" rx="4" fill="#fff" '+T+'/><rect x="22" y="19" width="20" height="38" rx="4" fill="'+c+'" '+T+'/><rect x="25" y="29" width="14" height="17" rx="2" fill="#fff" '+T+'/><text x="32" y="40" font-size="6" font-family="Verdana,sans-serif" font-weight="700" text-anchor="middle" fill="#1f2a44">GLUE</text>'; },
+  calculator:function(c){ var b=''; [18,28,38].forEach(function(x){ [28,38,48].forEach(function(y){ b+='<rect x="'+x+'" y="'+y+'" width="8" height="7" rx="1.5" fill="#fff" stroke="#1f2a44" stroke-width="1.5"/>'; }); });
+    return '<rect x="13" y="5" width="38" height="55" rx="6" fill="'+c+'" '+T+'/><rect x="18" y="10" width="28" height="12" rx="2" fill="#e6f4ea" '+T+'/><text x="43" y="19.5" font-size="7.5" font-family="Verdana,sans-serif" text-anchor="end" fill="#1f2a44">123</text>'+b; },
+  paint:function(c){ var p=["#e03131","#fcc419","#1c7ed6","#2f9e44","#f783ac","#7048e8","#fd7e14","#212529"], h='';
+    p.forEach(function(k,i){ h+='<circle cx="'+(14+(i%4)*12)+'" cy="'+(i<4?27:40)+'" r="4.5" fill="'+k+'" stroke="#1f2a44" stroke-width="1.5"/>'; });
+    return '<rect x="4" y="17" width="56" height="32" rx="7" fill="'+c+'" '+T+'/>'+h; },
+  scissors:function(c){ return '<path d="M27 40L42 6M37 40L22 6" stroke="#8a94a6" stroke-width="5" stroke-linecap="round"/><path d="M27 40L42 6M37 40L22 6" stroke="#1f2a44" stroke-width="1.2" stroke-linecap="round" opacity=".5"/><circle cx="32" cy="29" r="2.2" fill="#1f2a44"/><circle cx="22" cy="48" r="9" fill="'+c+'" '+T+'/><circle cx="22" cy="48" r="4.5" fill="#fff" '+T+'/><circle cx="42" cy="48" r="9" fill="'+c+'" '+T+'/><circle cx="42" cy="48" r="4.5" fill="#fff" '+T+'/>'; },
+  rubber:function(c){ return '<g transform="rotate(-20 32 32)"><rect x="9" y="22" width="46" height="21" rx="3" fill="'+c+'" '+T+'/><path d="M34 22v21" '+T+'/></g>'; },
+  setsquare:function(c){ var t=''; for(var x=14;x<=48;x+=6) t+='<path d="M'+x+' 56v-4" stroke="#1f2a44" stroke-width="1.5"/>';
+    return '<path d="M8 56V8l48 48z" fill="'+c+'" '+T+'/><path d="M16 48V28l20 20z" fill="#fff" '+T+'/>'+t; },
+  ruler:function(c){ var t=''; for(var x=8;x<=56;x+=6) t+='<path d="M'+x+' 24v'+((x/6)%2?6:9)+'" stroke="#1f2a44" stroke-width="1.5"/>';
+    return '<g transform="rotate(-30 32 32)"><rect x="2" y="24" width="60" height="16" rx="2" fill="'+c+'" '+T+'/>'+t+'</g>'; },
+  notebook:function(c){ var s=''; for(var y=11;y<=53;y+=7) s+='<circle cx="16" cy="'+y+'" r="2.6" fill="#fff" stroke="#1f2a44" stroke-width="1.8"/>';
+    return '<rect x="16" y="6" width="36" height="52" rx="2" fill="'+c+'" '+T+'/><rect x="26" y="14" width="20" height="10" rx="1.5" fill="#fff" '+T+'/><path d="M29 19h14" stroke="#1f2a44" stroke-width="1.5"/>'+s; },
+  book:function(c){ return '<rect x="44" y="11" width="8" height="44" fill="#f6f1e3" '+T+'/><path d="M46.5 16v34M49.5 16v34" stroke="#1f2a44" stroke-width="1" opacity=".5"/><rect x="12" y="8" width="34" height="50" rx="2" fill="'+c+'" '+T+'/><rect x="18" y="16" width="22" height="5" rx="1" fill="#fff"/><rect x="18" y="25" width="14" height="4" rx="1" fill="#fff"/>'; }
+};
+function img(id,c){ if(id.indexOf("|")>0){ var x=id.split("|"); id=x[0]; c=x[1]; } return '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">'+DESSINS[id](c||OBJETS[id].c)+'</svg>'; }
+function visuel(id,c,deux){ return '<div class="visuel'+(deux?' deux':'')+'">'+img(id,c)+(deux?img(id,c):'')+'</div>'; }
+
+/* --- Petits outils de langue --- */
+function sans(id){ return OBJETS[id].mot.replace(/^an? /,""); }              /* « ruler » */
+function avecArt(id){ return OBJETS[id].mot; }                                /* « a ruler », « scissors » */
+function plur(id){ return id==="scissors" ? "scissors" : PLURIELS[id]; }
+function nomPhrase(id){ return OBJETS[id].mot; }
+function accepte(id){                                                         /* toutes les écritures admises */
+  var o=OBJETS[id], l=[o.mot];
+  o.r.forEach(function(v){ l.push(v, "the "+v); if(!o.sansArticle) l.push((/^[aeiou]/.test(v)?"an ":"a ")+v); });
+  return l;
+}
+function epeler(id){ return sans(id).split(" ").map(function(m){ return m.split("").join("-"); }).join(" "); }
+function coulAcc(c){ var l=[c.en].concat(c.alt||[]), r=[]; l.forEach(function(x){ r.push(x,"it's "+x,"it is "+x); }); return r; }
+function coulDe(h){ return COULEURS.filter(function(c){ return c.h===h; })[0]; }
+function pasOrange(){ return COULEURS.filter(function(c){ return !c.voyelle; }); }
+
+var EXPL_A  = "Un seul objet, n'importe lequel → <b>a</b> : <i>This is a pen.</i>";
+var EXPL_Z  = "Plusieurs objets, n'importe lesquels → <b>Ø</b> (pas d'article, rien ne s'écrit) : <i>Those are scissors.</i> On ne met jamais a devant un pluriel.";
+var EXPL_THE= "On sait précisément de quel objet on parle (on vient d'en parler, ou c'est le mien) → <b>the</b>, au singulier comme au pluriel.";
+var ZERO = "Ø (nothing)";
+
+var LECON = (function(){
+  var h='<h3>School supplies · le matériel scolaire</h3><div class="vocab">';
+  IDS.forEach(function(id){ var o=OBJETS[id];
+    h+='<div>'+img(id)+'<b>'+o.mot+'</b><br><span class="doux">'+o.fr+'</span><br><button type="button" data-dire="'+o.mot+'" aria-label="Écouter">🔊</button></div>'; });
+  h+='</div><p class="doux">On dit aussi : <i>an exercise book</i> (= a notebook), <i>a stick of glue</i> (= a glue stick), <i>a school bag</i> (= a schoolbag).</p>';
+  h+='<h3>Colours · les couleurs</h3><div class="vocab">';
+  COULEURS.forEach(function(c){ h+='<div><span class="pastille" style="background:'+c.h+'"></span><b>'+c.en+'</b><br><span class="doux">'+c.fr[0]+'</span><br><button type="button" data-dire="'+c.en+'" aria-label="Écouter">🔊</button></div>'; });
+  h+='</div><p>En anglais, la couleur se place <b>avant</b> le nom et ne prend <b>jamais de s</b> : <i>a green pencil case</i>, <i>blue pens</i>.</p>';
+  h+='<h3>Je dis</h3><div class="phrases">';
+  [["What's in your schoolbag?","Qu'y a-t-il dans ton cartable ?"],
+   ["I have a pencil case, pens and a rubber.","J'ai une trousse, des stylos et une gomme."],
+   ["She needs scissors, highlighters and a glue stick.","Elle a besoin de ciseaux, de surligneurs et d'un bâton de colle (she → need<b>s</b>)."],
+   ["My pencil case is green.","Un seul objet → <b>is</b>."],
+   ["My colouring pencils are pink, purple and black.","Plusieurs objets → <b>are</b>."],
+   ["What colour is your ruler? — It's orange.","De quelle couleur est ta règle ? — Elle est orange."]
+  ].forEach(function(p){ h+='<p><button type="button" data-dire="'+p[0]+'" aria-label="Écouter">🔊</button><i>'+p[0]+'</i><br><span class="doux">'+p[1]+'</span></p>'; });
+  h+='</div><h3>Les articles a, the, Ø</h3>'+
+    '<table><tr><th></th><th>suivi de…</th><th>désigne…</th></tr>'+
+    '<tr><td><b>a</b></td><td>singulier</td><td>un objet parmi d\'autres<br><i>This is a pen.</i></td></tr>'+
+    '<tr><td><b>Ø</b></td><td>pluriel</td><td>des objets parmi d\'autres<br><i>Those are Ø scissors.</i></td></tr>'+
+    '<tr><td><b>the</b></td><td>singulier ou pluriel</td><td>des objets précis<br><i>The pen and the scissors are in the pencil case.</i></td></tr></table>'+
+    '<p>L\'article zéro <b>Ø</b> ne se prononce pas et ne s\'écrit pas : il montre qu\'il n\'y a pas d\'autre déterminant.</p>';
+  return h;
+})();
+
+/* --- Les sous-notions : je reconnais / je dis / j'écris + couleurs + articles.
+   type "qcm"    : options affichées directement (mots ou images, jamais A, B, C)
+   type "saisie" : r = réponses acceptées ; recopie = l'élève recopie la bonne réponse après une erreur
+   audio  : phrase lue à voix haute avec la question ; ecoute : phrase modèle à écouter après la réponse
+   expl   : explication (en français) après une erreur ; bravo : pourquoi c'est juste --- */
+var NOTIONS = [];
+NOTIONS.push({ nom:"I listen", fr:"j'entends et je clique", son:true, types:[
+  function(){ /* j'entends le mot → je clique sur l'image */
+    var id=unDe(IDS), o=OBJETS[id];
+    return {type:"qcm", images:true, q:"Listen and click on the right picture.", audio:o.mot, options:[id].concat(o.proches), r:[id], ecoute:o.mot, cle:"lp"+id,
+      libelle:"Écoute : « "+o.mot+" »", etiquette:function(x){ return OBJETS[x].fr; },
+      expl:"Tu as entendu <b>"+o.mot+"</b> = "+o.fr+". "+o.astuce, bravo:"Tu as bien reconnu "+o.mot+" ("+o.fr+")."};
+  },
+  function(){ /* j'entends « a red pen » → le bon objet ET la bonne couleur */
+    var id=unDe(COLORABLES), o=OBJETS[id], p=unDe(o.proches.filter(function(x){ return COLORABLES.indexOf(x)>=0; })), cs=tire(pasOrange(),2), c=cs[0], d=cs[1];
+    var dit="a "+c.en+" "+sans(id);
+    return {type:"qcm", images:true, q:"Listen and click on the right picture.", audio:dit, ecoute:dit,
+      options:[id+"|"+c.h, id+"|"+d.h, p+"|"+c.h, p+"|"+d.h], r:[id+"|"+c.h], cle:"lc"+id+c.en+p+d.en,
+      libelle:"Écoute : « "+dit+" »", etiquette:function(x){ var y=x.split("|"), k=coulDe(y[1]); return OBJETS[y[0]].fr+" "+k.fr[OBJETS[y[0]].g]; },
+      expl:"Tu as entendu <b>"+dit+"</b> : "+o.un+" "+c.fr[o.g]+". En anglais, la couleur se dit avant le nom.", bravo:"Le bon objet et la bonne couleur."};
+  }
+]});
+NOTIONS.push(
+  { nom:"I recognise", fr:"je reconnais les mots", types:[
+    function(){ /* image → mot (4 propositions) */
+      var id=unDe(IDS), o=OBJETS[id], opts=[o.mot], pool=melange(o.fautes).slice(0,1).concat(melange(o.proches.map(avecArt))).concat(o.fautes);
+      pool.forEach(function(x){ if(opts.length<4 && opts.indexOf(x)<0) opts.push(x); });
+      return {type:"qcm", q:"What is it?", visuel:visuel(id), options:opts, r:[o.mot], cle:"iw"+id, libelle:"Image : "+o.fr,
+        expl:o.fr+" se dit <b>"+o.mot+"</b>. "+o.astuce, bravo:o.fr+" = "+o.mot+"."};
+    },
+    function(){ /* mot → image (4 images) */
+      var id=unDe(IDS), o=OBJETS[id];
+      return {type:"qcm", images:true, q:"Read and click on the right picture.", grand:o.mot, options:[id].concat(o.proches), r:[id], cle:"ip"+id,
+        etiquette:function(x){ return OBJETS[x].fr; },
+        expl:"<b>"+o.mot+"</b> = "+o.fr+". "+o.astuce, bravo:o.mot+" = "+o.fr+"."};
+    }
+  ]},
+  { nom:"I say", fr:"je dis le mot", types:[
+    function(){ /* je dis le nom de l'objet (reconnaissance vocale) */
+      var id=unDe(IDS), o=OBJETS[id];
+      return {type:"oral", q:"What is it? Say it in English.", visuel:visuel(id), r:accepte(id), ecoute:o.mot, cle:"so"+id, libelle:"Image : "+o.fr,
+        expl:"C'est <b>"+o.mot+"</b> ("+o.fr+"). Écoute le modèle et répète-le."+(o.pron?" Prononciation : "+o.pron:""), bravo:"Bien dit : "+o.mot+"."};
+    },
+    function(){ /* je dis l'objet et sa couleur */
+      var id=unDe(COLORABLES), o=OBJETS[id], c=unDe(pasOrange()), dit="a "+c.en+" "+sans(id), r=[];
+      [c.en].concat(c.alt||[]).forEach(function(k){ o.r.forEach(function(v){ r.push(k+" "+v); }); });
+      return {type:"oral", q:"Say the colour and the object in English.", visuel:visuel(id,c.h), r:r, ecoute:dit, cle:"sc"+id+c.en, libelle:"Image : "+o.un+" "+c.fr[o.g],
+        expl:"On dit <b>"+dit+"</b> : la couleur se place avant le nom."+(o.pron?" Prononciation : "+o.pron:""), bravo:"Bien dit, et la couleur est à la bonne place."};
+    }
+  ]},
+  { nom:"I write", fr:"j'écris les mots", types:[
+    function(){ /* image → mot */
+      var id=unDe(IDS), o=OBJETS[id];
+      return {type:"saisie", recopie:true, q:"Write the word.", visuel:visuel(id), r:accepte(id), cle:"wi"+id, libelle:"Image : "+o.fr,
+        expl:"On écrit <b>"+sans(id)+"</b> ("+epeler(id)+"). "+o.astuce, bravo:"Bien écrit : "+sans(id)+" = "+o.fr+"."};
+    },
+    function(){ /* français → anglais */
+      var id=unDe(IDS), o=OBJETS[id];
+      return {type:"saisie", recopie:true, q:"Write the English word.", grand:o.fr, r:accepte(id), cle:"wf"+id,
+        expl:o.fr+" se dit <b>"+sans(id)+"</b> ("+epeler(id)+"). "+o.astuce, bravo:"Bien écrit : "+o.fr+" = "+sans(id)+"."};
+    },
+    function(){ /* dictée */
+      if(!SYNTHESE) return null;
+      var id=unDe(IDS), o=OBJETS[id];
+      return {type:"saisie", recopie:true, q:"Listen and write the word.", audio:o.mot, r:accepte(id), cle:"wd"+id, libelle:"Dictée : « "+o.mot+" »",
+        expl:"Tu as entendu <b>"+sans(id)+"</b> ("+epeler(id)+") = "+o.fr+". "+o.astuce, bravo:"Bien écrit : "+sans(id)+"."};
+    }
+  ]},
+  { nom:"Colours", fr:"les couleurs", types:[
+    function(){ /* objet coloré → couleur */
+      var id=unDe(COLORABLES), c=unDe(COULEURS);
+      return {type:"saisie", recopie:true, q:"What colour is it?", visuel:visuel(id,c.h), r:coulAcc(c), cle:"ci"+id+c.en, libelle:"Image : "+OBJETS[id].fr+" "+c.fr[OBJETS[id].g],
+        expl:c.fr[0]+" se dit <b>"+c.en+"</b>. "+(c.astuce||""), bravo:c.fr[0]+" = "+c.en+"."};
+    },
+    function(){ /* My … is / are … */
+      var pl=Math.random()<.4, id=pl?unDe(Object.keys(PLURIELS).concat(["scissors"])):unDe(COLORABLES), c=unDe(COULEURS);
+      if(id==="scissors") pl=true;
+      var n=pl?plur(id):sans(id), bon, opts;
+      if(pl){ bon="My "+n+" are "+c.en+"."; opts=[bon,"My "+n+" is "+c.en+".","My "+n+" are "+c.en+"s."]; }
+      else  { bon="My "+n+" is "+c.en+"."; opts=[bon,"My "+n+" are "+c.en+".","My "+n+" "+c.en+"."]; }
+      return {type:"qcm", q:"Look. What do you say?", visuel:visuel(id,c.h,pl&&id!=="scissors"), options:opts, r:[bon], ecoute:bon, cle:"mi"+id+c.en+pl,
+        libelle:"Image : "+n+" ("+c.fr[0]+")",
+        expl:pl?"Plusieurs objets → <b>are</b>. Et les couleurs ne prennent jamais de s : <i>"+bon+"</i>"
+               :"Un seul objet → <b>is</b>, et on n'oublie pas le verbe : <i>"+bon+"</i>",
+        bravo:pl?"Plusieurs objets → are, et pas de s à la couleur.":"Un seul objet → is."};
+    },
+    function(){ /* français → anglais */
+      var c=unDe(pasOrange());
+      return {type:"saisie", recopie:true, q:"Write the colour in English.", grand:c.fr[0], r:coulAcc(c), cle:"cf"+c.en,
+        expl:c.fr[0]+" se dit <b>"+c.en+"</b>. "+(c.astuce||""), bravo:c.fr[0]+" = "+c.en+"."};
+    },
+    function(){ /* place de la couleur */
+      var id=unDe(COLORABLES), o=OBJETS[id], c=unDe(pasOrange()), n=sans(id), bon="a "+c.en+" "+n;
+      return {type:"qcm", q:"How do you say it in English?", grand:o.un+" "+c.fr[o.g], options:[bon,"a "+n+" "+c.en,"the "+c.en+" "+n], r:[bon], ecoute:bon, cle:"ad"+id+c.en,
+        expl:"En anglais, la couleur se place <b>avant</b> le nom : <i>"+bon+"</i>. Et « "+o.un.split(" ")[0]+" » se dit <b>a</b> (the = le, la, les).",
+        bravo:"La couleur avant le nom, et a pour « un / une »."};
+    },
+    function(){ /* Read the text (fiche du cahier) */
+      var ids=tire(COLORABLES.filter(function(x){ return x!=="schoolbag"; }),3), cs=tire(COULEURS,4), k=H(0,2), cible=cs[k];
+      var t="In my "+cs[3].en+" schoolbag, "+ids.map(function(x,i){ return "my "+sans(x)+" is "+cs[i].en; }).join("; ")+".";
+      return {type:"saisie", recopie:true, q:"Read the text. What colour is the "+sans(ids[k])+"?", visuel:'<div class="note">'+t+'</div>', r:coulAcc(cible), cle:"ct"+ids.join("")+k,
+        libelle:"« "+t+" » → What colour is the "+sans(ids[k])+"?",
+        expl:"Dans le texte : « my "+sans(ids[k])+" is <b>"+cible.en+"</b> ». La couleur vient juste après is.", bravo:"La couleur est juste après is."};
+    },
+    function(){ /* What colour is your …? — It's … */
+      var id=unDe(COLORABLES), c=unDe(COULEURS), n=sans(id), bon="It's "+c.en+".";
+      return {type:"qcm", q:"Your friend asks: « What colour is your "+n+"? » What do you answer?", audio:"What colour is your "+n+"?",
+        visuel:visuel(id,c.h), options:[bon,"It's "+avecArt(id)+".","Yes, it's "+c.en+"."], r:[bon], ecoute:bon, cle:"wc"+id+c.en,
+        libelle:"What colour is your "+n+"? (image : "+c.fr[0]+")",
+        expl:"<i>What colour…?</i> = de quelle couleur… ? On répond avec la couleur : <i>"+bon+"</i> On ne répond pas yes à une question qui commence par What.",
+        bravo:"What colour → on donne la couleur."};
+    }
+  ]},
+  { nom:"a, the, Ø", fr:"les articles", types:[
+    function(){ var id=unDe(COLORABLES), s="This is … "+sans(id)+".";
+      return art(s,"a",["a","the",ZERO],"aa"+id); },
+    function(){ var id=unDe(Object.keys(PLURIELS).concat(["scissors"])), s="Those are … "+plur(id)+".";
+      return art(s,ZERO,["a","the",ZERO],"zt"+id); },
+    function(){ var p=tire(COLORABLES.filter(function(x){ return x!=="schoolbag"; }),2), c=unDe(COULEURS), s="I have a "+sans(p[0])+" and a "+sans(p[1])+". … "+sans(p[0])+" is "+c.en+".";
+      return art(s,"the",["a","the",ZERO],"tc"+p.join("")+c.en); },
+    function(){ /* What's in your schoolbag? — I have … */
+      var pool=IDS.filter(function(x){ return x!=="schoolbag" && x!=="paint"; }), p=tire(pool,2), a=p[0], b=p[1];
+      var bon="I have "+avecArt(a)+" and "+avecArt(b)+".", l1="I have "+sans(a)+" and "+sans(b)+".", l2;
+      if(OBJETS[a].sansArticle) l2="I have a "+sans(a)+" and "+avecArt(b)+".";
+      else if(OBJETS[b].sansArticle) l2="I have "+avecArt(a)+" and a "+sans(b)+".";
+      else l2="I have "+avecArt(a)+" and "+sans(b)+".";
+      return {type:"qcm", q:"Your friend asks: « What's in your schoolbag? » What do you answer?", audio:"What's in your schoolbag?",
+        visuel:'<div class="visuel deux">'+img(a)+img(b)+'</div>', options:[bon,l1,l2], r:[bon], ecoute:bon, cle:"ih"+a+b,
+        libelle:"Dans ton cartable : "+OBJETS[a].fr+" et "+OBJETS[b].fr,
+        expl:"Un objet → <b>a</b> devant chaque objet. Un mot au pluriel comme <i>scissors</i> → pas d'article (Ø). Réponse : <i>"+bon+"</i>",
+        bravo:"Le bon article devant chaque objet."};
+    },
+    function(){ var id=unDe(COLORABLES), s="She needs … "+sans(id)+".";
+      return art(s,"a",["a","the",ZERO],"an"+id); },
+    function(){ var id=unDe(["pen","colouringpencil","highlighter","scissors"]), s="Amanda has … "+plur(id)+" in her pencil case.";
+      return art(s,ZERO,["a","the",ZERO],"zh"+id); },
+    function(){ var id=unDe(COLORABLES.filter(function(x){ return x!=="schoolbag"; })), s="Where is my "+sans(id)+"? — … "+sans(id)+" is in your schoolbag.";
+      return art(s,"the",["a","the",ZERO],"tw"+id); },
+    function(){ /* She needs … */
+      var id=unDe(IDS.filter(function(x){ return x!=="paint"; })), o=OBJETS[id];
+      var bon="She needs "+avecArt(id)+".", ar=o.sansArticle?"She needs a "+sans(id)+".":"She needs "+sans(id)+".";
+      return {type:"qcm", q:"Amanda needs this. What do you say?", visuel:visuel(id), options:[bon,"She need "+avecArt(id)+".",ar], r:[bon], ecoute:bon, cle:"sn"+id,
+        libelle:"Amanda a besoin de : "+o.fr,
+        expl:"Avec <b>she</b> (elle), le verbe prend un s : she need<b>s</b>. "+(o.sansArticle?"Et <i>scissors</i> est au pluriel : pas de a.":"Et un objet → <b>a</b>.")+" Réponse : <i>"+bon+"</i>",
+        bravo:"She → needs, avec le bon article."};
+    }
+  ]}
+);
+function art(s,bon,opts,cle){
+  var complet=s.replace("… ", bon===ZERO?"":bon+" ").replace(/(^|\. |— )(\w)/g,function(m,a,b){ return a+b.toUpperCase(); });
+  var vis=s.replace("…","<b>…</b>");
+  return {type:"qcm", q:"Complete with a, the or Ø.<br><span style=\"font-weight:400\">"+vis+"</span>", options:opts, r:[bon], ecoute:complet, cle:cle,
+    libelle:s, expl:(bon==="a"?EXPL_A:bon==="the"?EXPL_THE:EXPL_Z)+"<br>Phrase complète : <i>"+complet+"</i>",
+    bravo:bon==="a"?"Un objet parmi d'autres → a.":bon==="the"?"Un objet précis → the.":"Pluriel, n'importe lesquels → Ø."};
+}
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function tire(a,n){ return melange(a).slice(0,n); }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function texte(h){ var d=document.createElement("div"); d.innerHTML=String(h).replace(/<br\s*\/?>/g," "); return d.textContent; }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "anglais-schoolbag.html";
+
+function norm(s){ return String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/\s*-\s*/g," ").replace(/\s+/g," ").trim().replace(/[.!?;,]+$/,"").trim(); }
+function estJuste(saisie,q){
+  if(q.type==="qcm") return q.r.indexOf(saisie)>=0;
+  return q.r.some(function(r){ return norm(saisie)===norm(r); });
+}
+function nomDe(q,x){ return q.etiquette ? q.etiquette(x) : x; }
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q=null, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<40 && (!q || deja[q.cle] || (essais<25 && hist.indexOf(q.cle)>=0)));
+  for(var k=0; !q && k<200; k++) q=types[k%types.length]();   /* sécurité (type d'écoute indisponible) */
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){ ecrire("vues:"+FICHIER, vues().concat(qs.map(function(q){ return q.cle; })).slice(-150)); }
+function serieEntrainement(notion){
+  var deja={}, qs=[], d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function notionsActives(){ return NOTIONS.filter(function(n){ return !n.son || SYNTHESE; }); }
+function serieControle(){
+  var deja={}, qs=[];
+  notionsActives().forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function page(h,retour){ tais(); $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan"><p class="t">Ready to start!</p><p>Relis la leçon, entraîne-toi sur chaque partie, puis fais le test quand tu te sens prêt.</p></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret"><p class="t">✓ You\'re ready for the test!</p><p>Tu es prêt pour l\'évaluation : '+dc.bon+' / '+dc.total+' au dernier test.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div>';
+  return '<div class="bilan travail"><p class="t">Not quite ready yet</p><p>Pas encore tout à fait prêt. Dernier test : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<button class="btn" id="b-lecon">Read the lesson<small>Relire la leçon : l\'essentiel à savoir</small></button>';
+  h+='<h2>Practise</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    if(n.son && !SYNTHESE){ h+='<button class="btn" disabled style="opacity:.6">'+echappe(n.nom)+'<small>'+n.fr+' · ⚠ pas de son dans cette fenêtre : ouvre l\'exercice dans Chrome ou Safari</small></button>'; return; }
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+n.fr+' · '+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · last try: '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=notionsActives().length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Test yourself</h2><button class="btn" id="b-ctrl">Take the test<small>'+nbC+' questions sur toute la leçon, correction à la fin'+(rec?' · best score: '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><button class="btn plein centre" id="b-go">Back to the menu</button>', true);
+  $("b-go").onclick=accueil;
+  [].forEach.call(document.querySelectorAll("[data-dire]"),function(b){ if(!SYNTHESE) b.classList.add("cache"); b.onclick=function(){ dire(b.dataset.dire); }; });
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">Let\'s try again, with a new question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Test":q.notion)+'</p><p class="enonce">'+q.q+
+     (q.grand?'<span class="grand">'+echappe(q.grand)+'</span>':'')+'</p>'+(q.visuel||'')+
+     (q.audio?'<button class="ecoute" type="button" id="b-audio">🔊 Listen again</button>':'')+'</div>';
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix'+(q.images?' images':'')+'">'+q.ordre.map(function(o,k){
+      return '<button class="btn" data-k="'+k+'"'+(q.images?' aria-label="Picture '+(k+1)+'"':'')+'>'+(q.images?img(o):echappe(o))+'</button>'; }).join("")+'</div>';
+  } else if(q.type==="oral"){
+    h+='<div id="oral"></div>';
+  } else {
+    h+='<div class="saisie" id="f"><input id="in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" aria-label="Your answer">'+
+       '<button class="btn plein" type="button" id="valider">Check</button></div>';
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+  if(q.audio){ $("b-audio").onclick=function(){ dire(q.audio); }; dire(q.audio); }
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else if(q.type==="oral"){
+    oralUI(q);
+  } else {
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+/* Question orale : micro si possible, sinon l'élève dit le mot, écoute le modèle et s'auto-évalue */
+function oralUI(q){
+  if(!Reco || MICRO_KO) return autoEval(q);
+  $("oral").innerHTML='<button class="btn plein centre" type="button" id="b-micro">🎤 Say it</button><p id="msg-oral" class="doux"></p>';
+  $("b-micro").onclick=function(){
+    var b=$("b-micro"); b.disabled=true; b.textContent="🎤 I'm listening…"; $("msg-oral").textContent="";
+    ecouterEleve(function(err,alts){
+      if(!$("b-micro") || serie.qs[serie.i]!==q) return;
+      if(err){
+        if(err!=="no-speech" && err!=="aborted"){ MICRO_KO=true; return autoEval(q,"Le micro n'est pas disponible ici : dis le mot à voix haute, puis vérifie avec le modèle."); }
+        b.disabled=false; b.textContent="🎤 Say it"; $("msg-oral").textContent="I didn't hear you. Try again!"; return;
+      }
+      var bon=oralJuste(alts,q);
+      repondre(bon||alts[0], null, !!bon);
+    });
+  };
+}
+function autoEval(q,msg){
+  $("oral").innerHTML=(msg?'<p class="doux">'+msg+'</p>':'')+'<p><b>Say it out loud. Then listen.</b></p>'+
+    '<button class="ecoute" type="button" id="b-modele">🔊 Listen</button>'+
+    '<div id="auto" class="rangee cache" style="margin-top:12px"><button class="btn centre" type="button" id="b-oui">✓ I said it right</button><button class="btn centre" type="button" id="b-non">✗ Not quite</button></div>';
+  if(!SYNTHESE){ $("b-modele").textContent="Check"; }
+  $("b-modele").onclick=function(){ dire(q.ecoute); if(!SYNTHESE) $("b-modele").outerHTML='<p>Le mot : <b>'+echappe(q.ecoute)+'</b></p>'; $("auto").classList.remove("cache"); };
+  $("b-oui").onclick=function(){ q.auto=true; repondre("(je l'ai bien dit)",null,true); };
+  $("b-non").onclick=function(){ q.auto=true; repondre("(pas encore bien dit)",null,false); };
+}
+
+function repondre(donne, bouton, force){
+  var q=serie.qs[serie.i], ok=(force!==undefined)?force:estJuste(donne,q);
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){
+    serie.erreurs.push({q:q.libelle||texte(q.q)+(q.grand?" → "+q.grand:""), donne:(q.type==="oral"&&!q.auto?"« "+donne+" »":nomDe(q,donne)), bonne:nomDe(q,q.r[0]), notion:q.notion, expl:q.expl});
+    serie.rattrapage.push(1);
+  }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button, #oral button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+(dernier?"See my score":"Next question")+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status"><p class="v">'+(ok?unDe(["Well done!","Great!","Yes!"]):"Not quite!")+'</p>';
+  var entendu=(q.type==="oral"&&!q.auto)?'J\'ai entendu « '+echappe(donne)+' ». ':'';
+  if(ok) h+='<p>'+entendu+q.bravo+'</p>';
+  else if(q.type==="oral") h+='<p>'+entendu+'Il fallait dire : <b>'+echappe(q.ecoute)+'</b></p><p>'+q.expl+'</p>';
+  else h+='<p>Tu as répondu « '+echappe(nomDe(q,donne))+' ». La réponse : <b>'+echappe(nomDe(q,q.r[0]))+'</b></p><p>'+q.expl+'</p>';
+  if(q.ecoute && SYNTHESE) h+='<button class="ecoute" type="button" id="b-rep">🔊 Listen and repeat</button>';
+  if(!ok && q.type==="oral" && Reco && !MICRO_KO) h+=' <button class="ecoute" type="button" id="b-redire">🎤 Say it again</button><p id="msg-redire" class="doux" style="margin-top:6px"></p>';
+  h+='</div>';
+  if(!ok && q.recopie){
+    h+='<p><b>Copy the right answer:</b> '+echappe(q.r[0])+'</p><div class="saisie" id="f2"><input id="in2" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" aria-label="Copy">'+
+       '<button class="btn plein" type="button" id="ok2">OK</button></div><p id="msg2" class="doux"></p>';
+  }
+  h+='<button class="btn plein centre'+(!ok&&q.recopie?' cache':'')+'" id="suite">'+(dernier?"See my score":"Next question")+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  if($("b-rep")){ $("b-rep").onclick=function(){ dire(q.ecoute); }; dire(q.ecoute); }   /* correction par la voix : on entend toujours le bon modèle */
+  if($("b-redire")){ $("b-redire").onclick=function(){   /* pour s'entraîner : ne change pas le score */
+    var b=$("b-redire"); b.disabled=true; $("msg-redire").textContent="I'm listening…";
+    ecouterEleve(function(err,alts){
+      if(!$("b-redire")) return; b.disabled=false;
+      if(err){ $("msg-redire").textContent="I didn't hear you. Try again!"; return; }
+      $("msg-redire").textContent = oralJuste(alts,q) ? "Well done! C'est bien dit." : "J'ai entendu « "+alts[0]+" ». Écoute encore le modèle et réessaie.";
+    });
+  }; }
+  if($("f2")){
+    $("in2").focus({preventScroll:true});
+    var verifier=function(){
+      if($("in2").disabled) return;
+      if(estJuste($("in2").value,q)){ $("in2").disabled=true; $("ok2").disabled=true; $("msg2").textContent="Well done! C'est bien écrit."; $("suite").classList.remove("cache"); $("suite").focus({preventScroll:true}); }
+      else $("msg2").textContent="Pas encore identique : regarde bien chaque lettre.";
+    };
+    $("ok2").onclick=verifier;
+    $("in2").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); verifier(); } };
+  } else $("suite").focus({preventScroll:true});
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Your test score</h2><p class="score">'+s+' / '+n+'</p>'+bilan();
+    h+='<h3>Part by part</h3><ul class="revoir">'+notionsActives().map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+' <span class="doux">('+no.fr+')</span><span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><p class="score">'+s+' / '+n+'</p>';
+    h+='<p>'+(s===n?"Perfect! 🎉 Tu maîtrises cette partie.":r>=SEUIL_PRET?"Great! Relis les corrections ci-dessous.":
+         "Keep going! Cette partie n'est pas encore sûre : relis la leçon et recommence, les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+e.expl+'</span>':'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Try again</button><button class="btn centre" id="retour-acc">Menu</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>
