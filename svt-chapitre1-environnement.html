@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>À la découverte de notre environnement</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer d'une matière à l'autre ====== */
+:root{ --matiere:#ffffff; --matiere-encre:#1f2a44; --matiere-fort:#334155; }
+
+/* ====== Style commun « Mes révisions » (identique dans tous les exercices) ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee; --marge:#f1a7a7;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18)}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 28px/1.15 var(--titre);margin:0}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px 28px;position:relative}
+main::before{content:"";position:absolute;top:0;bottom:0;left:14px;width:2px;background:var(--marge);opacity:.7}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere);color:var(--matiere-encre);border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte)}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.grand{display:block;font:700 30px var(--titre);margin-top:6px}
+.choix .btn{font-weight:400}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:10px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon table{border-collapse:collapse;width:100%;font-size:16px;margin:8px 0}
+.lecon td,.lecon th{border:1px solid var(--trait);padding:6px;text-align:center}
+.lecon td.g{text-align:left}
+.lecon ul{margin:0 0 10px;padding-left:20px}
+svg.fl{display:block;margin:4px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Sommaire</button></div>
+  <div class="etiquette"><p>SVT · Chapitre 1</p><h1>À la découverte de notre environnement</h1></div>
+</header>
+<main id="page"></main>
+
+<script>
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;   /* questions par entraînement (une sous-notion) */
+var Q_PAR_NOTION_CONTROLE = 3; /* le contrôle pose 3 questions par sous-notion → 15 questions */
+var SEUIL_PRET = 0.8;          /* 80 % au contrôle → « prêt pour l'évaluation » */
+
+/* --- Les flèches des relations (comme dans le document 2 du cahier) --- */
+var FLECHES = {
+  "flèche noire":               {coul:"#1f2a44", tirets:false, rel:"relation alimentaire"},
+  "flèche noire en pointillés": {coul:"#1f2a44", tirets:true,  rel:"relation de support"},
+  "flèche bleue":               {coul:"#2563eb", tirets:false, rel:"compétition"},
+  "flèche verte":               {coul:"#15803d", tirets:false, rel:"parasitisme"},
+  "flèche rouge":               {coul:"#dc2626", tirets:false, rel:"symbiose"}
+};
+function fleche(nom){
+  var f=FLECHES[nom];
+  return '<svg class="fl" viewBox="0 0 140 24" width="140" height="24" role="img" aria-label="'+nom+'"><title>'+nom+'</title>'+
+    '<g stroke="'+f.coul+'" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">'+
+    '<line x1="10" y1="12" x2="130" y2="12"'+(f.tirets?' stroke-dasharray="9 8"':'')+'/>'+
+    '<polyline points="18,3 6,12 18,21"/><polyline points="122,3 134,12 122,21"/></g></svg>';
+}
+
+var LECON =
+  '<h3>Que voit-on dans un paysage ?</h3>'+
+  '<p>Quand on observe un paysage, on peut voir <b>trois choses</b> :</p>'+
+  '<ul><li><b>le vivant</b> : les êtres vivants (animaux, végétaux) et <b>leurs restes</b>. <i>Ex. : un chêne, un renard, une toile d\'araignée…</i></li>'+
+  '<li><b>les réalisations humaines</b> : les objets construits par l\'Homme. <i>Ex. : un trottoir, une canette…</i></li>'+
+  '<li><b>le minéral</b> : tout ce qui n\'est pas vivant et pas construit par l\'Homme. <i>Ex. : de l\'eau, un caillou…</i></li></ul>'+
+  '<p>Pour ranger un élément, on se pose les questions dans l\'ordre :</p>'+
+  '<ul><li>Est-il vivant ? <b>Oui</b> → se nourrit-il de la lumière du Soleil ? Oui : <b>végétal</b>. Non : <b>animal</b>.</li>'+
+  '<li><b>Non</b> → a-t-il été fabriqué par un être vivant ? Oui : <b>reste</b> (plume, crotte, feuille morte…).</li>'+
+  '<li>Sinon → fabriqué par l\'Homme ? Oui : <b>réalisation humaine</b>. Non : <b>minéral</b>.</li></ul>'+
+  '<p>Attention : l\'être humain (un randonneur…) est un <b>animal</b>.</p>'+
+  '<h3>Un être vivant</h3>'+
+  '<p>Un être est vivant s\'il est capable de <b>naître</b>, de <b>se nourrir</b>, de <b>grandir</b>, de <b>se reproduire</b>, de <b>respirer</b> et de <b>mourir</b>.</p>'+
+  '<h3>Les relations entre les êtres vivants</h3>'+
+  '<p>Dans un écosystème, il y a de nombreuses <b>interactions</b> entre les êtres vivants.</p>'+
+  '<table>'+
+  '<tr><td>'+fleche("flèche noire")+'</td><td class="g"><b>Relation alimentaire</b> : l\'un se nourrit de l\'autre. <i>Le hérisson mange des vers blancs.</i></td></tr>'+
+  '<tr><td>'+fleche("flèche noire en pointillés")+'</td><td class="g"><b>Relation de support</b> : un être vivant utilise un autre être vivant (ou une partie de lui) pour se reposer ou faire son nid. <i>La mésange fait son nid dans le chêne.</i></td></tr>'+
+  '<tr><td>'+fleche("flèche bleue")+'</td><td class="g"><b>Compétition</b> : deux êtres vivants mangent la même ressource. <i>Le hérisson et le mulot mangent des vers blancs.</i></td></tr>'+
+  '<tr><td>'+fleche("flèche verte")+'</td><td class="g"><b>Parasitisme</b> : le parasite utilise l\'autre pour vivre et l\'affaiblit. <i>Le gui vole la sève de l\'arbre.</i></td></tr>'+
+  '<tr><td>'+fleche("flèche rouge")+'</td><td class="g"><b>Symbiose</b> : chacun tire bénéfice de l\'association. <i>La truffe aide le chêne à récupérer l\'eau, le chêne lui donne du sucre.</i></td></tr>'+
+  '</table>'+
+  '<h3>Écosystème et biodiversité</h3>'+
+  '<p>Sur Terre, les êtres vivants se répartissent en fonction des <b>conditions de vie</b> qu\'ils trouvent.</p>'+
+  '<p><b>Écosystème</b> : un milieu de vie et tous les êtres vivants qui le peuplent. <i>Ex. : la forêt, la montagne…</i></p>'+
+  '<p><b>Biodiversité</b> : l\'ensemble des êtres vivants dans un lieu donné. Il existe de nombreux écosystèmes différents qui abritent une grande diversité d\'êtres vivants : c\'est la biodiversité.</p>'+
+  '<h3>La place de l\'Homme dans les écosystèmes</h3>'+
+  '<p>L\'Homme peut avoir un effet <b>négatif</b> sur l\'écosystème : <b>détruire</b> des milieux, <b>tuer</b> ou <b>déranger</b> les animaux.</p>'+
+  '<p>Il peut aussi avoir un effet <b>positif</b> : <b>protéger</b> les êtres vivants menacés.</p>';
+
+/* --- Banques d'éléments à classer --- */
+var CAT = {
+  A:"Le vivant : un animal", V:"Le vivant : un végétal", R:"Le vivant : un reste d'être vivant",
+  H:"Une réalisation humaine", M:"Le minéral"
+};
+var EXPL_CAT = {
+  A:"C'est un être vivant (il naît, se nourrit, grandit…) qui ne se nourrit pas de la lumière du Soleil : c'est un animal.",
+  V:"C'est un être vivant qui se nourrit grâce à la lumière du Soleil : c'est un végétal.",
+  R:"Ce n'est pas (ou plus) vivant, mais ça a été fabriqué par un être vivant : c'est un reste d'être vivant.",
+  H:"Ce n'est pas vivant et ça a été fabriqué par l'Homme : c'est une réalisation humaine.",
+  M:"Ce n'est pas vivant, pas fabriqué par un être vivant ni par l'Homme : c'est du minéral."
+};
+var ELEMENTS = [
+  ["une marmotte","A"],["une mésange","A"],["un hérisson","A"],["un mulot","A"],["un écureuil","A"],["une chenille","A"],
+  ["un ver blanc","A"],["un renard","A"],["une araignée","A"],["un escargot","A"],["un phoque","A"],["une mouette","A"],
+  ["un randonneur","A","L'être humain est un être vivant qui ne se nourrit pas de la lumière : c'est un animal."],
+  ["un enfant qui joue","A","L'être humain est un être vivant qui ne se nourrit pas de la lumière : c'est un animal."],
+  ["un chêne","V"],["de l'herbe","V"],["une centaurée (fleur)","V"],["une touffe de gui","V"],["un buisson","V"],["une ortie","V"],["un pissenlit","V"],
+  ["une plume","R"],["une crotte de marmotte","R"],["une feuille morte","R"],["un bout de bois mort","R"],
+  ["une toile d'araignée","R","La toile a été fabriquée par l'araignée, un être vivant : c'est un reste, comme dans la leçon."],
+  ["une coquille d'escargot vide","R"],["un os","R"],["un coquillage vide sur la plage","R"],
+  ["une chaussure","H"],["une tente","H"],["un trottoir","H"],["une canette","H"],["une route","H"],["un vélo","H"],
+  ["une barrière","H"],["une cheminée","H"],["une passerelle","H"],["une poubelle","H"],["un grillage","H"],
+  ["un banc en bois","H","Le bois vient d'un arbre, mais le banc a été fabriqué par l'Homme : c'est une réalisation humaine."],
+  ["un caillou","M"],["un rocher","M"],["de l'eau","M"],["un lac","M"],["du sable","M"],["de la neige","M"],
+  ["un nuage","M","Un nuage bouge, mais il n'est pas vivant : il est fait de gouttes d'eau. C'est du minéral."]
+];
+
+/* --- Relations --- */
+var REL = {
+  alimentaire:{nom:"relation alimentaire", fl:"flèche noire", def:"L'un des deux êtres vivants se nourrit de l'autre."},
+  support:{nom:"relation de support", fl:"flèche noire en pointillés", def:"Un être vivant utilise un autre être vivant (ou une partie de lui) pour se reposer ou faire son nid."},
+  competition:{nom:"compétition", fl:"flèche bleue", def:"Deux êtres vivants mangent la même ressource ; ils entrent parfois en conflit pour l'obtenir."},
+  parasitisme:{nom:"parasitisme", fl:"flèche verte", def:"Un être vivant utilise un autre être vivant pour vivre et l'affaiblit."},
+  symbiose:{nom:"symbiose", fl:"flèche rouge", def:"Deux êtres vivants s'associent et chacun en tire un bénéfice."}
+};
+var SCENARIOS = [
+  ["Le hérisson mange des vers blancs.","alimentaire"],
+  ["Le ver blanc mange les racines du chêne.","alimentaire"],
+  ["La chenille mange les feuilles du chêne.","alimentaire"],
+  ["La mésange mange des chenilles.","alimentaire"],
+  ["Le mulot mange des champignons.","alimentaire"],
+  ["L'écureuil mange des noisettes.","alimentaire"],
+  ["La mésange fait son nid dans le chêne avec des branchages et des feuilles.","support"],
+  ["L'écureuil fait son nid dans les arbres.","support"],
+  ["Le hérisson et le mulot mangent tous les deux des vers blancs.","competition"],
+  ["La mésange et l'écureuil mangent tous les deux des chenilles.","competition"],
+  ["Le gui se fixe sur une branche et la pique pour voler la sève de l'arbre.","parasitisme"],
+  ["La tique s'accroche au chevreuil et boit son sang, ce qui l'affaiblit.","parasitisme"],
+  ["La truffe aide le chêne à récupérer l'eau du sol ; en échange, le chêne lui donne du sucre.","symbiose"],
+  ["L'abeille se nourrit du nectar de la fleur et, en échange, transporte son pollen pour l'aider à se reproduire.","symbiose"]
+];
+var INDICE_REL = {
+  alimentaire:"L'un mange l'autre : c'est une relation alimentaire.",
+  support:"L'un se sert de l'autre pour faire son nid ou se reposer : c'est une relation de support.",
+  competition:"Les deux mangent la même nourriture : c'est une compétition.",
+  parasitisme:"L'un vit aux dépens de l'autre et l'affaiblit : c'est du parasitisme.",
+  symbiose:"Chacun y gagne quelque chose : c'est une symbiose."
+};
+/* « la symbiose », « relation de support »… → on garde le mot important */
+function motRel(s){ return s.replace(/^(une |un |la |le |l')/,"").replace(/^relations? /,"").replace(/^(de |d')/,"").trim(); }
+function testRel(cle){ return function(s){ return motRel(s)===cle; }; }
+
+/* --- Être vivant --- */
+var CAPACITES = [
+  ["naître",["naitre"]],["se nourrir",["se nourrir","nourrir"]],["grandir",["grandir"]],
+  ["se reproduire",["se reproduire","reproduire"]],["respirer",["respirer"]],["mourir",["mourir"]]
+];
+var VIVANTS = ["une marmotte","un chêne","de l'herbe","une mésange","un ver blanc","un hérisson","une chenille","une ortie"];
+var PAS_VIVANTS = [
+  ["une plume","Une plume vient d'un oiseau, mais elle ne grandit pas, ne se nourrit pas : c'est un reste."],
+  ["une feuille morte","Une feuille morte vient d'un arbre, mais elle ne vit plus : c'est un reste."],
+  ["un nuage","Un nuage bouge et grossit, mais il ne naît pas, ne se nourrit pas, ne se reproduit pas : il n'est pas vivant."],
+  ["l'eau d'une rivière","L'eau bouge, mais elle ne se nourrit pas, ne respire pas : elle n'est pas vivante."],
+  ["une toile d'araignée","La toile est fabriquée par l'araignée, mais elle n'est pas vivante : c'est un reste."],
+  ["une crotte de marmotte","Une crotte vient d'un animal, mais elle n'est pas vivante : c'est un reste."],
+  ["un vélo","Un vélo bouge, mais seulement si on le pousse : il n'est pas vivant."]
+];
+var FAUSSES_CAPACITES = [["se déplacer","un chêne ne se déplace pas"],["parler","un chêne ne parle pas"],["voir","un chêne ne voit pas"],["bouger tout seul","un chêne ne bouge pas tout seul"],["avoir des pattes","un chêne n'a pas de pattes"]];
+
+/* --- Écosystèmes --- */
+var ECOSYSTEMES = ["la forêt","la montagne","une mare","la baie de Somme","une prairie"];
+var PAS_ECOSYSTEMES = ["un chêne","une marmotte","un rocher","une mésange","un caillou"];
+
+/* --- L'Homme --- */
+var NEGATIFS = [
+  ["Couper une forêt pour construire un parking","il détruit un milieu de vie"],
+  ["Assécher une mare pour construire une maison","il détruit un milieu de vie"],
+  ["Arracher toutes les haies au bord des champs","il détruit un milieu de vie"],
+  ["Chasser un animal jusqu'à ce qu'il disparaisse","il tue des animaux"],
+  ["Rouler en quad au milieu d'une réserve d'oiseaux","il dérange les animaux"],
+  ["Faire du bruit tout près des phoques de la baie de Somme","il dérange les animaux"],
+  ["Jeter des déchets dans une rivière","il abîme le milieu de vie des animaux"]
+];
+var POSITIFS = [
+  ["Créer une réserve naturelle pour protéger des oiseaux menacés","il protège des êtres vivants menacés"],
+  ["Interdire la chasse d'un animal menacé","il protège des êtres vivants menacés"],
+  ["Construire un passage sous la route pour que les crapauds traversent sans danger","il protège des êtres vivants menacés"],
+  ["Soigner des animaux sauvages blessés puis les relâcher","il protège des êtres vivants"],
+  ["Installer des nichoirs pour aider les mésanges","il protège des êtres vivants"],
+  ["Replanter une haie au bord d'un champ","il redonne un milieu de vie aux êtres vivants"]
+];
+
+/* --- Les sous-notions. Chacune a plusieurs types de questions ; chaque type fabrique
+       une question nouvelle à chaque fois (tirage dans une banque).
+   type "qcm"    : options = réponses affichées telles quelles (pas de A, B, C) ; affiche = dessin facultatif
+   type "saisie" : r = réponses acceptées (r[0] = celle qu'on affiche) ; test = vérification souple facultative
+   expl / bravo : explication après une erreur / confirmation après une bonne réponse --- */
+function classer(){
+  var e=unDe(ELEMENTS), bon=CAT[e[1]];
+  return {type:"qcm", q:"Dans quelle colonne du tableau ranges-tu cet élément ?", grand:e[0],
+    options:[CAT.A,CAT.V,CAT.R,CAT.H,CAT.M], r:[bon], cle:"cl"+e[0],
+    expl:(e[2]||EXPL_CAT[e[1]]), bravo:(e[2]||EXPL_CAT[e[1]])};
+}
+var NOTIONS = [
+  { nom:"Ce qu'on voit dans un paysage", types:[
+    classer, classer,
+    function(){
+      var d=unDe([
+        ["Tout ce qui n'est pas vivant et pas construit par l'Homme.","le minéral",/^(le )?mineral$/,"Le minéral : ni vivant, ni construit par l'Homme (l'eau, un caillou…)."],
+        ["Les objets construits par l'Homme.","les réalisations humaines",/^(les |une |des )?realisations? humaines?$/,"Les réalisations humaines : tout ce que l'Homme a construit (trottoir, canette…)."],
+        ["Les êtres vivants et leurs restes.","le vivant",/^(le )?vivant$/,"Le vivant : les êtres vivants (animaux, végétaux) et leurs restes."]
+      ]);
+      return {type:"saisie", lettres:true, q:"Dans un paysage, on peut voir trois choses. Comment s'appelle :", grand:d[0], r:[d[1]],
+        test:function(s){ return d[2].test(s); }, cle:"def"+d[1],
+        expl:d[3]+" Les trois choses : le vivant, les réalisations humaines, le minéral.", bravo:d[3]};
+    }
+  ]},
+  { nom:"Être vivant", types:[
+    function(){
+      var k=H(0,5), c=CAPACITES[k];
+      var phrase=CAPACITES.map(function(x,i){ return i===k?"<b>…</b>":x[0]; });
+      var txt="naître, se nourrir, grandir, se reproduire, respirer et mourir";
+      return {type:"saisie", lettres:true, q:"Complète la définition :<br>Un être vivant est capable de "+phrase.slice(0,5).join(", ")+" et de "+phrase[5]+".",
+        r:[c[0]], test:function(s){ return c[1].some(function(a){ return norm(a,true)===s; }); }, cle:"cap"+k,
+        expl:"Un être vivant est capable de "+txt+". Il manquait : "+c[0]+".", bravo:"Les 6 capacités : "+txt+"."};
+    },
+    function(){
+      var v=unDe(VIVANTS), f=melange(PAS_VIVANTS).slice(0,3);
+      return {type:"qcm", q:"Lequel de ces éléments est un être vivant ?", options:[v].concat(f.map(function(x){ return x[0]; })), r:[v], cle:"viv"+v+f[0][0],
+        expl:v.charAt(0).toUpperCase()+v.slice(1)+" naît, se nourrit, grandit, se reproduit, respire et meurt. "+f.map(function(x){ return x[1]; }).join(" "),
+        bravo:"Il naît, se nourrit, grandit, se reproduit, respire et meurt."};
+    },
+    function(){
+      var fc=unDe(FAUSSES_CAPACITES), faux=fc[0], vraies=melange(CAPACITES).slice(0,3).map(function(x){ return x[0]; });
+      return {type:"qcm", q:"Laquelle de ces capacités ne fait <u>pas</u> partie de la définition d'un être vivant ?", options:[faux].concat(vraies), r:[faux], cle:"fx"+faux+vraies.join(""),
+        expl:"« "+faux+" » n'est pas dans la définition : "+fc[1]+", pourtant il est vivant. Un être vivant naît, se nourrit, grandit, se reproduit, respire et meurt.",
+        bravo:"Un arbre ne fait pas ça, et pourtant il est vivant."};
+    },
+    function(){
+      return {type:"saisie", lettres:true, q:"Complète :<br>Un végétal est un être vivant capable de se nourrir grâce à la <b>…</b> du Soleil.",
+        r:["lumière"], test:function(s){ return /^(la )?lumiere$/.test(s); }, cle:"lum",
+        expl:"Un végétal se nourrit grâce à la lumière du Soleil ; un animal, non. C'est ce qui permet de les distinguer.",
+        bravo:"C'est ce qui distingue un végétal d'un animal."};
+    }
+  ]},
+  { nom:"Les relations entre êtres vivants", types:[
+    function(){
+      var s=unDe(SCENARIOS), R=REL[s[1]];
+      return {type:"saisie", lettres:true, q:"Quelle relation y a-t-il entre ces êtres vivants ?<br><i>"+s[0]+"</i>", r:[R.nom], test:testRel(s[1]), cle:"sc"+s[0],
+        expl:INDICE_REL[s[1]]+" ("+R.def+")", bravo:INDICE_REL[s[1]]};
+    },
+    function(){
+      var k=unDe(Object.keys(REL)), R=REL[k];
+      return {type:"saisie", lettres:true, q:"Quel est le nom de cette relation ?<br><i>"+R.def+"</i>", r:[R.nom], test:testRel(k), cle:"rd"+k,
+        expl:"C'est la définition de la "+(k==="parasitisme"?"relation de parasitisme":k==="symbiose"?"symbiose":R.nom)+". Relis le tableau des relations dans la leçon.",
+        bravo:"Tu connais la définition."};
+    },
+    function(){
+      var k=unDe(Object.keys(REL)), R=REL[k];
+      return {type:"saisie", lettres:true, q:"Dans le schéma de la forêt, quelle relation représente ce symbole ?"+fleche(R.fl), r:[R.nom], test:testRel(k), cle:"fs"+k,
+        expl:"La "+R.fl+" représente : "+R.nom+". Noire = alimentaire, noire en pointillés = support, bleue = compétition, verte = parasitisme, rouge = symbiose.",
+        bravo:"Bon symbole !"};
+    },
+    function(){
+      var k=unDe(Object.keys(REL)), R=REL[k];
+      var autres=melange(Object.keys(FLECHES).filter(function(n){ return n!==R.fl; })).slice(0,3);
+      var aff={}; Object.keys(FLECHES).forEach(function(n){ aff[n]=fleche(n); });
+      return {type:"qcm", q:"Quel symbole utilises-tu pour : <b>"+R.nom+"</b> ?", options:[R.fl].concat(autres), affiche:aff, r:[R.fl], cle:"sf"+k+autres.join(""),
+        expl:"Pour la "+R.nom+", on utilise la "+R.fl+". Noire = alimentaire, noire en pointillés = support, bleue = compétition, verte = parasitisme, rouge = symbiose.",
+        bravo:"C'est la "+R.fl+"."};
+    }
+  ]},
+  { nom:"Écosystème et biodiversité", types:[
+    function(){
+      var d=unDe([
+        ["Un milieu de vie et tous les êtres vivants qui le peuplent.","écosystème",/^(un |l')?ecosysteme$/,"Écosystème = milieu de vie + êtres vivants qui le peuplent (ex. : la forêt)."],
+        ["L'ensemble des êtres vivants dans un lieu donné.","biodiversité",/^(la )?biodiversite$/,"Biodiversité = l'ensemble (la diversité) des êtres vivants dans un lieu."],
+        ["Il existe de nombreux écosystèmes différents qui abritent une grande diversité d'êtres vivants : c'est la …","biodiversité",/^(la )?biodiversite$/,"La grande diversité des êtres vivants, c'est la biodiversité."]
+      ]);
+      return {type:"saisie", lettres:true, q:"Quel mot de la leçon correspond ?<br><i>"+d[0]+"</i>", r:[d[1]], test:function(s){ return d[2].test(s); }, cle:"eb"+d[0].slice(0,12),
+        expl:d[3], bravo:d[3]};
+    },
+    function(){
+      var eco=Math.random()<.5;
+      var bonne=eco?"Un milieu de vie et tous les êtres vivants qui le peuplent":"L'ensemble des êtres vivants dans un lieu donné";
+      var opts=[bonne, eco?"L'ensemble des êtres vivants dans un lieu donné":"Un milieu de vie et tous les êtres vivants qui le peuplent",
+        eco?"Un milieu de vie, sans les êtres vivants":"Un seul être vivant et son milieu de vie",
+        eco?"Un groupe d'animaux de la même espèce":"L'ensemble des animaux d'une forêt, sans les végétaux"];
+      return {type:"qcm", q:"Que veut dire « "+(eco?"écosystème":"biodiversité")+" » ?", options:opts, r:[bonne], cle:"ed"+eco,
+        expl:"Écosystème = un milieu de vie et tous les êtres vivants qui le peuplent. Biodiversité = l'ensemble des êtres vivants (animaux ET végétaux) dans un lieu donné.",
+        bravo:eco?"Un écosystème, c'est le milieu ET ses êtres vivants.":"Tous les êtres vivants, animaux et végétaux."};
+    },
+    function(){
+      var e=unDe(ECOSYSTEMES), f=melange(PAS_ECOSYSTEMES).slice(0,3);
+      return {type:"qcm", q:"Lequel de ces exemples est un écosystème ?", options:[e].concat(f), r:[e], cle:"ex"+e+f[0],
+        expl:e.charAt(0).toUpperCase()+e.slice(1)+" est un milieu de vie avec tous les êtres vivants qui le peuplent. Un seul être vivant ou un rocher ne forme pas un écosystème.",
+        bravo:"Un milieu de vie avec tous ses êtres vivants."};
+    },
+    function(){
+      return {type:"saisie", lettres:true, q:"Complète :<br>Sur Terre, les êtres vivants se répartissent en fonction des <b>…</b> qu'ils trouvent.",
+        r:["conditions de vie"], test:function(s){ return /^(les )?conditions?( de vie)?$/.test(s); }, cle:"cdv",
+        expl:"Les êtres vivants vivent là où ils trouvent les conditions de vie qui leur conviennent (nourriture, eau, abri…) : c'est pour ça qu'on ne trouve pas les mêmes en forêt et en montagne.",
+        bravo:"Chaque être vivant vit là où les conditions de vie lui conviennent."};
+    }
+  ]},
+  { nom:"L'Homme et les écosystèmes", types:[
+    function(){
+      var p=unDe(POSITIFS), n=melange(NEGATIFS).slice(0,3);
+      return {type:"qcm", q:"Laquelle de ces actions a un effet <b>positif</b> sur l'écosystème ?", options:[p[0]].concat(n.map(function(x){ return x[0]; })), r:[p[0]], cle:"po"+p[0]+n[0][0],
+        expl:"« "+p[0]+" » est positif : "+p[1]+". Les autres actions sont négatives : l'Homme détruit des milieux, tue ou dérange les animaux.",
+        bravo:"Positif : "+p[1]+"."};
+    },
+    function(){
+      var n=unDe(NEGATIFS), p=melange(POSITIFS).slice(0,3);
+      return {type:"qcm", q:"Laquelle de ces actions a un effet <b>négatif</b> sur l'écosystème ?", options:[n[0]].concat(p.map(function(x){ return x[0]; })), r:[n[0]], cle:"ne"+n[0]+p[0][0],
+        expl:"« "+n[0]+" » est négatif : "+n[1]+". Les autres actions protègent les êtres vivants.",
+        bravo:"Négatif : "+n[1]+"."};
+    },
+    function(){
+      var pos=Math.random()<.5;
+      return pos
+        ? {type:"saisie", lettres:true, q:"Complète :<br>Effet positif sur l'écosystème : l'Homme peut <b>…</b> les êtres vivants menacés.", r:["protéger"],
+           test:function(s){ return /^proteg/.test(s); }, cle:"vpr",
+           expl:"Effet positif : protéger les êtres vivants menacés. Effet négatif : détruire des milieux, tuer ou déranger les animaux.", bravo:"Protéger les êtres vivants menacés."}
+        : {type:"saisie", lettres:true, q:"Complète :<br>Effet négatif sur l'écosystème : l'Homme peut <b>…</b> des milieux, tuer ou déranger les animaux.", r:["détruire"],
+           test:function(s){ return /^detrui/.test(s); }, cle:"vde",
+           expl:"Effet négatif : détruire des milieux, tuer ou déranger les animaux. Effet positif : protéger les êtres vivants menacés.", bravo:"Détruire des milieux, tuer ou déranger les animaux."};
+    }
+  ]}
+];
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function E(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," "); }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function texte(h){ var d=document.createElement("div"); d.innerHTML=h.replace(/<br\s*\/?>/g," "); return d.textContent.replace(/\s+/g," ").trim(); }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "svt-chapitre1-environnement.html";
+
+/* En SVT, on évalue la notion, pas l'orthographe : accents et majuscules ignorés. */
+function norm(s,lettres){
+  s=String(s).toLowerCase().trim().replace(/[’']/g,"'").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\s+/g," ");
+  if(lettres) s=s.replace(/-/g," ").replace(/\s+/g," ").replace(/[.!]$/,"").trim();
+  else s=s.replace(/[\s .]/g,"");
+  return s;
+}
+function estJuste(saisie,q){
+  if(q.test) return q.test(norm(saisie,true));
+  return q.r.some(function(r){ return norm(saisie,q.lettres)===norm(r,q.lettres); });
+}
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<40 && (deja[q.cle] || (essais<25 && hist.indexOf(q.cle)>=0)));
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){
+  var h=vues().concat(qs.map(function(q){ return q.cle; }));
+  ecrire("vues:"+FICHIER, h.slice(-150));
+}
+function serieEntrainement(notion){
+  var deja={}, qs=[];
+  var d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function serieControle(){
+  var deja={}, qs=[];
+  NOTIONS.forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function page(h,retour){ $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan"><p class="t">Prêt à commencer</p><p>Relis la leçon, entraîne-toi sur chaque partie, puis fais le contrôle quand tu te sens prêt.</p></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret"><p class="t">✓ Tu es prêt pour l\'évaluation</p><p>Tu as eu '+dc.bon+' / '+dc.total+' au dernier contrôle.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div>';
+  return '<div class="bilan travail"><p class="t">Pas encore tout à fait prêt</p><p>Dernier contrôle : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<button class="btn" id="b-lecon">Relire la leçon<small>L\'essentiel à savoir</small></button>';
+  h+='<h2>S\'entraîner</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · dernier essai : '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=NOTIONS.length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Se tester</h2><button class="btn" id="b-ctrl">Faire le contrôle<small>'+nbC+' questions sur toute la leçon, correction à la fin'+(rec?' · meilleur score : '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><button class="btn plein centre" id="b-go">Retour au sommaire</button>', true);
+  $("b-go").onclick=accueil;
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">On y revient, avec une autre question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Contrôle":q.notion)+'</p><p class="enonce">'+q.q+
+     (q.grand?'<span class="grand">'+echappe(q.grand)+'</span>':'')+'</p></div>';
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix">'+q.ordre.map(function(o,k){ return '<button class="btn" data-k="'+k+'">'+(q.affiche?q.affiche[o]:echappe(o))+'</button>'; }).join("")+'</div>';
+  } else {
+    h+='<div class="saisie" id="f"><input id="in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" '+
+       (q.chiffres?'inputmode="numeric" ':'')+'aria-label="Ta réponse"><button class="btn plein" type="button" id="valider">Valider</button></div>';
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else {
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+function repondre(donne, bouton){
+  var q=serie.qs[serie.i], ok=estJuste(donne,q);
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){ serie.erreurs.push({q:texte(q.q)+(q.grand?" → "+q.grand:""), donne:donne, bonne:q.r[0], notion:q.notion, expl:q.expl}); serie.rattrapage.push(1); }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status"><p class="v">'+(ok?unDe(["Juste !","Bravo !","Exact !"]):"Pas tout à fait")+'</p>';
+  if(ok) h+='<p>'+q.bravo+'</p>';
+  else h+='<p>Tu as répondu « '+echappe(donne)+' ». La réponse : <b>'+echappe(q.r[0])+'</b></p><p>'+q.expl+'</p>';
+  h+='</div>';
+  if(!ok && q.lettres){
+    h+='<p><b>Recopie la bonne réponse :</b></p><div class="saisie" id="f2"><input id="in2" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" aria-label="Recopie">'+
+       '<button class="btn plein" type="button" id="ok2">OK</button></div><p id="msg2" class="doux"></p>';
+  }
+  h+='<button class="btn plein centre'+(!ok&&q.lettres?' cache':'')+'" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  if($("f2")){
+    $("in2").focus({preventScroll:true});
+    var verifier=function(){
+      if($("in2").disabled) return;
+      if(estJuste($("in2").value,q)){ $("in2").disabled=true; $("ok2").disabled=true; $("msg2").textContent="C'est bien écrit."; $("suite").classList.remove("cache"); $("suite").focus({preventScroll:true}); }
+      else $("msg2").textContent="Pas encore identique : regarde bien chaque mot.";
+    };
+    $("ok2").onclick=verifier;
+    $("in2").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); verifier(); } };
+  } else $("suite").focus({preventScroll:true});
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Résultat du contrôle</h2><p class="score">'+s+' / '+n+'</p>'+bilan();
+    h+='<h3>Partie par partie</h3><ul class="revoir">'+NOTIONS.map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+'<span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><p class="score">'+s+' / '+n+'</p>';
+    h+='<p>'+(s===n?"Sans faute ! Tu maîtrises cette partie.":r>=SEUIL_PRET?"Très bien. Relis les corrections ci-dessous.":
+         "Cette partie n'est pas encore sûre. Relis la leçon et recommence : les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+e.expl+'</span>':'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Recommencer</button><button class="btn centre" id="retour-acc">Sommaire</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>

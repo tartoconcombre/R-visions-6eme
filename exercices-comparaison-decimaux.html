@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparaison des nombres décimaux</title>
+<meta name="theme-color" content="#dc2626">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer d'une matière à l'autre ====== */
+:root{ --matiere:#dc2626; --matiere-encre:#ffffff; --matiere-fort:#c11f1f; }
+
+/* ====== Style commun « Mes révisions » (identique dans tous les exercices) ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee; --marge:#f1a7a7;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18)}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 28px/1.15 var(--titre);margin:0}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px 28px;position:relative}
+main::before{content:"";position:absolute;top:0;bottom:0;left:14px;width:2px;background:var(--marge);opacity:.7}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere);color:var(--matiere-encre);border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.btn:disabled{opacity:.6;cursor:default}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte)}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.grand{display:block;font:700 30px var(--titre);margin-top:6px}
+.figure svg{display:block;width:100%;height:auto;margin-top:10px;color:var(--encre)}
+.choix .btn{font-weight:400;font-size:20px}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:10px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.ordre-res{min-height:58px;border:2px dashed var(--trait);border-radius:var(--rayon);padding:12px 14px;margin-bottom:12px;font:700 21px var(--titre);background:#fff}
+.puces{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.puce{padding:10px 16px;border:2px solid var(--trait);border-radius:12px;background:#fff;font-weight:700;font-size:21px}
+.puce:disabled{opacity:.3;cursor:default}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon table{border-collapse:collapse;width:100%;font-size:16px;margin:8px 0}
+.lecon td,.lecon th{border:1px solid var(--trait);padding:6px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Sommaire</button></div>
+  <div class="etiquette"><p>Maths</p><h1>Comparaison des nombres décimaux</h1></div>
+</header>
+<main id="page"></main>
+
+<script>
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;   /* questions par entraînement (une sous-notion) */
+var Q_PAR_NOTION_CONTROLE = 3; /* le contrôle pose 3 questions par sous-notion → sa longueur suit le nombre de notions */
+var SEUIL_PRET = 0.8;          /* 80 % au contrôle → « prêt pour l'évaluation » */
+
+var LECON =
+  '<h3>Comparer deux nombres</h3>'+
+  '<p>Comparer deux nombres, c\'est dire s\'ils sont <b>égaux</b> et sinon, lequel est le <b>plus petit</b> (et donc aussi le plus grand).</p>'+
+  '<p><b>&lt;</b> se lit « est inférieur à » : 17 &lt; 19<br><b>&gt;</b> se lit « est supérieur à » : 25,9 &gt; 25<br>'+
+  '<b>=</b> : 54,6 = 54,600 (les zéros à la fin de la partie décimale ne changent rien)</p>'+
+  '<h3>La méthode</h3>'+
+  '<p>1. On compare d\'abord les <b>parties entières</b>.<br>2. Si elles sont égales, on compare le chiffre des <b>dixièmes</b>, puis si nécessaire celui des <b>centièmes</b>… jusqu\'à trouver deux chiffres <b>différents</b>.</p>'+
+  '<p>46,32 et 46,8 : 3 &lt; 8 (dixièmes) donc 46,32 &lt; 46,8 : 46,32 <i>est inférieur à</i> 46,8.<br>'+
+  '26,19 et 26,175 : 9 &gt; 7 (centièmes) donc 26,19 &gt; 26,175 : 26,19 <i>est supérieur à</i> 26,175.</p>'+
+  '<p>⚠ Le nombre qui a le plus de chiffres n\'est pas forcément le plus grand !</p>'+
+  '<h3>Ranger</h3>'+
+  '<p>Ordre <b>croissant</b> : du plus petit au plus grand.<br>4,1 &lt; 4,126 &lt; 4,16 &lt; 4,61 &lt; 4,612 &lt; 4,62</p>'+
+  '<p>Ordre <b>décroissant</b> : du plus grand au plus petit (avec le signe &gt;).</p>'+
+  '<h3>Encadrer</h3>'+
+  '<table><tr><th>À l\'unité</th><th>Au dixième</th></tr>'+
+  '<tr><td>6 &lt; 6,85 &lt; 7</td><td>6,8 &lt; 6,85 &lt; 6,9</td></tr>'+
+  '<tr><td>4 &lt; 4,93 &lt; 5</td><td>4,9 &lt; 4,93 &lt; 5,0</td></tr>'+
+  '<tr><td>0 &lt; 0,08 &lt; 1</td><td>0,0 &lt; 0,08 &lt; 0,1</td></tr></table>'+
+  '<p>6 &lt; 6,85 &lt; 7 se lit : « 6,85 <b>est compris entre</b> 6 et 7 ».</p>'+
+  '<h3>Abscisse d\'un point</h3>'+
+  '<p>Sur une droite graduée, on cherche d\'abord ce que vaut <b>une graduation</b> : entre 4 et 9, il y a 10 graduations, donc une graduation vaut (9 − 4) ÷ 10 = <b>0,5</b>.</p>'+
+  '<p>Puis on compte : D est 7 graduations après 4, donc 4 + 7 × 0,5 = 7,5. On écrit <b>D(7,5)</b>.</p>';
+
+/* ---------- Outils sur les décimaux (écrits avec une virgule) ---------- */
+function val(s){ return parseFloat(String(s).replace(",",".")); }
+function F10(t){ var e=Math.floor(t/10), d=t%10; return d ? e+","+d : String(e); }   /* dixièmes → texte */
+function decs(s){ return (String(s).split(",")[1]||""); }
+function signe(a,b){ var x=val(a), y=val(b); return x<y?"<":x>y?">":"="; }
+function complete(liste){  /* même nombre de décimales pour tous : 4,1 → 4,100 */
+  var m=0; liste.forEach(function(s){ m=Math.max(m,decs(s).length); });
+  return liste.map(function(s){ var d=decs(s); var z=new Array(m-d.length+1).join("0"); return d? s+z : (m? s+","+z : s); });
+}
+var RANG_NOMS=["dixièmes","centièmes","millièmes"];
+function decide(a,b){
+  var ia=+String(a).split(",")[0], ib=+String(b).split(",")[0];
+  if(ia!==ib) return {rang:"partie entière", x:ia, y:ib};
+  var da=decs(a), db=decs(b), n=Math.max(da.length,db.length);
+  for(var i=0;i<n;i++){ var x=da[i]||"0", y=db[i]||"0"; if(x!==y) return {rang:RANG_NOMS[i], x:x, y:y, vide:(!da[i]||!db[i])}; }
+  return {rang:null};
+}
+function explComp(a,b){
+  var d=decide(a,b), s=signe(a,b);
+  if(!d.rang) return "Les zéros à la fin de la partie décimale ne changent pas la valeur : "+a+" = "+b+".";
+  if(d.rang==="partie entière") return "On compare d'abord les parties entières : "+d.x+" "+s+" "+d.y+", donc "+a+" "+s+" "+b+". Pas besoin de regarder la partie décimale.";
+  var t="Les parties entières sont égales. On compare chiffre par chiffre : au rang des "+d.rang+", "+d.x+" "+s+" "+d.y+", donc "+a+" "+s+" "+b+".";
+  if(d.vide) t+=" (Un rang vide compte comme 0 : on peut écrire "+complete([a,b]).join(" et ")+".)";
+  var grand = s===">" ? a : b, petit = s===">" ? b : a;
+  if(decs(petit).length>decs(grand).length) t+=" Le nombre le plus long n'est pas le plus grand !";
+  return t;
+}
+function paire(cas){
+  var p=H(0,60), a, b, d;
+  if(cas==="longueur"){ d=H(2,9); a=p+","+d; b=p+","+H(1,d-1)+H(1,9)+(Math.random()<.5?H(1,9):""); }
+  else if(cas==="zero"){ a=p+",0"+H(1,9)+(Math.random()<.4?H(1,9):""); b=p+","+H(1,9); }
+  else if(cas==="egal"){ a=p+","+H(1,9)+(Math.random()<.5?H(1,9):""); b=a+(Math.random()<.5?"0":"00"); }
+  else if(cas==="entiere"){ a=H(10,60)+","+H(1,9); b=H(1,9)+","+H(1,9)+H(1,9)+(Math.random()<.5?H(1,9):""); }
+  else if(cas==="centiemes"){ d=H(0,9); var c1=H(1,9), c2=c1; while(c2===c1) c2=H(0,9); a=p+","+d+c1; b=p+","+d+c2+H(1,9); }
+  else { var ab=""+H(0,9)+H(0,9), m1=H(1,9), m2=m1; while(m2===m1) m2=H(1,9); a=p+","+ab+m1; b=p+","+ab+m2; }
+  return Math.random()<.5 ? [a,b] : [b,a];
+}
+/* Série de nombres de même partie entière, qui partagent des chiffres (pièges de longueur et de zéros) */
+function serieNombres(n){
+  var p=H(1,30), pool=melange([1,2,3,4,5,6,7,8,9]).slice(0,3), out=[], vus={}, essais=0;
+  if(Math.random()<.35) pool.push(0);
+  while(out.length<n && essais<300){
+    essais++;
+    var len = out.length===0 ? 1 : out.length===1 ? 3 : H(1,3), s="";
+    for(var i=0;i<len;i++) s+=unDe(pool);
+    if(s[s.length-1]==="0") continue;
+    var x=p+","+s; if(vus[val(x)]) continue;
+    vus[val(x)]=1; out.push(x);
+  }
+  if(Math.random()<.25) out[out.length-1]=String(p);   /* parfois un nombre entier */
+  return out;
+}
+function trie(l,croissant){ return l.slice().sort(function(a,b){ return croissant? val(a)-val(b) : val(b)-val(a); }); }
+
+/* ---------- Droite graduée (dessin) ---------- */
+function droite(c){
+  var tot=c.L+c.k+c.R, W=440, m=22, u=(W-2*m-14)/tot, y=64;
+  var s='<svg viewBox="0 0 '+W+' 124" role="img" aria-label="Droite graduée">';
+  s+='<line x1="'+(m-12)+'" y1="'+y+'" x2="'+(W-m+2)+'" y2="'+y+'" stroke="currentColor" stroke-width="3"/>';
+  s+='<path d="M'+(W-m)+' '+(y-7)+' L'+(W-m+11)+' '+y+' L'+(W-m)+' '+(y+7)+'" fill="none" stroke="currentColor" stroke-width="3"/>';
+  for(var j=0;j<=tot;j++){
+    var idx=j-c.L, x=(m+j*u).toFixed(1), fort=(idx===0||idx===c.k), h=fort?16:9;
+    s+='<line x1="'+x+'" y1="'+(y-h)+'" x2="'+x+'" y2="'+(y+h)+'" stroke="currentColor" stroke-width="'+(fort?4:2)+'"/>';
+    if(fort) s+='<text x="'+x+'" y="'+(y+48)+'" font-size="27" font-weight="700" text-anchor="middle" fill="currentColor">'+F10(c.a10+idx*c.step)+'</text>';
+    if(c.lettre && idx===c.i){
+      s+='<line x1="'+x+'" y1="'+(y-12)+'" x2="'+x+'" y2="'+(y+12)+'" stroke="#c11f1f" stroke-width="5"/>';
+      s+='<text x="'+x+'" y="'+(y-26)+'" font-size="28" font-weight="700" text-anchor="middle" fill="#c11f1f">'+c.lettre+'</text>';
+    }
+  }
+  return s+'</svg>';
+}
+function graduation(avecPoint){
+  var cfg=unDe([[1,10],[2,5],[5,10],[5,2],[10,5],[1,5],[20,5]]), step=cfg[0], k=cfg[1];
+  var L=H(2,4), R=H(2,4); if(k+L+R>20) R=20-k-L;
+  var c0=Math.ceil(L*step/10), a10=10*H(c0,c0+8);
+  var c={step:step,k:k,L:L,R:R,a10:a10};
+  if(avecPoint){ do{ c.i=H(-L,k+R); }while(c.i===0||c.i===k); c.lettre=unDe(["A","B","C","D","E","M","P","R","K"]); c.v=a10+c.i*step; }
+  return c;
+}
+function explGrad(c){
+  var a=F10(c.a10), b=F10(c.a10+c.k*c.step);
+  return "Entre "+a+" et "+b+", il y a "+c.k+" graduations : une graduation vaut ("+b+" − "+a+") ÷ "+c.k+" = "+F10(c.step)+".";
+}
+
+/* --- Les sous-notions. Chacune a plusieurs types de questions ; chaque type fabrique
+       une question nouvelle à chaque fois (valeurs tirées au hasard).
+   type "qcm"    : options = réponses affichées telles quelles (pas de A, B, C)
+   type "saisie" : r = réponses acceptées ; num:true → on compare la valeur (5 = 5,0 ; virgule ou point acceptés)
+                   test : fonction de correction particulière (mots)
+   type "ordre"  : on touche les nombres dans l'ordre
+   expl   : explication donnée après une erreur
+   bravo  : courte confirmation donnée après une bonne réponse --- */
+var NOTIONS = [
+  { nom:"Comparer deux décimaux", types:[
+    function(){
+      var pr=paire(unDe(["longueur","longueur","zero","egal","entiere","centiemes","milliemes"])), a=pr[0], b=pr[1], s=signe(a,b), d=decide(a,b);
+      var mots=Math.random()<.35;
+      var opts = mots ? [a+" est inférieur à "+b, a+" est supérieur à "+b, a+" est égal à "+b] : [a+" < "+b, a+" > "+b, a+" = "+b];
+      var bon = opts[["<",">","="].indexOf(s)];
+      return {type:"qcm", q: mots ? "Quelle phrase est juste ?" : "Quelle écriture est juste ?", options:opts, r:[bon], cle:"cp"+a+"|"+b+mots,
+        expl:explComp(a,b),
+        bravo: !d.rang ? "Les zéros à la fin ne changent pas la valeur." : d.rang==="partie entière" ? "La partie entière suffit à décider." : "C'est le chiffre des "+d.rang+" qui décide."};
+    },
+    function(){
+      var pr=paire(unDe(["longueur","zero","centiemes","milliemes"])), a=pr[0], b=pr[1], d=decide(a,b);
+      var MOTS={"dixièmes":/dixi/,"centièmes":/centi/,"millièmes":/milli/};
+      return {type:"saisie", q:"Les parties entières sont égales. À quel rang se trouvent les premiers chiffres différents ?", grand:a+"   et   "+b,
+        r:["les "+d.rang], cle:"rg"+a+"|"+b,
+        test:function(v){ v=v.toLowerCase(); return MOTS[d.rang].test(v) && Object.keys(MOTS).every(function(k){ return k===d.rang || !MOTS[k].test(v); }); },
+        expl:explComp(a,b), bravo:"On avance rang par rang : dixièmes, centièmes, millièmes."};
+    },
+    function(){
+      var pr=paire(unDe(["longueur","zero","entiere","centiemes","milliemes"])), a=pr[0], b=pr[1], grand=Math.random()<.5;
+      var bon = (signe(a,b)===">")===grand ? a : b;
+      return {type:"saisie", num:true, q:"Écris le plus "+(grand?"grand":"petit")+" de ces deux nombres.", grand:a+"   et   "+b, r:[bon], cle:"pg"+a+"|"+b+grand,
+        expl:explComp(a,b), bravo:"Tu as comparé rang par rang."};
+    }
+  ]},
+  { nom:"Ranger", types:[
+    function(){
+      var l=serieNombres(5), cr=Math.random()<.7, ordre=trie(l,cr), sep=cr?" < ":" > ";
+      return {type:"ordre", q:"Range ces nombres dans l'ordre "+(cr?"croissant":"décroissant")+". Touche-les dans l'ordre.", nombres:l, sep:sep,
+        r:[ordre.join(sep)], cle:"or"+ordre.join("|")+cr, resume:"Ordre "+(cr?"croissant":"décroissant")+" : "+l.join(" ; "),
+        expl:"Ordre "+(cr?"croissant : du plus petit au plus grand":"décroissant : du plus grand au plus petit")+". Pour comparer facilement, on écrit tous les nombres avec autant de décimales : "+complete(ordre).join(sep)+".",
+        bravo:"Les nombres sont bien rangés."};
+    },
+    function(){
+      var l=serieNombres(4), pg=Math.random()<.5, bon=trie(l,!pg)[0];
+      return {type:"qcm", q:"Quel est le plus "+(pg?"grand":"petit")+" de ces nombres ?", options:l, r:[bon], cle:"pp"+trie(l,true).join("|")+pg,
+        expl:"On les écrit avec autant de décimales pour les comparer : "+complete(trie(l,true)).join(" < ")+". Le plus "+(pg?"grand":"petit")+" est "+bon+".",
+        bravo:"Ce n'est pas le nombre de chiffres qui compte, mais leur rang."};
+    }
+  ]},
+  { nom:"Encadrer", types:[
+    function(){ return encadrement("u"); },
+    function(){ return encadrement("d"); },
+    function(){
+      if(Math.random()<.7) return encadrement(unDe(["u","d"]));
+      var e=nbEnc(unDe(["u","d"]));
+      return {type:"saisie", q:"Comment se lit cet encadrement ? Complète :<br>« "+e.x+" est <b>…</b> entre "+e.bas+" et "+e.haut+" »", grand:e.bas+" < "+e.x+" < "+e.haut,
+        r:["compris"], cle:"lec"+e.x, test:function(v){ return /compris/.test(v.toLowerCase()); },
+        expl:"« "+e.bas+" < "+e.x+" < "+e.haut+" » se lit : "+e.x+" est compris entre "+e.bas+" et "+e.haut+".", bravo:"« Est compris entre » : c'est ça."};
+    }
+  ]},
+  { nom:"Abscisse d'un point", types:[
+    function(){
+      var c=graduation(true), ref, n, plus=true;
+      if(c.i<0){ ref=c.a10; n=-c.i; plus=false; } else if(c.i>c.k){ ref=c.a10+c.k*c.step; n=c.i-c.k; } else { ref=c.a10; n=c.i; }
+      return {type:"saisie", num:true, q:"Quelle est l'abscisse du point "+c.lettre+" ?", figure:droite(c), r:[F10(c.v)], cle:"ab"+c.a10+"-"+c.step+"-"+c.k+"-"+c.i,
+        resume:"Abscisse du point "+c.lettre+" (repères "+F10(c.a10)+" et "+F10(c.a10+c.k*c.step)+")",
+        expl:explGrad(c)+" "+c.lettre+" est "+n+" graduation"+(n>1?"s":"")+(plus?" après ":" avant ")+F10(ref)+" : "+F10(ref)+(plus?" + ":" − ")+n+" × "+F10(c.step)+" = "+F10(c.v)+". On écrit "+c.lettre+"("+F10(c.v)+").",
+        bravo:"Une graduation vaut "+F10(c.step)+" : c'est bien compté."};
+    },
+    function(){
+      var c=graduation(false);
+      return {type:"saisie", num:true, q:"Sur cette droite, combien vaut une graduation (l'écart entre deux petits traits qui se suivent) ?", figure:droite(c), r:[F10(c.step)],
+        cle:"gr"+c.a10+"-"+c.step+"-"+c.k, resume:"Valeur d'une graduation (repères "+F10(c.a10)+" et "+F10(c.a10+c.k*c.step)+", "+c.k+" graduations)",
+        expl:explGrad(c), bravo:"Écart entre les repères ÷ nombre de graduations."};
+    }
+  ]}
+];
+function nbEnc(prec){
+  var p=H(0,40);
+  if(prec==="u"){ var dec = Math.random()<.5 ? ""+H(1,9) : ""+H(0,9)+H(1,9); return {x:p+","+dec, bas:String(p), haut:String(p+1)}; }
+  var d=H(0,9), c = Math.random()<.7 ? ""+H(1,9) : ""+H(0,9)+H(1,9);
+  return {x:p+","+d+c, bas:p+","+d, haut: d===9 ? (p+1)+",0" : p+","+(d+1), d:d};
+}
+function encadrement(prec){
+  var e=nbEnc(prec), bas=Math.random()<.5, u=prec==="u";
+  var ex = u ? "À l'unité : on prend les deux nombres entiers qui se suivent autour de "+e.x+" : "+e.bas+" < "+e.x+" < "+e.haut+"."
+             : "Au dixième : on garde un seul chiffre après la virgule ("+e.bas+"), puis on ajoute 0,1 : "+e.bas+" < "+e.x+" < "+e.haut+"."+(e.d===9?" Attention : "+e.bas+" + 0,1 = "+e.haut+".":"");
+  return {type:"saisie", num:true, q:"Complète l'encadrement "+(u?"à l'unité":"au dixième")+".", grand: bas ? "… < "+e.x+" < "+e.haut : e.bas+" < "+e.x+" < …",
+    r:[bas?e.bas:e.haut], cle:"en"+prec+e.x+bas, expl:ex,
+    bravo: u ? "À l'unité : deux nombres entiers qui se suivent." : "Au dixième : un chiffre après la virgule, puis + 0,1."};
+}
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function texte(h){ var d=document.createElement("div"); d.innerHTML=h.replace(/<br\s*\/?>/g," "); return d.textContent; }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "exercices-comparaison-decimaux.html";
+
+function norm(s){ return String(s).toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,""); }
+/* Nombre tapé : virgule ou point, espaces ignorés, « D(7,5) » accepté. */
+function lireNombre(s){
+  s=String(s).replace(/[a-zA-Z()\s=]/g,"").replace(".",",");
+  if(!/^\d+(,\d+)?$/.test(s)) return null;
+  return val(s);
+}
+function estJuste(saisie,q){
+  if(q.test) return q.test(String(saisie));
+  if(q.num){ var v=lireNombre(saisie); return v!==null && q.r.some(function(r){ return Math.abs(v-val(r))<1e-9; }); }
+  return q.r.some(function(r){ return norm(saisie)===norm(r); });
+}
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<40 && (deja[q.cle] || (essais<25 && hist.indexOf(q.cle)>=0)));
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){
+  var h=vues().concat(qs.map(function(q){ return q.cle; }));
+  ecrire("vues:"+FICHIER, h.slice(-150));
+}
+function serieEntrainement(notion){
+  var deja={}, qs=[], d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function serieControle(){
+  var deja={}, qs=[];
+  NOTIONS.forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function page(h,retour){ $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan"><p class="t">Prêt à commencer</p><p>Relis la leçon, entraîne-toi sur chaque partie, puis fais le contrôle quand tu te sens prêt.</p></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret"><p class="t">✓ Tu es prêt pour l\'évaluation</p><p>Tu as eu '+dc.bon+' / '+dc.total+' au dernier contrôle.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div>';
+  return '<div class="bilan travail"><p class="t">Pas encore tout à fait prêt</p><p>Dernier contrôle : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<button class="btn" id="b-lecon">Relire la leçon<small>L\'essentiel à savoir</small></button>';
+  h+='<h2>S\'entraîner</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · dernier essai : '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=NOTIONS.length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Se tester</h2><button class="btn" id="b-ctrl">Faire le contrôle<small>'+nbC+' questions sur toute la leçon, correction à la fin'+(rec?' · meilleur score : '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><button class="btn plein centre" id="b-go">Retour au sommaire</button>', true);
+  $("b-go").onclick=accueil;
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">On y revient, avec une autre question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Contrôle":q.notion)+'</p><p class="enonce">'+q.q+
+     (q.grand?'<span class="grand">'+echappe(q.grand)+'</span>':'')+'</p>'+(q.figure?'<div class="figure">'+q.figure+'</div>':'')+'</div>';
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix">'+q.ordre.map(function(o,k){ return '<button class="btn" data-k="'+k+'">'+echappe(o)+'</button>'; }).join("")+'</div>';
+  } else if(q.type==="ordre"){
+    q.ordre=melange(q.nombres);
+    h+='<div id="f"><div class="ordre-res" id="res"></div><div class="puces">'+
+       q.ordre.map(function(o,k){ return '<button class="puce" type="button" data-o="'+k+'">'+echappe(o)+'</button>'; }).join("")+
+       '</div><div class="rangee"><button class="btn centre" type="button" id="eff">Effacer</button><button class="btn plein centre" type="button" id="valider" disabled>Valider</button></div></div>';
+  } else {
+    h+='<div class="saisie" id="f"><input id="in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" '+
+       (q.num?'inputmode="decimal" ':'')+'aria-label="Ta réponse"><button class="btn plein" type="button" id="valider">Valider</button></div>';
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else if(q.type==="ordre"){
+    var pris=[], puces=document.querySelectorAll(".puce");
+    var maj=function(){ $("res").textContent=pris.join(q.sep); $("valider").disabled=pris.length<q.nombres.length; };
+    [].forEach.call(puces,function(b){ b.onclick=function(){ if(b.disabled) return; pris.push(q.ordre[+b.dataset.o]); b.disabled=true; maj(); }; });
+    $("eff").onclick=function(){ pris=[]; [].forEach.call(puces,function(b){ b.disabled=false; }); maj(); };
+    $("valider").onclick=function(){ if(pris.length===q.nombres.length) repondre(pris.join(q.sep)); };
+    maj();
+  } else {
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+function repondre(donne, bouton){
+  var q=serie.qs[serie.i], ok=estJuste(donne,q);
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){ serie.erreurs.push({q:q.resume||(texte(q.q)+(q.grand?" → "+q.grand:"")), donne:donne, bonne:q.r[0], notion:q.notion, expl:q.expl}); serie.rattrapage.push(1); }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status"><p class="v">'+(ok?unDe(["Juste !","Bravo !","Exact !"]):"Pas tout à fait")+'</p>';
+  if(ok) h+='<p>'+echappe(q.bravo)+'</p>';
+  else h+='<p>Tu as répondu « '+echappe(donne)+' ». La réponse : <b>'+echappe(q.r[0])+'</b></p><p>'+echappe(q.expl)+'</p>';
+  h+='</div><button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  $("suite").focus({preventScroll:true});
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Résultat du contrôle</h2><p class="score">'+s+' / '+n+'</p>'+bilan();
+    h+='<h3>Partie par partie</h3><ul class="revoir">'+NOTIONS.map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+'<span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><p class="score">'+s+' / '+n+'</p>';
+    h+='<p>'+(s===n?"Sans faute ! Tu maîtrises cette partie.":r>=SEUIL_PRET?"Très bien. Relis les corrections ci-dessous.":
+         "Cette partie n'est pas encore sûre. Relis la leçon et recommence : les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+echappe(e.expl)+'</span>':'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Recommencer</button><button class="btn centre" id="retour-acc">Sommaire</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>
