@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premiers États, premières écritures</title>
+<meta name="theme-color" content="#222222">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer d'une matière à l'autre ====== */
+:root{ --matiere:#222222; --matiere-encre:#ffffff; --matiere-fort:#000000; }
+
+/* ====== Style commun « Mes révisions » (identique dans tous les exercices) ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee; --marge:#f1a7a7;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18)}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 28px/1.15 var(--titre);margin:0}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px 28px;position:relative}
+main::before{content:"";position:absolute;top:0;bottom:0;left:14px;width:2px;background:var(--marge);opacity:.7}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere);color:var(--matiere-encre);border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte)}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.grand{display:block;font:600 22px/1.35 var(--titre);margin-top:8px;color:var(--matiere-fort)}
+.choix .btn{font-weight:400}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:10px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon ul{padding-left:20px;margin:0 0 10px}
+.lecon table{border-collapse:collapse;width:100%;font-size:16px;margin:8px 0}
+.lecon td,.lecon th{border:1px solid var(--trait);padding:6px;text-align:left;vertical-align:top}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Sommaire</button></div>
+  <div class="etiquette"><p>Histoire · Chapitre 3</p><h1>Premiers États, premières écritures</h1></div>
+</header>
+<main id="page"></main>
+
+<script>
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;   /* questions par entraînement (une sous-notion) */
+var Q_PAR_NOTION_CONTROLE = 3; /* le contrôle pose 3 questions par sous-notion → 15 questions */
+var SEUIL_PRET = 0.8;          /* 80 % au contrôle → « prêt pour l'évaluation » */
+
+var LECON =
+  '<h3>A. Les premiers États</h3>'+
+  '<p>Au Néolithique, dans l\'Orient ancien (le <b>Croissant fertile</b>), les hommes se regroupent le long des grands fleuves : le <b>Nil</b> en Égypte, le <b>Tigre</b> et l\'<b>Euphrate</b> en Mésopotamie. Les fleuves donnent l\'eau pour l\'agriculture et servent de routes pour les échanges.</p>'+
+  '<p><b>Un État</b> : un territoire délimité par des frontières, avec un régime politique (un roi par exemple), où vit un peuple qui s\'organise selon des lois communes.</p>'+
+  '<p><b>En Mésopotamie</b>, les habitants se regroupent en <b>cités-États</b> (Ur, Uruk, Lagash, Mari…). Ils vivent sous l\'autorité du <b>roi</b>, qui fixe les règles et les croyances communes. Le roi est vu comme le représentant sur Terre du dieu principal de la cité. Les cités-États échangent leurs productions ; elles se font aussi la guerre.</p>'+
+  '<p><b>Une cité-État</b> : un petit État indépendant composé d\'une ville et de la campagne qui l\'entoure.</p>'+
+  '<p>Les Mésopotamiens sont <b>polythéistes</b> (ils croient en plusieurs dieux). Pour le dieu principal de la cité, on construit un temple et une ziggourat.</p>'+
+  '<p><b>En Égypte</b>, le pays est unifié en un <b>royaume</b> vers 3100 av. J.-C. Le <b>pharaon</b> détient tout le pouvoir : il est considéré comme un dieu vivant. À sa mort, son corps est placé dans une <b>pyramide</b>.</p>'+
+  '<h3>L\'exemple de la cité d\'Ur</h3>'+
+  '<ul><li>Ur est une cité-État de Mésopotamie, au bord de l\'<b>Euphrate</b>, dirigée par un <b>roi</b>.</li>'+
+  '<li>Selon les croyances, le roi tient son pouvoir du <b>dieu Nanna</b> : sur la stèle d\'Ur-Nammu, Nanna lui remet les insignes de la royauté (une corde et un bâton).</li>'+
+  '<li>C\'est le <b>roi</b> qui fait les lois (lois du roi Shulgi). Les crimes sont punis par des peines fixées à l\'avance, parfois la mort.</li>'+
+  '<li>Une <b>muraille (rempart)</b> protège la ville des attaques (et des inondations). Les <b>ports</b> sur l\'Euphrate servent au commerce.</li>'+
+  '<li>On rend hommage à Nanna par un <b>temple</b>, une <b>ziggourat</b>, la cour de Nanna, la résidence de la grande prêtresse et des <b>offrandes</b>.</li>'+
+  '<li>Les tombes royales contiennent des objets en <b>or</b> et en <b>lapis-lazuli</b> : la cité est riche, ses artisans sont habiles, elle fait du commerce.</li></ul>'+
+  '<table><tr><th>Bâtiments politiques</th><th>Bâtiments religieux</th><th>Constructions militaires</th></tr>'+
+  '<tr><td>palais du roi</td><td>temples, ziggourat, résidence de la grande prêtresse</td><td>muraille (rempart), tours de défense</td></tr></table>'+
+  '<h3>B. Les premières écritures</h3>'+
+  '<p>Avec l\'augmentation de la population, il faut écrire pour <b>compter</b> les récoltes, les troupeaux et les hommes, et lister les terres. L\'écriture sert aussi à fixer les <b>lois</b> et à raconter l\'histoire des dieux. Seuls les <b>scribes</b> savent lire et écrire.</p>'+
+  '<p><b>En Mésopotamie</b>, la première écriture apparaît <b>vers 3300 av. J.-C.</b> : elle est faite de petits dessins, les <b>pictogrammes</b>. À partir de <b>3000 av. J.-C.</b>, ils sont remplacés par l\'<b>écriture cunéiforme</b> (signes en forme de coins, de clous), plus facile à écrire. Les scribes la tracent sur des <b>tablettes d\'argile</b> avec un roseau taillé. Exemple : l\'inventaire d\'un troupeau d\'ânes (tablette de 2360 av. J.-C.).</p>'+
+  '<p><b>En Égypte</b>, vers <b>3200 av. J.-C.</b> (à peu près à la même époque), les Égyptiens créent les <b>hiéroglyphes</b>. Ils ornent surtout les tombeaux et les temples (listes d\'offrandes pour les morts, prières). Un hiéroglyphe peut représenter un mot ou un son. Pour écrire plus vite (lettres, inventaires), les scribes utilisent le <b>hiératique</b>, une écriture simplifiée, à l\'encre sur du <b>papyrus</b>. Selon les Égyptiens, le dieu <b>Thot</b> a donné l\'écriture aux hommes.</p>'+
+  '<p>Les <b>supports</b> : tablettes d\'argile, papyrus, pierre, murs des monuments.</p>'+
+  '<p>Vers <b>1500 av. J.-C.</b>, sur les bords de la Méditerranée, les <b>Phéniciens</b> créent l\'<b>alphabet</b>, qu\'ils transmettent aux <b>Grecs</b>.</p>'+
+  '<p>Grâce à l\'écriture, nous pouvons mieux connaître les anciennes civilisations et reconstituer leur histoire.</p>'+
+  '<h3>Les mots à savoir</h3>'+
+  '<ul><li><b>Temple</b> : bâtiment dédié au culte d\'un dieu ou d\'une déesse.</li>'+
+  '<li><b>Ziggourat</b> : temple mésopotamien en forme de pyramide à étages.</li>'+
+  '<li><b>Support</b> : le matériau sur lequel l\'écriture est tracée.</li>'+
+  '<li><b>Pictogramme</b> : un petit dessin qui représente un objet.</li>'+
+  '<li><b>Cunéiforme</b> : écriture avec des signes en forme de coins (de clous), utilisée en Mésopotamie vers 3000 av. J.-C.</li>'+
+  '<li><b>Hiéroglyphes</b> : signes utilisés par les Égyptiens vers 3200 av. J.-C. pour écrire.</li>'+
+  '<li><b>Scribe</b> : celui qui a pour métier d\'écrire.</li>'+
+  '<li><b>Papyrus</b> : plante des bords du Nil avec laquelle on fabriquait des feuilles pour écrire.</li>'+
+  '<li><b>Polythéisme</b> : la croyance en plusieurs dieux.</li></ul>'+
+  '<h3>Repères</h3>'+
+  '<table><tr><th>Date</th><th>Événement</th></tr>'+
+  '<tr><td>vers 3300 av. J.-C.</td><td>Premières écritures (pictogrammes) en Mésopotamie</td></tr>'+
+  '<tr><td>vers 3200 av. J.-C.</td><td>Hiéroglyphes en Égypte</td></tr>'+
+  '<tr><td>vers 3100 av. J.-C.</td><td>L\'Égypte est unifiée en un royaume</td></tr>'+
+  '<tr><td>à partir de 3000 av. J.-C.</td><td>Signes cunéiformes en Mésopotamie</td></tr>'+
+  '<tr><td>vers 2600 av. J.-C.</td><td>Pyramides de Gizeh</td></tr>'+
+  '<tr><td>vers 2100 av. J.-C.</td><td>Ziggourat d\'Ur</td></tr>'+
+  '<tr><td>vers 1500 av. J.-C.</td><td>Alphabet des Phéniciens</td></tr></table>'+
+  '<p class="doux">Avant J.-C., plus le nombre est grand, plus c\'est ancien : 3300 av. J.-C. est plus ancien que 1500 av. J.-C.</p>';
+
+/* --- Fabrication des questions ---
+   S(...) : question à taper. r = réponses acceptées, aff = réponse affichée.
+   Q(...) : QCM. bonne + leurres (erreurs plausibles), mélangés à chaque fois.
+   Options possibles : mode:"date" (on ne garde que le nombre), recopie:true (recopier le mot après une erreur). */
+function S(cle,q,r,expl,bravo,o){ var x={type:"saisie",cle:cle,q:q,r:r,expl:expl,bravo:bravo}; if(o) for(var k in o) x[k]=o[k]; return x; }
+function Q(cle,q,bonne,leurres,expl,bravo,o){ var x={type:"qcm",cle:cle,q:q,bonne:bonne,leurres:leurres,expl:expl,bravo:bravo}; if(o) for(var k in o) x[k]=o[k]; return x; }
+function tire(banque){
+  var o=unDe(banque), q={}; for(var k in o) q[k]=o[k];
+  if(q.type==="qcm"){ q.options=[q.bonne].concat(q.leurres); q.r=[q.bonne]; }
+  return q;
+}
+function typeDe(banque){ return function(){ return tire(banque); }; }
+
+/* ---------- 1. Les mots du chapitre ---------- */
+var VOC_DEF = [
+  S("v-etat","Quel mot correspond à cette définition ?",["État","un État"],"Un État : territoire délimité par des frontières, avec un régime politique, où vit un peuple qui s'organise selon des lois communes.","C'est la définition d'un État (avec un É majuscule).",{grand:"Territoire délimité par des frontières, avec un régime politique (un roi par exemple), où vit un peuple qui s'organise selon des lois communes.",aff:"un État",recopie:true}),
+  S("v-cite","Quel mot correspond à cette définition ?",["cité-État","une cité-État","cité État"],"Une cité-État : une ville + la campagne qui l'entoure, qui forme un petit État indépendant (comme Ur).","Comme Ur ou Uruk.",{grand:"Petit État indépendant composé d'une ville et de la campagne qui l'entoure.",aff:"une cité-État",recopie:true}),
+  S("v-temple","Quel mot correspond à cette définition ?",["temple","un temple"],"Un temple : bâtiment construit pour un dieu (ou une déesse).","Le temple est la maison du dieu.",{grand:"Bâtiment dédié au culte d'un dieu ou d'une déesse.",aff:"un temple",recopie:true}),
+  S("v-zig","Quel mot correspond à cette définition ?",["ziggourat","une ziggourat","ziggurat"],"Une ziggourat : temple mésopotamien en forme de pyramide à étages (deux g, puis « ou »).","La ziggourat d'Ur était dédiée à Nanna.",{grand:"Temple mésopotamien en forme de pyramide à étages.",aff:"une ziggourat",recopie:true}),
+  S("v-support","Quel mot correspond à cette définition ?",["support","un support"],"Un support : le matériau sur lequel on écrit (argile, papyrus, pierre…).","Argile, papyrus, pierre : ce sont des supports.",{grand:"Le matériau sur lequel l'écriture est tracée.",aff:"un support",recopie:true}),
+  S("v-picto","Quel mot correspond à cette définition ?",["pictogramme","un pictogramme","pictogrammes"],"Un pictogramme : un petit dessin qui représente un objet (un âne, un épi…).","Picto = dessin.",{grand:"Un petit dessin qui représente un objet.",aff:"un pictogramme",recopie:true}),
+  S("v-cunei","Quel mot correspond à cette définition ?",["cunéiforme","cunéiformes","écriture cunéiforme","signes cunéiformes"],"L'écriture cunéiforme : des signes en forme de coins (de clous), en Mésopotamie.","Cunéiforme vient du latin « cuneus », le coin.",{grand:"Écriture faite de signes en forme de coins (de clous), utilisée en Mésopotamie.",aff:"l'écriture cunéiforme",recopie:true}),
+  S("v-hiero","Quel mot correspond à cette définition ?",["hiéroglyphes","les hiéroglyphes","hiéroglyphe"],"Les hiéroglyphes : les signes de l'écriture des Égyptiens (vers 3200 av. J.-C.).","Hiéroglyphe veut dire « écriture sacrée ».",{grand:"Signes utilisés par les Égyptiens vers 3200 av. J.-C. pour écrire.",aff:"les hiéroglyphes",recopie:true}),
+  S("v-scribe","Quel mot correspond à cette définition ?",["scribe","un scribe","scribes"],"Un scribe : celui qui a pour métier d'écrire. Ils sont presque les seuls à savoir lire et écrire.","Scribe vient du latin « scribere », écrire.",{grand:"Celui qui a pour métier d'écrire.",aff:"un scribe",recopie:true}),
+  S("v-papyrus","Quel mot correspond à cette définition ?",["papyrus","le papyrus"],"Le papyrus : plante des bords du Nil avec laquelle on fabriquait des feuilles pour écrire.","Le papyrus pousse au bord du Nil.",{grand:"Plante des bords du Nil avec laquelle on fabriquait des feuilles pour écrire.",aff:"le papyrus",recopie:true}),
+  S("v-poly","Quel mot correspond à cette définition ?",["polythéisme","le polythéisme"],"Le polythéisme : croire en plusieurs dieux (« poly » = plusieurs, « théo » = dieu).","Poly = plusieurs, théo = dieu.",{grand:"La croyance en plusieurs dieux.",aff:"le polythéisme",recopie:true}),
+  S("v-pharaon","Quel mot correspond à cette définition ?",["pharaon","le pharaon"],"Le pharaon : le titre du roi d'Égypte.","Le pharaon est le roi d'Égypte.",{grand:"Titre donné au roi d'Égypte.",aff:"le pharaon",recopie:true}),
+  S("v-pyramide","Quel mot correspond à cette définition ?",["pyramide","une pyramide","pyramides"],"La pyramide : le tombeau gigantesque des pharaons (pyramides de Gizeh, vers 2600 av. J.-C.).","Comme les pyramides de Gizeh.",{grand:"Tombeau gigantesque des pharaons.",aff:"une pyramide",recopie:true})
+];
+var VOC_TROU = [
+  S("t-etat1","Complète la définition.",["frontières"],"Un État est un territoire délimité par des frontières.","Les frontières délimitent le territoire.",{grand:"Un État est un territoire délimité par des …",aff:"frontières"}),
+  S("t-etat2","Complète la définition.",["lois","lois communes"],"Dans un État, le peuple s'organise selon des lois communes.","Les lois sont les mêmes pour tous.",{grand:"Dans un État, le peuple s'organise selon des … communes.",aff:"lois"}),
+  S("t-etat3","Complète la définition.",["politique"],"Un État a un régime politique (un roi, par exemple).","Le régime politique, c'est la façon dont l'État est gouverné.",{grand:"Un État a un régime … (un roi par exemple).",aff:"politique"}),
+  S("t-cite","Complète la définition.",["indépendant"],"Une cité-État est un petit État indépendant : elle ne dépend d'aucune autre cité.","Indépendant : elle se gouverne seule.",{grand:"Une cité-État est un petit État … composé d'une ville et de la campagne qui l'entoure.",aff:"indépendant"}),
+  S("t-cite2","Complète la définition.",["campagne"],"Une cité-État = une ville + la campagne qui l'entoure (les champs).","La campagne nourrit la ville.",{grand:"Une cité-État est composée d'une ville et de la … qui l'entoure.",aff:"campagne"}),
+  S("t-zig","Complète la définition.",["étages"],"Une ziggourat est un temple en forme de pyramide à étages.","Une pyramide à étages, comme un escalier géant.",{grand:"Une ziggourat est un temple mésopotamien en forme de pyramide à …",aff:"étages"}),
+  S("t-support","Complète la définition.",["tracée","écrite"],"Un support est le matériau sur lequel l'écriture est tracée.","On trace les signes sur le support.",{grand:"Un support est le matériau sur lequel l'écriture est …",aff:"tracée"}),
+  S("t-picto","Complète la définition.",["dessin","petit dessin"],"Un pictogramme est un petit dessin qui représente un objet.","Picto = dessin.",{grand:"Un pictogramme est un petit … qui représente un objet.",aff:"dessin"}),
+  S("t-cunei","Complète la définition.",["coins","clous","coin","clou"],"Les signes cunéiformes ont la forme de coins (de clous).","En forme de coins ou de clous : les deux se disent.",{grand:"Les signes cunéiformes sont en forme de …",aff:"coins (ou clous)"}),
+  S("t-scribe","Complète la définition.",["métier"],"Un scribe est celui qui a pour métier d'écrire.","C'est son travail.",{grand:"Un scribe est celui qui a pour … d'écrire.",aff:"métier"}),
+  S("t-poly","Complète la définition.",["plusieurs"],"Le polythéisme est la croyance en plusieurs dieux.","Poly = plusieurs.",{grand:"Le polythéisme est la croyance en … dieux.",aff:"plusieurs"})
+];
+var VOC_QCM = [
+  Q("q-etat","Quelle est la bonne définition d'un État ?","Un territoire délimité par des frontières, avec un régime politique, où vit un peuple qui s'organise selon des lois communes.",["Une grande ville entourée d'un rempart, dirigée par les prêtres.","Un ensemble de villages sans chef, où chacun suit ses propres règles."],"Un État : un territoire + des frontières + un régime politique + un peuple + des lois communes.","Les mots clés : frontières, régime politique, lois communes."),
+  Q("q-cite","Quelle est la bonne définition d'une cité-État ?","Un petit État indépendant composé d'une ville et de la campagne qui l'entoure.",["Une ville qui fait partie d'un grand royaume dirigé par un pharaon.","Un quartier de la ville réservé au roi et aux prêtres."],"Une cité-État est indépendante : une ville et sa campagne. Le royaume dirigé par un pharaon, c'est l'Égypte.","Indépendante : une ville et sa campagne."),
+  Q("q-zig","Qu'est-ce qu'une ziggourat ?","Un temple mésopotamien en forme de pyramide à étages.",["Le tombeau d'un pharaon en Égypte.","Le palais où vit le roi d'Ur."],"La ziggourat est un temple (Mésopotamie). Le tombeau du pharaon, c'est la pyramide (Égypte).","Ne pas confondre avec la pyramide égyptienne, qui est un tombeau."),
+  Q("q-picto","Qu'est-ce qu'un pictogramme ?","Un petit dessin qui représente un objet.",["Un signe en forme de coin, tracé dans l'argile.","Une lettre de l'alphabet."],"Le pictogramme est un dessin (un âne, un épi). Les signes en forme de coins, ce sont les cunéiformes.","Picto = dessin."),
+  Q("q-support","Qu'est-ce qu'un support d'écriture ?","Le matériau sur lequel l'écriture est tracée.",["L'outil qui sert à écrire, comme le roseau taillé.","La langue dans laquelle le texte est écrit."],"Le support, c'est ce sur quoi on écrit (argile, papyrus, pierre). Le roseau, c'est l'outil.","Argile, papyrus, pierre : des supports."),
+  Q("q-temple","Qu'est-ce qu'un temple ?","Un bâtiment dédié au culte d'un dieu ou d'une déesse.",["Le bâtiment où le roi gouverne la cité.","Le tombeau où l'on enterre les rois."],"Le temple est pour les dieux. Le roi gouverne depuis son palais.","Le temple est la maison du dieu."),
+  Q("q-poly","Que veut dire « polythéiste » ?","Qui croit en plusieurs dieux.",["Qui croit en un seul dieu.","Qui ne croit en aucun dieu."],"Poly = plusieurs. Les Mésopotamiens et les Égyptiens croient en plusieurs dieux (Nanna, Enki, Rê, Thot…).","Poly = plusieurs."),
+  Q("q-hieratique","Qu'est-ce que le hiératique ?","Une écriture simplifiée des hiéroglyphes, tracée à l'encre sur du papyrus.",["L'écriture en forme de coins de la Mésopotamie.","Le premier alphabet, créé par les Phéniciens."],"Le hiératique simplifie les hiéroglyphes pour écrire plus vite sur papyrus.","Hiératique = hiéroglyphes simplifiés.")
+];
+
+/* ---------- 2. Les premiers États ---------- */
+var ETAT_S = [
+  S("e-nil","Le long de quel grand fleuve les Égyptiens se sont-ils installés ?",["Nil","le Nil"],"L'Égypte s'est formée le long du Nil. Le Tigre et l'Euphrate, c'est la Mésopotamie.","Le Nil traverse l'Égypte.",{aff:"le Nil"}),
+  S("e-meso","Cite un des deux grands fleuves de Mésopotamie.",["Tigre","Euphrate","le Tigre","l'Euphrate"],"Les deux fleuves de Mésopotamie sont le Tigre et l'Euphrate (« Mésopotamie » veut dire « entre les fleuves »).","Mésopotamie = le pays entre le Tigre et l'Euphrate.",{aff:"le Tigre ou l'Euphrate"}),
+  S("e-croissant","Dans quelle région les hommes organisent-ils les premiers États ?",["Croissant fertile","le Croissant fertile","Orient ancien","l'Orient ancien"],"Les premiers États naissent dans le Croissant fertile (l'Orient ancien) : Mésopotamie et Égypte.","Le Croissant fertile, des terres riches grâce aux fleuves.",{aff:"le Croissant fertile"}),
+  S("e-cites","En Mésopotamie, en quoi les habitants se regroupent-ils ?",["cités-États","des cités-États","cité-État","cités États"],"En Mésopotamie, il y a de nombreuses cités-États (Ur, Uruk, Lagash…). L'Égypte, elle, forme un seul royaume.","Plusieurs cités-États indépendantes.",{aff:"des cités-États"}),
+  S("e-roi","Qui dirige une cité-État de Mésopotamie ?",["roi","le roi","un roi"],"Chaque cité-État est dirigée par un roi. En Égypte, on parle de pharaon.","Un roi à la tête de chaque cité.",{aff:"le roi"}),
+  S("e-regles","En Mésopotamie, qui fixe les règles et les croyances communes ?",["roi","le roi"],"Les habitants vivent sous l'autorité du roi, qui fixe les règles et les croyances communes.","Le roi a l'autorité.",{aff:"le roi"}),
+  S("e-royaume","L'Égypte est unifiée vers 3100 av. J.-C. Quel type d'État forme-t-elle ?",["royaume","un royaume","un seul royaume"],"L'Égypte forme un seul royaume dirigé par le pharaon (et non des cités-États comme la Mésopotamie).","Un seul royaume, un seul pharaon.",{aff:"un royaume"}),
+  S("e-pharaon","Quel est le titre du roi d'Égypte ?",["pharaon","le pharaon"],"Le roi d'Égypte s'appelle le pharaon.","Pharaon = roi d'Égypte.",{aff:"le pharaon"}),
+  S("e-pyramide","À sa mort, dans quel tombeau gigantesque place-t-on le corps du pharaon ?",["pyramide","une pyramide","dans une pyramide"],"Le pharaon est enterré dans une pyramide (Gizeh). La ziggourat, elle, est un temple de Mésopotamie.","La pyramide est le tombeau du pharaon.",{aff:"une pyramide"}),
+  S("e-poly","Les Mésopotamiens croient en plusieurs dieux. Comment appelle-t-on cette croyance ?",["polythéisme","le polythéisme","polythéistes"],"Croire en plusieurs dieux, c'est le polythéisme.","Poly = plusieurs.",{aff:"le polythéisme"}),
+  S("e-construit","Pour le dieu principal de la cité, que construisent les Mésopotamiens ? (cite un bâtiment)",["temple","un temple","ziggourat","une ziggourat","ziggurat"],"Pour le dieu principal, on construit un temple et une ziggourat.","Temple et ziggourat sont des bâtiments religieux.",{aff:"un temple et une ziggourat"})
+];
+var ETAT_Q = [
+  Q("e-relations","Comment les cités-États de Mésopotamie vivent-elles entre elles ?","Elles échangent leurs productions, et elles se font aussi la guerre.",["Elles vivent toujours en paix, sans jamais se rencontrer.","Elles obéissent toutes au même roi."],"Chaque cité-État est indépendante, avec son roi. Elles échangent leurs productions mais se font aussi la guerre.","Échanges et guerres : les deux existent."),
+  Q("e-fleuves","Pourquoi les hommes s'installent-ils le long des grands fleuves ?","Les fleuves apportent l'eau pour l'agriculture et servent de routes pour les échanges.",["Les fleuves protègent des ennemis comme un rempart.","Les fleuves servent seulement à transporter les pierres des pyramides."],"Les fleuves donnent l'eau nécessaire à l'agriculture et sont des voies de communication pour échanger.","Eau pour cultiver + routes pour échanger."),
+  Q("e-roiMeso","En Mésopotamie, comment le roi est-il considéré ?","Comme le représentant sur Terre du dieu principal de la cité.",["Comme un dieu vivant.","Comme un simple prêtre au service du temple."],"En Mésopotamie, le roi représente le dieu sur Terre. C'est le pharaon égyptien qui est considéré comme un dieu vivant.","Le roi mésopotamien représente le dieu, il n'est pas un dieu."),
+  Q("e-pharaon2","En Égypte, comment le pharaon est-il considéré ?","Comme un dieu vivant qui détient tout le pouvoir.",["Comme le roi d'une cité parmi d'autres cités indépendantes.","Comme un scribe choisi par les prêtres."],"Le pharaon détient tout le pouvoir et il est considéré comme un dieu vivant.","Pharaon = tout le pouvoir, dieu vivant."),
+  Q("e-origine","Qu'est-ce qui a permis la naissance des premiers États ?","La naissance de l'agriculture et le regroupement de la population dans les premières villes.",["La construction des pyramides de Gizeh.","L'arrivée des Grecs en Mésopotamie."],"Avec l'agriculture, la population augmente et se regroupe dans des villes : c'est le début des premiers États.","Agriculture + villes → premiers États."),
+  Q("e-ecriture-pays","Quel tableau est juste ?","Mésopotamie : cités-États et cunéiforme. Égypte : royaume et hiéroglyphes.",["Mésopotamie : royaume et hiéroglyphes. Égypte : cités-États et cunéiforme.","Mésopotamie : cités-États et hiéroglyphes. Égypte : royaume et cunéiforme."],"Mésopotamie = cités-États + écriture cunéiforme. Égypte = un royaume + hiéroglyphes.","Chaque pays avec son organisation et son écriture.")
+];
+
+/* ---------- 3. La cité d'Ur ---------- */
+var CAT=["Bâtiment politique","Bâtiment religieux","Construction militaire"];
+function classe(cle,nom,i,expl){ return Q(cle,"Sur le plan d'Ur, dans quelle colonne du tableau ranges-tu :",CAT[i],CAT.filter(function(c,k){ return k!==i; }),expl,expl,{grand:nom}); }
+var UR_CLASSE = [
+  classe("c-palais","le palais du roi",0,"Le palais du roi est un bâtiment politique : c'est de là que le roi dirige la cité."),
+  classe("c-temple","le temple du dieu Nanna",1,"Un temple est un bâtiment religieux : il est dédié à un dieu."),
+  classe("c-zig","la ziggourat",1,"La ziggourat est un temple : c'est un bâtiment religieux."),
+  classe("c-pretresse","la résidence de la grande prêtresse de Nanna",1,"La grande prêtresse sert le dieu Nanna : sa résidence est un bâtiment religieux."),
+  classe("c-enki","le temple du dieu Enki",1,"Un temple est un bâtiment religieux, quel que soit le dieu."),
+  classe("c-cour","la cour de Nanna",1,"La cour de Nanna fait partie du lieu de culte du dieu : c'est religieux."),
+  classe("c-muraille","la muraille (le rempart)",2,"La muraille protège la ville : c'est une construction militaire."),
+  classe("c-tours","les tours de défense",2,"Les tours servent à défendre la ville : construction militaire.")
+];
+var UR_S = [
+  S("u-pouvoir","Selon les croyances, de qui le roi d'Ur tient-il son pouvoir ?",["des dieux","du dieu Nanna","Nanna","dieux","dieu","les dieux","le dieu Nanna"],"Selon les croyances, c'est le dieu Nanna qui donne le pouvoir au roi : il lui remet les insignes de la royauté (corde et bâton).","Le pouvoir du roi vient du dieu Nanna.",{aff:"du dieu Nanna (des dieux)"}),
+  S("u-nanna","Comment s'appelle le dieu principal de la cité d'Ur ?",["Nanna"],"Le dieu principal d'Ur est Nanna (deux n au milieu). On lui a construit la ziggourat.","Nanna, le dieu protecteur d'Ur.",{aff:"Nanna"}),
+  S("u-lois","À Ur, qui fait les lois ?",["le roi","roi","Shulgi","le roi Shulgi"],"C'est le roi qui fait les lois : par exemple le roi Shulgi (2094-2047 av. J.-C.).","Les lois sont promulguées par le roi.",{aff:"le roi (Shulgi)"}),
+  S("u-fleuve","Au bord de quel fleuve se trouve la cité d'Ur ?",["Euphrate","l'Euphrate"],"Ur est au bord de l'Euphrate, en Mésopotamie (comme Mari).","Ur est sur l'Euphrate.",{aff:"l'Euphrate"}),
+  S("u-region","Dans quelle région se trouve la cité d'Ur ?",["Mésopotamie","en Mésopotamie","sud de la Mésopotamie"],"Ur est une cité-État de Mésopotamie, près du golfe Persique.","Ur, cité-État de Mésopotamie.",{aff:"la Mésopotamie"}),
+  S("u-objets","Les objets en or d'Ur ont été trouvés dans les tombes royales. À qui appartenaient-ils ?",["roi","au roi","rois","aux rois","famille royale","la famille royale","rois et reines","reine"],"Trouvés dans les tombes royales, ces objets appartenaient aux rois et à leur famille.","Tombes royales → objets des rois.",{aff:"aux rois (la famille royale)"}),
+  S("u-matiere","Cite un matériau précieux utilisé pour les objets des tombes royales d'Ur.",["or","l'or","en or","lapis-lazuli","lapis lazuli","pierres précieuses","argent"],"Les objets sont en or, en lapis-lazuli (pierre bleue) et en pierres précieuses.","Des matériaux précieux.",{aff:"l'or ou le lapis-lazuli"}),
+  S("u-zig","Quel grand bâtiment en forme de pyramide à étages est dédié au dieu Nanna à Ur ?",["ziggourat","la ziggourat","une ziggourat","ziggurat"],"C'est la ziggourat d'Ur, construite vers 2100 av. J.-C. pour Nanna.","La ziggourat de Nanna.",{aff:"la ziggourat"})
+];
+var UR_Q = [
+  Q("u-rempart","Pourquoi la ville d'Ur est-elle entourée d'un rempart ?","Pour protéger la ville et ses habitants (des attaques, et aussi des inondations).",["Pour empêcher les habitants de sortir de la ville.","Pour montrer où commence le temple du dieu Nanna."],"Le rempart protège la ville : contre les attaques des cités voisines, et (comme à Mari) contre les inondations.","Le rempart, c'est pour se protéger."),
+  Q("u-port","Pourquoi la ville d'Ur a-t-elle des ports sur l'Euphrate ?","Pour faire du commerce : échanger des produits avec d'autres cités grâce au fleuve.",["Pour se protéger des attaques des cités voisines.","Pour rendre hommage au dieu Nanna."],"Le fleuve est une voie de communication : les ports servent aux échanges (commerce).","Ports = commerce par le fleuve."),
+  Q("u-hommage","Comment rend-on hommage au dieu Nanna dans la cité d'Ur ?","En lui construisant un temple et une ziggourat, et en lui faisant des offrandes.",["En construisant une muraille autour de la ville.","En enterrant le roi dans une pyramide."],"Pour Nanna : temple, ziggourat, cour de Nanna, grande prêtresse et offrandes (le roi lui offre de l'eau). La pyramide, c'est l'Égypte.","Temple, ziggourat, offrandes."),
+  Q("u-stele","Sur la stèle d'Ur-Nammu, que fait le roi et que lui remet le dieu Nanna ?","Le roi fait une offrande d'eau ; Nanna lui remet les insignes de la royauté (une corde et un bâton).",["Le roi écrit ses lois ; Nanna lui remet une tablette d'argile.","Le roi part en guerre ; Nanna lui remet une épée et un casque."],"La stèle montre que le pouvoir du roi vient du dieu : Nanna lui donne la corde et le bâton.","Le pouvoir vient du dieu."),
+  Q("u-loisavis","Que montrent les lois du roi Shulgi ?","Les crimes sont punis par des peines fixées à l'avance, parfois très sévères (la mort).",["Chacun peut se faire justice lui-même, sans règle.","Il n'y a aucune punition : on demande seulement pardon."],"Les lois sont strictes (mort pour un meurtre) mais elles donnent un cadre : la même règle pour tous, écrite à l'avance.","Des lois sévères, mais un cadre pour tous."),
+  Q("u-richesse","Que nous apprennent l'or et le lapis-lazuli des tombes royales sur la cité d'Ur ?","La cité est riche, ses artisans sont habiles, et elle fait du commerce pour obtenir ces matériaux.",["Tous les habitants d'Ur étaient riches.","Ces objets servaient d'outils aux paysans."],"Ces objets de luxe montrent la richesse des rois, le savoir-faire des artisans et le commerce (la Mésopotamie n'a ni or ni pierres précieuses).","Richesse, artisans habiles, commerce."),
+  Q("u-mari","Quels sont les points communs entre la cité de Mari et la cité d'Ur ?","Toutes deux sont au bord de l'Euphrate, entourées d'un rempart, avec un palais du roi.",["Toutes deux sont dirigées par un pharaon.","Toutes deux sont construites au bord du Nil."],"Mari et Ur sont des cités-États de Mésopotamie : fleuve (Euphrate) et canaux, rempart, palais du roi.","Euphrate, rempart, roi.")
+];
+
+/* ---------- 4. Les premières écritures ---------- */
+var ECR_S = [
+  S("w-scribes","Qui sont presque les seuls à savoir lire et écrire ?",["scribes","les scribes","scribe"],"Seuls les scribes savent lire et écrire : c'est leur métier.","Le scribe a pour métier d'écrire.",{aff:"les scribes"}),
+  S("w-support","Cite un support d'écriture utilisé dans l'Orient ancien.",["tablette","tablettes","tablette d'argile","argile","papyrus","pierre","stèle","mur","murs","murs des monuments"],"Les supports : tablettes d'argile, papyrus, pierre (stèles), murs des monuments.","C'est bien un support.",{aff:"tablette d'argile, papyrus ou pierre"}),
+  S("w-picto","La première écriture est faite de petits dessins. Comment s'appellent-ils ?",["pictogrammes","les pictogrammes","pictogramme"],"La première écriture (Mésopotamie, 3300 av. J.-C.) est faite de pictogrammes.","Pictogrammes : les premiers signes.",{aff:"les pictogrammes"}),
+  S("w-cunei","Les pictogrammes sont remplacés par des signes en forme de coins. Comment s'appelle cette écriture ?",["cunéiforme","écriture cunéiforme","l'écriture cunéiforme","cunéiformes","signes cunéiformes"],"Les signes en forme de coins (de clous) forment l'écriture cunéiforme.","Cunéiforme = en forme de coins.",{aff:"l'écriture cunéiforme"}),
+  S("w-hiero","Comment s'appelle l'écriture des Égyptiens ?",["hiéroglyphes","les hiéroglyphes","hiéroglyphe","hiératique"],"Les Égyptiens écrivent en hiéroglyphes (et en hiératique, leur forme simplifiée).","Les hiéroglyphes d'Égypte.",{aff:"les hiéroglyphes"}),
+  S("w-argile","Sur quel matériau les scribes de Mésopotamie écrivent-ils le cunéiforme ?",["argile","l'argile","tablette d'argile","tablettes d'argile","tablette en argile"],"Le cunéiforme est tracé sur des tablettes d'argile (terre molle qui durcit).","Des tablettes d'argile.",{aff:"l'argile (tablettes d'argile)"}),
+  S("w-papyrus","Sur quel support les scribes égyptiens écrivent-ils le hiératique ?",["papyrus","du papyrus","feuilles de papyrus","feuille de papyrus"],"Le hiératique est tracé à l'encre sur des feuilles de papyrus, une plante des bords du Nil.","Le papyrus, plante du Nil.",{aff:"le papyrus"}),
+  S("w-roseau","Avec quel outil les scribes de Mésopotamie tracent-ils les signes dans l'argile ?",["roseau","un roseau","roseau taillé","roseaux","calame"],"Ils utilisent un roseau taillé (un calame) : c'est lui qui donne la forme de coin.","Le roseau taillé fait les coins.",{aff:"un roseau taillé"}),
+  S("w-hieratique","Comment s'appelle l'écriture simplifiée des hiéroglyphes ?",["hiératique","le hiératique"],"Le hiératique est l'écriture simplifiée des hiéroglyphes, pour écrire vite sur papyrus.","Hiératique = hiéroglyphes simplifiés.",{aff:"le hiératique"}),
+  S("w-thot","Selon les Égyptiens, quel dieu a donné l'écriture aux hommes ?",["Thot","le dieu Thot"],"Selon les Égyptiens, c'est Thot, le scribe des dieux, qui a donné l'écriture aux hommes.","Thot, le scribe des dieux.",{aff:"Thot"})
+];
+var ECR_Q = [
+  Q("w-pourquoi","Pourquoi le besoin d'écrire apparaît-il ?","Pour compter les récoltes, les troupeaux et les hommes, et lister les terres.",["Pour écrire des romans et des poèmes à lire le soir.","Pour que tous les enfants apprennent à lire à l'école."],"La population augmente : il faut compter et faire des inventaires. Plus tard, l'écriture sert aussi aux lois et aux histoires des dieux.","Compter et faire des inventaires."),
+  Q("w-diff","Qu'est-ce qui distingue les signes cunéiformes des pictogrammes ?","Les pictogrammes sont des dessins d'objets ; les signes cunéiformes sont des traits en forme de coins, plus faciles à écrire.",["Les signes cunéiformes sont plus anciens que les pictogrammes.","Les pictogrammes s'écrivent sur papyrus, les cunéiformes sur la pierre."],"D'abord les pictogrammes (dessins, 3300), puis les cunéiformes (coins, à partir de 3000), plus simples et plus rapides. Les deux sur argile.","Dessins → coins, plus faciles à tracer."),
+  Q("w-anes","À quoi a servi la tablette cunéiforme de 2360 av. J.-C. (manuel p. 60) ?","À faire l'inventaire d'un troupeau d'ânes.",["À écrire une prière au dieu Nanna.","À fixer les lois du roi."],"C'est un inventaire : on compte les ânes. Compter, c'est la première raison d'écrire.","Un inventaire : compter."),
+  Q("w-stele","À quoi servaient les hiéroglyphes de la stèle de la princesse Nefertiabet ?","À nommer les aliments offerts à la princesse morte, pour qu'elle s'en nourrisse dans l'au-delà.",["À compter les troupeaux du pharaon.","À raconter la construction des pyramides."],"Sur cette stèle en pierre, les hiéroglyphes nomment des offrandes pour la vie dans l'au-delà : un usage religieux.","Hiéroglyphes = souvent religieux (tombeaux, temples)."),
+  Q("w-simplif","Pourquoi les scribes égyptiens ont-ils simplifié les hiéroglyphes ?","Pour écrire plus vite dans la vie courante : lettres, inventaires, testaments.",["Parce que les hiéroglyphes étaient interdits par le pharaon.","Pour que les Mésopotamiens puissent les lire."],"Les hiéroglyphes sont longs à dessiner : le hiératique, plus simple, permet d'écrire vite à l'encre sur papyrus.","Simplifier pour écrire plus vite."),
+  Q("w-legende","Selon la légende d'Enmerkar, pourquoi le roi d'Uruk a-t-il écrit sur une tablette d'argile ?","Parce que son messager, fatigué, ne pouvait plus retenir un message trop long.",["Pour fixer les lois de sa cité.","Pour compter ses troupeaux."],"La légende explique que l'écriture permet de transmettre un message à une personne lointaine sans l'oublier.","L'écriture garde le message à distance."),
+  Q("w-signe","Un hiéroglyphe peut représenter :","un mot ou un son.",["seulement un objet dessiné.","seulement une lettre, comme dans notre alphabet."],"Un hiéroglyphe peut être un signe-mot (le soleil) ou un signe-son (le son « rê »). Il y en a environ 5 000.","Signe-mot ou signe-son."),
+  Q("w-ou","Où trouve-t-on surtout les hiéroglyphes ?","Sur les murs des tombeaux et des temples, et sur des stèles en pierre.",["Sur des tablettes d'argile.","Dans les livres des écoles."],"Les hiéroglyphes ornent les tombeaux et les temples. L'argile, c'est le support du cunéiforme mésopotamien.","Tombeaux et temples."),
+  Q("w-grace","Grâce à l'écriture, aujourd'hui nous pouvons :","mieux connaître les anciennes civilisations et reconstituer leur histoire.",["savoir exactement ce que pensait chaque habitant d'Ur.","parler la langue des Égyptiens comme eux."],"Les textes anciens sont des sources : ils nous aident à reconstituer l'histoire.","L'écriture nous laisse des traces.")
+];
+
+/* ---------- 5. Repères : dates et lieux ---------- */
+var REP_S = [
+  S("d-3300","Vers quelle date apparaît la première écriture ? (… av. J.-C.)",["3300"],"La première écriture (pictogrammes) apparaît vers 3300 av. J.-C. en Mésopotamie. (2360, c'est seulement la date d'une tablette du manuel.)","3300 av. J.-C. : la plus ancienne écriture.",{mode:"date",chiffres:true,aff:"vers 3300 av. J.-C."}),
+  S("d-3000","À partir de quelle date les signes cunéiformes remplacent-ils les pictogrammes ? (… av. J.-C.)",["3000"],"Pictogrammes vers 3300, puis signes cunéiformes à partir de 3000 av. J.-C.","3000 av. J.-C. : les cunéiformes.",{mode:"date",chiffres:true,aff:"3000 av. J.-C."}),
+  S("d-3200","Vers quelle date les Égyptiens créent-ils les hiéroglyphes ? (… av. J.-C.)",["3200"],"Les hiéroglyphes apparaissent vers 3200 av. J.-C., à peu près à la même époque que l'écriture en Mésopotamie.","3200 av. J.-C. : les hiéroglyphes.",{mode:"date",chiffres:true,aff:"vers 3200 av. J.-C."}),
+  S("d-3100","Vers quelle date l'Égypte est-elle unifiée en un royaume ? (… av. J.-C.)",["3100"],"L'Égypte est unifiée vers 3100 av. J.-C. (le roi Narmer).","3100 av. J.-C. : un seul royaume.",{mode:"date",chiffres:true,aff:"vers 3100 av. J.-C."}),
+  S("d-1500","Vers quelle date les Phéniciens créent-ils l'alphabet ? (… av. J.-C.)",["1500"],"L'alphabet est créé par les Phéniciens vers 1500 av. J.-C., bien après les premières écritures.","1500 av. J.-C. : l'alphabet.",{mode:"date",chiffres:true,aff:"vers 1500 av. J.-C."}),
+  S("d-ou","Dans quelle région apparaît la première écriture ?",["Mésopotamie","en Mésopotamie","sud de la Mésopotamie"],"La première écriture apparaît dans le sud de la Mésopotamie, vers 3300 av. J.-C.","La Mésopotamie, la première.",{aff:"la Mésopotamie"}),
+  S("d-phen","Quel peuple crée l'alphabet ?",["Phéniciens","les Phéniciens"],"Ce sont les Phéniciens, sur les bords de la Méditerranée, vers 1500 av. J.-C.","Les Phéniciens, peuple de marins.",{aff:"les Phéniciens"}),
+  S("d-grecs","À quel peuple les Phéniciens transmettent-ils l'alphabet ?",["Grecs","les Grecs","aux Grecs"],"Les Phéniciens transmettent l'alphabet aux Grecs.","Phéniciens → Grecs.",{aff:"aux Grecs"}),
+  S("d-ecart","Combien d'années séparent la première écriture (3300 av. J.-C.) de l'alphabet (1500 av. J.-C.) ?",["1800"],"Avant J.-C., on soustrait : 3300 − 1500 = 1 800 ans.","3300 − 1500 = 1 800 ans.",{mode:"date",chiffres:true,aff:"1 800 ans"}),
+  S("d-mill","Pendant quel millénaire apparaissent les premières écritures ? (3300 av. J.-C.)",["IVe","IVe millénaire","4e","4e millénaire","4ème","4ème millénaire","quatrième","quatrième millénaire","IV","4"],"3300 av. J.-C. est entre 4000 et 3001 av. J.-C. : c'est le IVe millénaire (à la fin).","Entre 4000 et 3001 av. J.-C. : le IVe millénaire.",{aff:"le IVe millénaire av. J.-C.",strict:true})
+];
+var REP_Q = [
+  Q("d-epoque","Quand apparaissent les hiéroglyphes par rapport à l'écriture de Mésopotamie ?","À peu près à la même époque (vers 3200 av. J.-C.).",["Bien après, en même temps que l'alphabet (vers 1500 av. J.-C.).","Avant la naissance de l'agriculture."],"Mésopotamie vers 3300, Égypte vers 3200 : presque en même temps. Ce sont les deux plus anciennes écritures du monde.","Presque en même temps."),
+  Q("d-ordre","Quel est le bon ordre chronologique ?","Naissance de l'agriculture → premiers États → premières écritures et civilisations.",["Premières écritures → naissance de l'agriculture → premiers États.","Premiers États → naissance de l'agriculture → premières écritures."],"L'agriculture et les villes permettent les premiers États ; puis viennent les écritures, les croyances, les monuments.","Agriculture, États, puis civilisations."),
+  Q("d-ancien","Lequel de ces événements est le plus ancien ?","Les premières écritures (vers 3300 av. J.-C.)",["Les pyramides de Gizeh (vers 2600 av. J.-C.)","La ziggourat d'Ur (vers 2100 av. J.-C.)"],"Avant J.-C., plus le nombre est grand, plus c'est ancien : 3300 > 2600 > 2100.","Plus le nombre est grand, plus c'est ancien."),
+  Q("d-recent","Lequel de ces événements est le plus récent ?","La ziggourat d'Ur (vers 2100 av. J.-C.)",["Les pyramides de Gizeh (vers 2600 av. J.-C.)","L'unification de l'Égypte (vers 3100 av. J.-C.)"],"Avant J.-C., plus le nombre est petit, plus c'est proche de nous : 2100 est le plus récent.","Le plus petit nombre av. J.-C. est le plus récent."),
+  Q("d-phenou","Où vivent les Phéniciens ?","Sur les bords de la mer Méditerranée.",["En Mésopotamie, entre le Tigre et l'Euphrate.","En Égypte, au bord du Nil."],"Les Phéniciens vivent sur les bords de la Méditerranée ; ils sont marins et commerçants.","La Méditerranée."),
+  Q("d-zigmill","La ziggourat d'Ur est construite vers 2100 av. J.-C. Dans quel millénaire ?","Le IIIe millénaire av. J.-C.",["Le IIe millénaire av. J.-C.","Le IVe millénaire av. J.-C."],"Le IIIe millénaire av. J.-C. va de 3000 à 2001 av. J.-C. : 2100 en fait partie.","Entre 3000 et 2001 : IIIe millénaire.")
+];
+
+var NOTIONS = [
+  { nom:"Les mots du chapitre", types:[typeDe(VOC_DEF), typeDe(VOC_TROU), typeDe(VOC_QCM)] },
+  { nom:"Les premiers États", types:[typeDe(ETAT_S), typeDe(ETAT_Q)] },
+  { nom:"La cité d'Ur", types:[typeDe(UR_CLASSE), typeDe(UR_S), typeDe(UR_Q)] },
+  { nom:"Les premières écritures", types:[typeDe(ECR_S), typeDe(ECR_Q)] },
+  { nom:"Dates et repères", types:[typeDe(REP_S), typeDe(REP_Q)] }
+];
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function texte(h){ var d=document.createElement("div"); d.innerHTML=h.replace(/<br\s*\/?>/g," "); return d.textContent; }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "histoire-premiers-etats-ecritures.html";
+
+/* Correction tolérante sur la forme : majuscules, accents, articles (le, la, des…), pluriel,
+   traits d'union ; une petite faute de frappe dans un mot long est acceptée avec un rappel d'orthographe.
+   Pour les dates, seul le nombre compte (« 3 300 av. J.-C. » = « 3300 »). */
+var VIDES=["de","d","du","des","le","la","les","l","un","une","en","au","aux","a","dans","sur","par","et","avec","pour","c","est","il","elle","ils","elles","ce","sont"];
+function sansAccents(s){ return s.normalize ? s.normalize("NFD").replace(/[̀-ͯ]/g,"") : s; }
+function norm(s,mode){
+  s=sansAccents(String(s).toLowerCase()).replace(/[’'`]/g," ").trim();
+  if(mode==="date") return s.replace(/\D/g,"");
+  return s.replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(function(w){ return w && VIDES.indexOf(w)<0; })
+          .map(function(w){ return w.length>3 ? w.replace(/[sx]$/,"") : w; }).join(" ");
+}
+function lev(a,b){
+  var m=a.length,n=b.length,d=[],i,j; for(i=0;i<=m;i++){ d[i]=[i]; } for(j=0;j<=n;j++) d[0][j]=j;
+  for(i=1;i<=m;i++) for(j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+/* 2 = juste, 1 = juste avec une petite faute d'orthographe, 0 = faux */
+function verdict(saisie,q){
+  if(q.type==="qcm") return saisie===q.r[0] ? 2 : 0;
+  var n=norm(saisie,q.mode), best=0; if(!n) return 0;
+  q.r.forEach(function(r){
+    if(best===2) return;
+    var m=norm(r,q.mode);
+    if(n===m){ best=2; return; }
+    if(q.mode==="date") return;
+    /* réponse rédigée en phrase courte qui contient la bonne réponse : acceptée */
+    if(n.split(" ").length<=m.split(" ").length+4 && (" "+n+" ").indexOf(" "+m+" ")>=0){ best=2; return; }
+    var tol = q.strict ? 0 : m.length>=9 ? 2 : m.length>=5 ? 1 : 0;
+    if(tol && lev(n,m)<=tol) best=1;
+  });
+  return best;
+}
+function affiche(q){ return q.aff || q.r[0]; }
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<60 && (deja[q.cle] || (essais<35 && hist.indexOf(q.cle)>=0)));
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){
+  var h=vues().concat(qs.map(function(q){ return q.cle; }));
+  ecrire("vues:"+FICHIER, h.slice(-60));
+}
+function serieEntrainement(notion){
+  var deja={}, qs=[], d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function serieControle(){
+  var deja={}, qs=[];
+  NOTIONS.forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function page(h,retour){ $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan"><p class="t">Prêt à commencer</p><p>Relis la leçon, entraîne-toi sur chaque partie, puis fais le contrôle quand tu te sens prêt.</p></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret"><p class="t">✓ Tu es prêt pour l\'évaluation</p><p>Tu as eu '+dc.bon+' / '+dc.total+' au dernier contrôle.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div>';
+  return '<div class="bilan travail"><p class="t">Pas encore tout à fait prêt</p><p>Dernier contrôle : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<button class="btn" id="b-lecon">Relire la leçon<small>L\'essentiel à savoir</small></button>';
+  h+='<h2>S\'entraîner</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · dernier essai : '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=NOTIONS.length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Se tester</h2><button class="btn" id="b-ctrl">Faire le contrôle<small>'+nbC+' questions sur tout le chapitre, correction à la fin'+(rec?' · meilleur score : '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><button class="btn plein centre" id="b-go">Retour au sommaire</button>', true);
+  $("b-go").onclick=accueil;
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">On y revient, avec une autre question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Contrôle":q.notion)+'</p><p class="enonce">'+q.q+
+     (q.grand?'<span class="grand">'+echappe(q.grand)+'</span>':'')+'</p></div>';
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix">'+q.ordre.map(function(o,k){ return '<button class="btn" data-k="'+k+'">'+echappe(o)+'</button>'; }).join("")+'</div>';
+  } else {
+    h+='<div class="saisie" id="f"><input id="in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" '+
+       (q.chiffres?'inputmode="numeric" ':'')+'aria-label="Ta réponse"><button class="btn plein" type="button" id="valider">Valider</button></div>';
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else {
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+function repondre(donne, bouton){
+  var q=serie.qs[serie.i], v=verdict(donne,q), ok=v>0;
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){ serie.erreurs.push({q:texte(q.q)+(q.grand?" → "+q.grand:""), donne:donne, bonne:affiche(q), notion:q.notion, expl:q.expl}); serie.rattrapage.push(1); }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+
+  /* Contrôle : pas de correction pendant, comme en évaluation. */
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status"><p class="v">'+(ok?unDe(["Juste !","Bravo !","Exact !"]):"Pas tout à fait")+'</p>';
+  if(ok){ h+='<p>'+q.bravo+'</p>'; if(v===1) h+='<p>Attention à l\'orthographe : on écrit <b>'+echappe(affiche(q))+'</b>.</p>'; }
+  else h+=(q.type==="qcm"?'':'<p>Tu as répondu « '+echappe(donne)+' ». ')+(q.type==="qcm"?'<p>':'')+'La réponse : <b>'+echappe(affiche(q))+'</b></p><p>'+q.expl+'</p>';
+  h+='</div>';
+  if(!ok && q.recopie){
+    h+='<p><b>Recopie le mot :</b></p><div class="saisie" id="f2"><input id="in2" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" aria-label="Recopie">'+
+       '<button class="btn plein" type="button" id="ok2">OK</button></div><p id="msg2" class="doux"></p>';
+  }
+  h+='<button class="btn plein centre'+(!ok&&q.recopie?' cache':'')+'" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  if($("f2")){
+    $("in2").focus({preventScroll:true});
+    var verifier=function(){
+      if($("in2").disabled) return;
+      if(verdict($("in2").value,q)===2){ $("in2").disabled=true; $("ok2").disabled=true; $("msg2").textContent="C'est bien écrit."; $("suite").classList.remove("cache"); $("suite").focus({preventScroll:true}); }
+      else $("msg2").textContent="Pas encore identique : regarde bien chaque lettre et les accents.";
+    };
+    $("ok2").onclick=verifier;
+    $("in2").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); verifier(); } };
+  } else $("suite").focus({preventScroll:true});
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Résultat du contrôle</h2><p class="score">'+s+' / '+n+'</p>'+bilan();
+    h+='<h3>Partie par partie</h3><ul class="revoir">'+NOTIONS.map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+'<span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><p class="score">'+s+' / '+n+'</p>';
+    h+='<p>'+(s===n?"Sans faute ! Tu maîtrises cette partie.":r>=SEUIL_PRET?"Très bien. Relis les corrections ci-dessous.":
+         "Cette partie n'est pas encore sûre. Relis la leçon et recommence : les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+e.expl+'</span>':'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Recommencer</button><button class="btn centre" id="retour-acc">Sommaire</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>
