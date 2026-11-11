@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le groupe nominal et ses expansions</title>
+<meta name="theme-color" content="#7c3aed">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer d'une matière à l'autre ====== */
+:root{ --matiere:#7c3aed; --matiere-encre:#ffffff; --matiere-fort:#6d28d9; }
+
+/* ====== Style commun « Mes révisions » (identique dans tous les exercices) ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee; --marge:#f1a7a7;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18);display:flex;align-items:center;gap:12px}
+.etiquette div{flex:1}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 28px/1.15 var(--titre);margin:0}
+.illu{width:78px;height:60px;flex:none}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px 28px;position:relative}
+main::before{content:"";position:absolute;top:0;bottom:0;left:14px;width:2px;background:var(--marge);opacity:.7}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere);color:var(--matiere-encre);border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte);display:flex;gap:12px;align-items:center}
+.bilan div{flex:1}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.grand{display:block;font:600 25px/1.3 var(--titre);margin-top:8px}
+.choix .btn{font-weight:400}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:10px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid;display:flex;gap:12px;align-items:flex-start}
+.retour div{flex:1}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.fin-tete{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon .ex{background:#f5f3ff;border-radius:8px;padding:8px 10px;margin:6px 0 10px}
+.lecon .rappel{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+/* Mascotte « Plume » : seulement dans le bilan, les retours et l'écran de fin */
+.mascotte{width:58px;height:58px;flex:none}
+.retour .mascotte,.fin-tete .mascotte{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Sommaire</button></div>
+  <div class="etiquette">
+    <div><p>Français</p><h1>Le groupe nominal et ses expansions</h1></div>
+    <!-- Illustration liée à la leçon : le navire d'Ulysse (l'Odyssée est citée dans la leçon) -->
+    <svg class="illu" viewBox="0 0 80 60" aria-hidden="true">
+      <path d="M40 6 V40" stroke="#7c4a1e" stroke-width="2.5"/>
+      <path d="M41 9 Q60 22 41 37 Z" fill="#fff" stroke="var(--matiere-fort)" stroke-width="2"/>
+      <path d="M41 17 Q52 23 41 30" fill="none" stroke="var(--matiere)" stroke-width="3"/>
+      <path d="M39 12 Q24 25 39 36 Z" fill="#fff" stroke="var(--matiere-fort)" stroke-width="2"/>
+      <path d="M14 40 H66 L58 50 H22 Z" fill="#a0612a"/>
+      <circle cx="30" cy="45" r="1.6" fill="#fde68a"/><circle cx="40" cy="45" r="1.6" fill="#fde68a"/><circle cx="50" cy="45" r="1.6" fill="#fde68a"/>
+      <path d="M2 53 Q10 48 18 53 T34 53 T50 53 T66 53 T82 53" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+      <path d="M8 58 Q16 54 24 58 T40 58 T56 58 T72 58" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+</header>
+<main id="page"></main>
+
+<script>
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;
+var Q_PAR_NOTION_CONTROLE = 3;
+var SEUIL_PRET = 0.8;
+
+var LECON =
+  '<p class="rappel">Rappels (vus avant la séance 3)</p>'+
+  '<h3>Le groupe nominal</h3>'+
+  '<p>Un <b>groupe nominal</b> (GN) est un groupe de mots construit autour d\'un <b>nom</b> : le <b>nom noyau</b>. Il commence le plus souvent par un <b>déterminant</b>.</p>'+
+  '<div class="ex">une <b>épée</b> &nbsp;·&nbsp; une grande <b>épée</b> en fer &nbsp;→ noyau : <b>épée</b></div>'+
+  '<h3>La préposition</h3>'+
+  '<p>Une <b>préposition</b> est un petit mot <b>invariable</b> qui relie un mot à un autre : <b>à, de, en, pour, sur, sous, avec, sans, dans, contre, vers, chez, entre, par</b>…</p>'+
+  '<p>Attention : <b>du, des, au, aux</b> contiennent une préposition collée à un déterminant (du = de + le, au = à + le).</p>'+
+  '<p class="rappel" style="margin-top:14px">Séance 3 — Les expansions du nom</p>'+
+  '<p>Une <b>expansion du nom</b> est un mot ou un groupe de mots qui fait partie du groupe nominal et qui <b>complète le nom</b>. Il peut s\'agir :</p>'+
+  '<p>• d\'un <b>adjectif épithète</b><br>• d\'un <b>complément du nom</b></p>'+
+  '<h3>L\'adjectif épithète</h3>'+
+  '<p>C\'est un adjectif qualificatif qui apporte des précisions sur le nom. Il <b>s\'accorde</b> en genre et en nombre avec lui. Il est placé <b>avant ou après</b> le nom et <b>on peut le supprimer</b>.</p>'+
+  '<div class="ex">de <b>gentils</b> élèves, une <b>grande</b> salle, un cours <b>passionnant</b></div>'+
+  '<h3>Le complément du nom</h3>'+
+  '<p>C\'est un groupe de mots placé <b>après le nom</b> qu\'il complète. Il est <b>introduit par une préposition</b> (de, à, pour, sur, avec…) suivie d\'un nom, d\'un groupe nominal, d\'un infinitif, d\'un adverbe ou d\'un pronom. Il peut exprimer l\'appartenance, la destination, la matière…</p>'+
+  '<div class="ex">le crayon <b>de Victor</b>, le train <b>pour Paris</b>, la chaise <b>en bois</b></div>'+
+  '<p class="doux">À noter : dans l\'Odyssée, Homère caractérise ses héros par des expansions du nom : « Ulysse <b>aux mille ruses</b> », « Achille <b>aux pieds légers</b> ». On les appelle des épithètes homériques.</p>';
+
+/* --- Banque de groupes nominaux : [GN, nom noyau, adjectifs épithètes du noyau, complément du nom, préposition (null si du/au/des/aux/d')] --- */
+var GN = [
+  ["une épée en fer","épée",[],"en fer","en"],
+  ["un livre de contes","livre",[],"de contes","de"],
+  ["une marâtre sans cœur","marâtre",[],"sans cœur","sans"],
+  ["un village de montagne","village",[],"de montagne","de"],
+  ["une couronne en or","couronne",[],"en or","en"],
+  ["une armure pour les combats","armure",[],"pour les combats","pour"],
+  ["une morale à méditer","morale",[],"à méditer","à"],
+  ["la volonté de chacun","volonté",[],"de chacun","de"],
+  ["le crayon de Victor","crayon",[],"de Victor","de"],
+  ["le train pour Paris","train",[],"pour Paris","pour"],
+  ["la chaise en bois","chaise",[],"en bois","en"],
+  ["Ulysse aux mille ruses","Ulysse",[],"aux mille ruses",null],
+  ["Achille aux pieds légers","Achille",[],"aux pieds légers",null],
+  ["un hurlement strident","hurlement",["strident"],"",null],
+  ["une chaleur brûlante","chaleur",["brûlante"],"",null],
+  ["des vagues puissantes","vagues",["puissantes"],"",null],
+  ["les fruits exotiques","fruits",["exotiques"],"",null],
+  ["un papillon multicolore","papillon",["multicolore"],"",null],
+  ["un vieil homme squelettique","homme",["vieil","squelettique"],"",null],
+  ["une grotte accueillante","grotte",["accueillante"],"",null],
+  ["une petite maison de pierre","maison",["petite"],"de pierre","de"],
+  ["un long voyage en mer","voyage",["long"],"en mer","en"],
+  ["une épée tranchante en acier","épée",["tranchante"],"en acier","en"],
+  ["une tasse à café","tasse",[],"à café","à"],
+  ["une carte au trésor","carte",[],"au trésor",null],
+  ["le château du roi","château",[],"du roi",null],
+  ["un gâteau au chocolat","gâteau",[],"au chocolat",null],
+  ["une sorcière sans pitié","sorcière",[],"sans pitié","sans"],
+  ["un cheval blanc","cheval",["blanc"],"",null],
+  ["une forêt sombre et profonde","forêt",["sombre","profonde"],"",null],
+  ["la grande salle du palais","salle",["grande"],"du palais",null],
+  ["une île déserte","île",["déserte"],"",null],
+  ["une lettre pour sa mère","lettre",[],"pour sa mère","pour"],
+  ["un bateau à voile","bateau",[],"à voile","à"],
+  ["une boîte avec un couvercle","boîte",[],"avec un couvercle","avec"],
+  ["le récit de ses aventures","récit",[],"de ses aventures","de"],
+  ["une terrible tempête","tempête",["terrible"],"",null],
+  ["un ancien palais en ruine","palais",["ancien"],"en ruine","en"],
+  ["un jeune berger sans troupeau","berger",["jeune"],"sans troupeau","sans"],
+  ["une magnifique robe de soirée","robe",["magnifique"],"de soirée","de"],
+  ["un pont en pierre","pont",[],"en pierre","en"],
+  ["un fidèle chien de chasse","chien",["fidèle"],"de chasse","de"],
+  ["un bouclier de bronze","bouclier",[],"de bronze","de"],
+  ["une maison sur la colline","maison",[],"sur la colline","sur"],
+  ["un combat contre le Cyclope","combat",[],"contre le Cyclope","contre"],
+  ["un voyage vers Ithaque","voyage",[],"vers Ithaque","vers"],
+  ["une promenade sous la pluie","promenade",[],"sous la pluie","sous"],
+  ["un repas entre amis","repas",[],"entre amis","entre"]
+];
+
+/* --- Banque de phrases : gn = [GN, noyau] ; epi = [adjectif, nom qualifié] (tous les épithètes de la phrase) ; cdn = [CDN, nom complété, préposition ou null] --- */
+var PH = [
+  {ph:"Le vieux roi regarde la mer.", gn:[["Le vieux roi","roi"],["la mer","mer"]], epi:[["vieux","roi"]], cdn:[]},
+  {ph:"Ulysse construit un radeau solide.", gn:[["un radeau solide","radeau"]], epi:[["solide","radeau"]], cdn:[]},
+  {ph:"Pénélope tisse une grande toile de lin.", gn:[["une grande toile de lin","toile"]], epi:[["grande","toile"]], cdn:[["de lin","toile","de"]]},
+  {ph:"Les marins effrayés aperçoivent un monstre gigantesque.", gn:[["Les marins effrayés","marins"],["un monstre gigantesque","monstre"]], epi:[["effrayés","marins"],["gigantesque","monstre"]], cdn:[]},
+  {ph:"La princesse cache une clé en or sous son oreiller.", gn:[["La princesse","princesse"],["une clé en or","clé"],["son oreiller","oreiller"]], epi:[], cdn:[["en or","clé","en"]]},
+  {ph:"Le chevalier sans peur traverse la forêt sombre.", gn:[["Le chevalier sans peur","chevalier"],["la forêt sombre","forêt"]], epi:[["sombre","forêt"]], cdn:[["sans peur","chevalier","sans"]]},
+  {ph:"Une petite fille ouvre la porte du grenier.", gn:[["Une petite fille","fille"],["la porte du grenier","porte"]], epi:[["petite","fille"]], cdn:[["du grenier","porte",null]]},
+  {ph:"Le Cyclope affamé dévore les compagnons d'Ulysse.", gn:[["Le Cyclope affamé","Cyclope"],["les compagnons d'Ulysse","compagnons"]], epi:[["affamé","Cyclope"]], cdn:[["d'Ulysse","compagnons",null]]},
+  {ph:"Mon frère adore ses livres de contes.", gn:[["Mon frère","frère"],["ses livres de contes","livres"]], epi:[], cdn:[["de contes","livres","de"]]},
+  {ph:"La reine des fées possède une baguette en argent.", gn:[["La reine des fées","reine"],["une baguette en argent","baguette"]], epi:[], cdn:[["des fées","reine",null],["en argent","baguette","en"]]},
+  {ph:"Un énorme dragon garde le trésor du royaume.", gn:[["Un énorme dragon","dragon"],["le trésor du royaume","trésor"]], epi:[["énorme","dragon"]], cdn:[["du royaume","trésor",null]]},
+  {ph:"Les enfants affamés mangent une délicieuse tarte aux pommes.", gn:[["Les enfants affamés","enfants"],["une délicieuse tarte aux pommes","tarte"]], epi:[["affamés","enfants"],["délicieuse","tarte"]], cdn:[["aux pommes","tarte",null]]},
+  {ph:"Une tempête violente détruit le bateau des marins.", gn:[["Une tempête violente","tempête"],["le bateau des marins","bateau"]], epi:[["violente","tempête"]], cdn:[["des marins","bateau",null]]},
+  {ph:"Le prince charmant offre une bague en diamant.", gn:[["Le prince charmant","prince"],["une bague en diamant","bague"]], epi:[["charmant","prince"]], cdn:[["en diamant","bague","en"]]},
+  {ph:"Les sirènes chantent une mélodie envoûtante.", gn:[["Les sirènes","sirènes"],["une mélodie envoûtante","mélodie"]], epi:[["envoûtante","mélodie"]], cdn:[]},
+  {ph:"Ma grand-mère raconte une histoire sans fin.", gn:[["Ma grand-mère","grand-mère"],["une histoire sans fin","histoire"]], epi:[], cdn:[["sans fin","histoire","sans"]]},
+  {ph:"Le gardien du phare allume une grosse lampe.", gn:[["Le gardien du phare","gardien"],["une grosse lampe","lampe"]], epi:[["grosse","lampe"]], cdn:[["du phare","gardien",null]]},
+  {ph:"Une vieille sorcière habite une cabane en bois.", gn:[["Une vieille sorcière","sorcière"],["une cabane en bois","cabane"]], epi:[["vieille","sorcière"]], cdn:[["en bois","cabane","en"]]},
+  {ph:"Le jeune Télémaque attend son père courageux.", gn:[["Le jeune Télémaque","Télémaque"],["son père courageux","père"]], epi:[["jeune","Télémaque"],["courageux","père"]], cdn:[]},
+  {ph:"Les guerriers grecs fabriquent un immense cheval de bois.", gn:[["Les guerriers grecs","guerriers"],["un immense cheval de bois","cheval"]], epi:[["grecs","guerriers"],["immense","cheval"]], cdn:[["de bois","cheval","de"]]},
+  {ph:"Le forgeron fabrique une armure pour les combats.", gn:[["Le forgeron","forgeron"],["une armure pour les combats","armure"]], epi:[], cdn:[["pour les combats","armure","pour"]]},
+  {ph:"Le capitaine du navire observe une île déserte.", gn:[["Le capitaine du navire","capitaine"],["une île déserte","île"]], epi:[["déserte","île"]], cdn:[["du navire","capitaine",null]]},
+  {ph:"Mon oncle boit un café sans sucre.", gn:[["Mon oncle","oncle"],["un café sans sucre","café"]], epi:[], cdn:[["sans sucre","café","sans"]]},
+  {ph:"La fée bienveillante prépare une potion contre les mauvais sorts.", gn:[["La fée bienveillante","fée"],["une potion contre les mauvais sorts","potion"]], epi:[["bienveillante","fée"],["mauvais","sorts"]], cdn:[["contre les mauvais sorts","potion","contre"]]}
+];
+
+/* Leurres du QCM « groupe nominal » : groupe verbal, adjectifs seuls, groupe introduit par une préposition */
+var PAS_GN = {
+  "un groupe verbal (construit autour d'un verbe)":["marche lentement","dort profondément","chante très fort","arrive demain","navigue toute la nuit"],
+  "un adjectif (ou des adjectifs) sans nom":["très curieux","haute et impressionnante","vraiment solide","grand et fort","toujours joyeux"],
+  "un groupe qui commence par une préposition (comme un complément du nom, mais sans le nom)":["en marbre","sans scrupule","pour se protéger","à méditer","avec courage","de bronze"]
+};
+/* Leurres du QCM « préposition » */
+var PREPS = ["à","de","en","pour","sur","sous","avec","sans","dans","contre","vers","chez","entre","par"];
+var PAS_PREP = {
+  "un mot de liaison (conjonction de coordination)":["et","mais","ou","donc","car"],
+  "un adverbe":["très","bien","souvent","toujours","vite"],
+  "un déterminant":["le","une","ces","son","leur"]
+};
+
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function sansMot(gn,mot){ return gn.replace(" "+mot+" "," ").replace(mot+" ","").replace(" "+mot,""); }
+var NB_LETTRES=["zéro","un","deux","trois","quatre","cinq"];
+
+var NOTIONS = [
+  { nom:"Le groupe nominal", types:[
+    function(){
+      var s=unDe(PH), g=unDe(s.gn);
+      return {type:"saisie", q:"Recopie le groupe nominal en entier dont le nom noyau est « "+echappe(g[1])+" ».", grand:s.ph, r:[g[0]], cle:"gp"+g[0],
+        expl:"Le groupe nominal va du déterminant jusqu'à la dernière expansion du nom (adjectif ou complément du nom) : « "+echappe(g[0])+" ».",
+        bravo:"Déterminant, nom et expansions : rien n'est oublié."};
+    },
+    function(){
+      var g=unDe(GN);
+      var piege = g[3] ? " Attention : « "+g[3]+" » est un complément du nom : le nom qui est dedans n'est pas le noyau." : "";
+      return {type:"saisie", q:"Quel est le nom noyau de ce groupe nominal ?", grand:g[0], r:[g[1]], cle:"nn"+g[0],
+        expl:"Le nom noyau est le nom principal du groupe : les autres mots se rapportent à lui. Ici : « "+g[1]+" »."+piege,
+        bravo:"C'est le nom principal : les autres mots le complètent."};
+    },
+    function(){
+      var g=unDe(GN.filter(function(x){ return x[0]!==x[1] && /^(un|une|des|le|la|les|l')\s/.test(x[0]); }));
+      var cats=Object.keys(PAS_GN), opts=[g[0]], natures={};
+      cats.forEach(function(c){ var l=unDe(PAS_GN[c]); opts.push(l); natures[l]=c; });
+      var detail=opts.slice(1).map(function(o){ return "« "+o+" » est "+natures[o]; }).join(" ; ");
+      return {type:"qcm", q:"Lequel de ces groupes de mots est un groupe nominal ?", options:opts, r:[g[0]], cle:"qg"+g[0],
+        expl:"Un groupe nominal est construit autour d'un nom, le plus souvent précédé d'un déterminant : « "+g[0]+" ». Les autres : "+detail+".",
+        bravo:"Un déterminant et un nom : c'est bien un groupe nominal."};
+    }
+  ]},
+  { nom:"La préposition", types:[
+    function(){
+      var g=unDe(GN.filter(function(x){ return x[4]; }));
+      return {type:"saisie", q:"Quelle est la préposition qui introduit le complément du nom ?", grand:g[0], r:[g[4]], cle:"pg"+g[0],
+        expl:"Le complément du nom « "+g[3]+" » commence par la préposition « "+g[4]+" ». C'est le petit mot invariable qui le relie au nom « "+g[1]+" ».",
+        bravo:"La préposition est le premier mot du complément du nom."};
+    },
+    function(){
+      var l=[]; PH.forEach(function(s){ s.cdn.forEach(function(c){ if(c[2]) l.push([s,c]); }); });
+      var x=unDe(l), s=x[0], c=x[1];
+      return {type:"saisie", q:"Dans cette phrase, recopie la préposition qui introduit le complément du nom « "+echappe(c[1])+" ».", grand:s.ph, r:[c[2]], cle:"pp"+s.ph+c[1],
+        expl:"Le nom « "+c[1]+" » est complété par « "+c[0]+" », qui commence par la préposition « "+c[2]+" ».",
+        bravo:"Tu as trouvé le petit mot qui relie le complément au nom."};
+    },
+    function(){
+      var p=unDe(PREPS), cats=Object.keys(PAS_PREP), opts=[p], natures={};
+      cats.forEach(function(c){ var l=unDe(PAS_PREP[c]); opts.push(l); natures[l]=c; });
+      var detail=opts.slice(1).map(function(o){ return "« "+o+" » est "+natures[o]; }).join(" ; ");
+      return {type:"qcm", q:"Lequel de ces mots est une préposition ?", options:opts, r:[p], cle:"qp"+p+opts.join(""),
+        expl:"« "+p+" » est une préposition, comme à, de, en, pour, sur, avec, sans… Les autres : "+detail+".",
+        bravo:"« "+p+" » fait partie de la liste des prépositions."};
+    }
+  ]},
+  { nom:"L'adjectif épithète", types:[
+    function(){
+      var g=unDe(GN.filter(function(x){ return x[2].length===1; })), a=g[2][0];
+      var piege = g[3] ? " « "+g[3]+" » n'est pas un adjectif : c'est un complément du nom (il commence par une préposition)." : "";
+      return {type:"saisie", q:"Recopie l'adjectif épithète de ce groupe nominal.", grand:g[0], r:[a], cle:"ea"+g[0],
+        expl:"« "+a+" » est un adjectif qui qualifie le nom « "+g[1]+" » et s'accorde avec lui. On peut le supprimer : « "+sansMot(g[0],a)+" »."+piege,
+        bravo:"C'est bien l'adjectif qui qualifie « "+g[1]+" »."};
+    },
+    function(){
+      var l=[]; PH.forEach(function(s){ s.epi.forEach(function(e){ if(s.gn.some(function(g){ return g[1]===e[1]; })) l.push([s,e]); }); });
+      var x=unDe(l), s=x[0], e=x[1];
+      return {type:"saisie", q:"Dans cette phrase, recopie l'adjectif épithète du nom « "+echappe(e[1])+" ».", grand:s.ph, r:[e[0]], cle:"es"+s.ph+e[1],
+        expl:"« "+e[0]+" » est placé à côté du nom « "+e[1]+" », il le qualifie et s'accorde avec lui.",
+        bravo:"Tu as trouvé l'adjectif qui qualifie « "+e[1]+" »."};
+    },
+    function(){
+      var s=unDe(PH), n=s.epi.length;
+      var liste=n?" : "+s.epi.map(function(e){ return "« "+e[0]+" » (qui qualifie « "+e[1]+" »)"; }).join(", "):"";
+      return {type:"saisie", chiffres:true, q:"Combien y a-t-il d'adjectifs épithètes dans cette phrase ?", grand:s.ph, r:[String(n),NB_LETTRES[n]], cle:"ec"+s.ph,
+        expl:"Il y en a "+n+liste+"."+(n===0?" Les mots qui suivent une préposition (en or, sans fin…) sont des compléments du nom, pas des adjectifs.":""),
+        bravo:n?"Tu les as tous repérés.":"Pas d'adjectif ici : seulement des compléments du nom ou des noms seuls."};
+    },
+    function(){
+      var l=[]; PH.forEach(function(s){ s.epi.forEach(function(e){ l.push([s,e]); }); });
+      var x=unDe(l), s=x[0], e=x[1];
+      return {type:"saisie", q:"Quel nom l'adjectif « "+echappe(e[0])+" » qualifie-t-il ?", grand:s.ph, r:[e[1]], cle:"eq"+s.ph+e[0],
+        expl:"« "+e[0]+" » est placé à côté de « "+e[1]+" » et s'accorde avec lui (même genre, même nombre).",
+        bravo:"L'adjectif s'accorde avec ce nom."};
+    }
+  ]},
+  { nom:"Le complément du nom", types:[
+    function(){
+      var g=unDe(GN.filter(function(x){ return x[3]; }));
+      var piege = g[2].length ? " « "+g[2].join(" », « ")+" » est un adjectif épithète, pas un complément du nom." : "";
+      return {type:"saisie", q:"Recopie le complément du nom.", grand:g[0], r:[g[3]], cle:"cg"+g[0],
+        expl:"Le complément du nom est placé après le nom « "+g[1]+" » et commence par une préposition : « "+g[3]+" »."+piege,
+        bravo:"Une préposition et la suite : c'est le complément du nom."};
+    },
+    function(){
+      var l=[]; PH.forEach(function(s){ s.cdn.forEach(function(c){ l.push([s,c]); }); });
+      var x=unDe(l), s=x[0], c=x[1];
+      return {type:"saisie", q:"Dans cette phrase, recopie le complément du nom « "+echappe(c[1])+" ».", grand:s.ph, r:[c[0]], cle:"cs"+s.ph+c[1],
+        expl:"Juste après « "+c[1]+" », le groupe « "+c[0]+" » commence par "+(c[2]?"la préposition « "+c[2]+" »":"« "+c[0].split(" ")[0].replace(/'.*/,"'")+" » (préposition + déterminant collés)")+" : c'est le complément du nom.",
+        bravo:"Placé après le nom, introduit par une préposition : c'est juste."};
+    },
+    function(){
+      var l=[]; PH.forEach(function(s){ s.cdn.forEach(function(c){ l.push([s,c]); }); });
+      var x=unDe(l), s=x[0], c=x[1];
+      return {type:"saisie", q:"Quel nom est complété par « "+echappe(c[0])+" » ?", grand:s.ph, r:[c[1]], cle:"cq"+s.ph+c[0],
+        expl:"Le complément du nom est placé juste après le nom qu'il complète : « "+c[1]+" "+c[0]+" ».",
+        bravo:"C'est le nom placé juste avant le complément."};
+    }
+  ]}
+];
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Mascotte « Plume » (joie / encourage / calme) ---------------- */
+function mascotte(h){
+  var yeux;
+  if(h==="joie") yeux='<path d="M17 29 Q23 22 29 29 M35 29 Q41 22 47 29" stroke="#1f2a44" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+                      '<circle cx="15" cy="37" r="3" fill="#f9a8d4"/><circle cx="49" cy="37" r="3" fill="#f9a8d4"/>';
+  else if(h==="encourage") yeux='<circle cx="24" cy="29" r="4" fill="#1f2a44"/><circle cx="40" cy="29" r="4" fill="#1f2a44"/>'+
+                      '<circle cx="25.5" cy="27.5" r="1.3" fill="#fff"/><circle cx="41.5" cy="27.5" r="1.3" fill="#fff"/>'+
+                      '<path d="M16 19 L28 16 M48 19 L36 16" stroke="#1f2a44" stroke-width="2.5" stroke-linecap="round"/>';
+  else yeux='<circle cx="23" cy="28" r="4" fill="#1f2a44"/><circle cx="41" cy="28" r="4" fill="#1f2a44"/>'+
+            '<circle cx="24.5" cy="26.5" r="1.3" fill="#fff"/><circle cx="42.5" cy="26.5" r="1.3" fill="#fff"/>';
+  return '<svg class="mascotte" viewBox="0 0 64 64" aria-hidden="true">'+
+    '<path d="M13 20 L16 6 L27 14 Z M51 20 L48 6 L37 14 Z" fill="var(--matiere-fort)"/>'+
+    '<ellipse cx="32" cy="37" rx="22" ry="23" fill="var(--matiere)" stroke="var(--matiere-fort)" stroke-width="2"/>'+
+    '<ellipse cx="32" cy="46" rx="12" ry="11" fill="#fff" opacity=".85"/>'+
+    '<path d="M27 44 q2 2 4 0 M33 44 q2 2 4 0 M30 49 q2 2 4 0" stroke="var(--matiere)" stroke-width="1.5" fill="none"/>'+
+    '<circle cx="23" cy="28" r="9" fill="#fff"/><circle cx="41" cy="28" r="9" fill="#fff"/>'+ yeux +
+    '<path d="M29 34 L35 34 L32 39 Z" fill="#f59e0b"/>'+
+    '<path d="M25 60 h6 M33 60 h6" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/></svg>';
+}
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function texte(h){ var d=document.createElement("div"); d.innerHTML=h.replace(/<br\s*\/?>/g," "); return d.textContent; }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "exercices-expansions-nom.html";
+if(!/\.html$/.test(FICHIER)) FICHIER="exercices-expansions-nom.html";
+
+/* Correction tolérante sur la forme (majuscules, accents, ponctuation, guillemets, espaces) :
+   on évalue l'identification du bon groupe de mots, pas l'orthographe. */
+function norm(s,q){
+  s=String(s).toLowerCase().trim().replace(/[’`]/g,"'").replace(/œ/g,"oe").replace(/æ/g,"ae");
+  if(q.chiffres && /^[\d\s.]+$/.test(s)) return s.replace(/[\s.]/g,"");
+  s=s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[«»"“”.,;:!?]/g," ").replace(/\s*'\s*/g,"'").replace(/\s+/g," ").trim();
+  return s;
+}
+function estJuste(saisie,q){ return q.r.some(function(r){ return norm(saisie,q)===norm(r,q); }); }
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<40 && (deja[q.cle] || (essais<25 && hist.indexOf(q.cle)>=0)));
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){
+  var h=vues().concat(qs.map(function(q){ return q.cle; }));
+  ecrire("vues:"+FICHIER, h.slice(-150));
+}
+function serieEntrainement(notion){
+  var deja={}, qs=[], d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function serieControle(){
+  var deja={}, qs=[];
+  NOTIONS.forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function page(h,retour){ $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan">'+mascotte("calme")+'<div><p class="t">Prêt à commencer</p><p>Relis la leçon, entraîne-toi sur chaque partie, puis fais le contrôle quand tu te sens prêt.</p></div></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret">'+mascotte("joie")+'<div><p class="t">✓ Tu es prêt pour l\'évaluation</p><p>Tu as eu '+dc.bon+' / '+dc.total+' au dernier contrôle.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div></div>';
+  return '<div class="bilan travail">'+mascotte("encourage")+'<div><p class="t">Pas encore tout à fait prêt</p><p>Dernier contrôle : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<button class="btn" id="b-lecon">Relire la leçon<small>L\'essentiel à savoir</small></button>';
+  h+='<h2>S\'entraîner</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · dernier essai : '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=NOTIONS.length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Se tester</h2><button class="btn" id="b-ctrl">Faire le contrôle<small>'+nbC+' questions sur toute la leçon, correction à la fin'+(rec?' · meilleur score : '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><button class="btn plein centre" id="b-go">Retour au sommaire</button>', true);
+  $("b-go").onclick=accueil;
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">On y revient, avec une autre question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Contrôle":q.notion)+'</p><p class="enonce">'+q.q+
+     (q.grand?'<span class="grand">'+echappe(q.grand)+'</span>':'')+'</p></div>';
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix">'+q.ordre.map(function(o,k){ return '<button class="btn" data-k="'+k+'">'+echappe(o)+'</button>'; }).join("")+'</div>';
+  } else {
+    h+='<div class="saisie" id="f"><input id="in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" '+
+       (q.chiffres?'inputmode="numeric" ':'')+'aria-label="Ta réponse"><button class="btn plein" type="button" id="valider">Valider</button></div>';
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else {
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+function repondre(donne, bouton){
+  var q=serie.qs[serie.i], ok=estJuste(donne,q);
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){ serie.erreurs.push({q:texte(q.q)+(q.grand?" → "+q.grand:""), donne:donne, bonne:q.r[0], notion:q.notion, expl:q.expl}); serie.rattrapage.push(1); }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status">'+mascotte(ok?"joie":"encourage")+'<div><p class="v">'+(ok?unDe(["Juste !","Bravo !","Exact !"]):"Pas tout à fait")+'</p>';
+  if(ok) h+='<p>'+echappe(q.bravo)+'</p>';
+  else h+='<p>Tu as répondu « '+echappe(donne)+' ». La réponse : <b>'+echappe(q.r[0])+'</b></p><p>'+echappe(q.expl)+'</p>';
+  h+='</div></div>';
+  h+='<button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  $("suite").focus({preventScroll:true});
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  var humeur = r>=SEUIL_PRET ? "joie" : "encourage";
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Résultat du contrôle</h2><div class="fin-tete">'+mascotte(humeur)+'<p class="score">'+s+' / '+n+'</p></div>'+bilan();
+    h+='<h3>Partie par partie</h3><ul class="revoir">'+NOTIONS.map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+'<span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><div class="fin-tete">'+mascotte(humeur)+'<p class="score">'+s+' / '+n+'</p></div>';
+    h+='<p>'+(s===n?"Sans faute ! Tu maîtrises cette partie.":r>=SEUIL_PRET?"Très bien. Relis les corrections ci-dessous.":
+         "Cette partie n'est pas encore sûre. Relis la leçon et recommence : les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+echappe(e.expl)+'</span>':'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Recommencer</button><button class="btn centre" id="retour-acc">Sommaire</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>
