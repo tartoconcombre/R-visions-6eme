@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Se présenter — Frauen-Nationalmannschaft</title>
+<meta name="theme-color" content="#dc2626">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer (mettre la couleur « Allemand » de MATIERES dans index.html) ====== */
+:root{ --matiere:#dc2626; --matiere-encre:#ffffff; --matiere-fort:#991b1b; }
+
+/* ====== Style commun « Mes révisions » ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee; --marge:#f1a7a7;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.55}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18);display:flex;align-items:center;gap:12px}
+.etiquette div{flex:1}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 26px/1.15 var(--titre);margin:0}
+.illu{width:78px;height:60px;flex:none}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere);color:var(--matiere-encre);border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte);display:flex;gap:12px;align-items:center}
+.bilan div{flex:1}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.carte-q .fr{font-size:15px;color:var(--encre-douce);margin:2px 0 0}
+.grand{display:block;font:600 25px/1.3 var(--titre);margin-top:10px}
+.choix .btn{font-weight:400}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:8px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.lettres{display:flex;gap:6px;margin:0 0 12px}
+.lettres button{border:2px solid var(--trait);background:#fff;border-radius:10px;padding:6px 14px;font-weight:700;font-size:19px}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid;display:flex;gap:12px;align-items:flex-start}
+.retour div.txt{flex:1;min-width:0}
+.btn-son.modele{margin:2px 0 0;padding:6px 14px;font-size:16px;text-align:left;max-width:100%}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.recopie{margin-top:10px}
+.recopie p{margin:0 0 6px;font-weight:700}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.fin-tete{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon table{width:100%;border-collapse:collapse;font-size:16px;margin:6px 0 10px}
+.lecon td,.lecon th{border-bottom:1px solid var(--trait);padding:7px 4px;vertical-align:top;text-align:left}
+.lecon th{font-size:14px;color:var(--encre-douce);font-weight:400}
+.mascotte{width:58px;height:58px;flex:none}
+.retour .mascotte,.fin-tete .mascotte{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ====== Propre à cet exercice : fiche de joueuse, écoute, micro ====== */
+.fiche{border:2px solid var(--encre);border-radius:6px;padding:8px 12px;margin-top:12px;background:#fff;font-size:16px}
+.fiche .role{font-weight:700;text-align:center;margin:0 0 4px;letter-spacing:.04em}
+.fiche dl{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:0}
+.fiche dt{font-weight:700}
+.fiche dd{margin:0}
+.fiche .vise{background:var(--orange-voile)}
+.btn-son{border:2px solid var(--matiere-fort);background:#fff;color:var(--matiere-fort);border-radius:999px;padding:8px 16px;font-weight:700;margin-top:10px}
+.btn-son.petit{padding:2px 10px;margin:0 0 0 4px;font-size:14px;border-width:1.5px}
+.btn-son.joue{background:var(--matiere-fort);color:#fff}
+.zone-micro{text-align:center;margin:0 0 12px}
+.micro{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:16px 28px;background:var(--matiere);color:var(--matiere-encre);font:600 22px var(--titre);box-shadow:0 3px 0 var(--matiere-fort)}
+.micro.ecoute{background:#fff;color:var(--matiere-fort);outline:3px solid var(--matiere);animation:pulse 1s infinite}
+@keyframes pulse{50%{outline-color:transparent}}
+.entendu{font-size:18px;margin:10px 0}
+.entendu b{font-size:20px}
+.info{font-size:15px;color:var(--orange);margin:8px 0 0}
+.auto p{margin:6px 0}
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Sommaire</button></div>
+  <div class="etiquette">
+    <div><p>Allemand</p><h1>Se présenter — Frauen-Nationalmannschaft</h1></div>
+    <!-- Illustration liée à la leçon : maillot de l'équipe et ballon -->
+    <svg class="illu" viewBox="0 0 80 60" aria-hidden="true">
+      <path d="M14 10 L26 4 Q34 10 42 4 L54 10 L60 24 L50 28 L49 56 L19 56 L18 28 L8 24 Z" fill="#fff" stroke="#1f2a44" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M26 4 Q34 12 42 4" fill="none" stroke="#1f2a44" stroke-width="4"/>
+      <path d="M9 22 L18 26 M59 22 L50 26" stroke="#1f2a44" stroke-width="3.5"/>
+      <rect x="22" y="15" width="24" height="3" fill="#1f2a44"/><rect x="22" y="18" width="24" height="3" fill="#dc2626"/><rect x="22" y="21" width="24" height="3" fill="#facc15"/>
+      <text x="34" y="46" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="17" fill="#1f2a44">17</text>
+      <g transform="translate(66 46)"><circle r="11" fill="#fff" stroke="#1f2a44" stroke-width="2"/><polygon points="0,-4.5 4.3,-1.4 2.6,3.6 -2.6,3.6 -4.3,-1.4" fill="#1f2a44"/>
+      <path d="M0 -4.5 V-11 M4.3 -1.4 L10.4 -3.4 M2.6 3.6 L6.4 8.9 M-2.6 3.6 L-6.4 8.9 M-4.3 -1.4 L-10.4 -3.4" stroke="#1f2a44" stroke-width="1.6"/></g>
+    </svg>
+  </div>
+</header>
+<main id="page"></main>
+
+<script>
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;
+var Q_PAR_NOTION_CONTROLE = 3;
+var SEUIL_PRET = 0.8;
+
+/* Les joueuses de la fiche (données recopiées telles quelles) */
+var JOUEUSES = [
+  {v:"Giulia",     n:"Gwinn",    o:"München", a:26, t:7,  r:"Kapitänin"},
+  {v:"Ann-Katrin", n:"Berger",   o:"Gotham",  a:25, t:1,  r:"Torhüterin"},
+  {v:"Giovanna",   n:"Hoffmann", o:"Leipzig", a:27, t:18},
+  {v:"Klara",      n:"Bühl",     o:"München", a:25, t:19},
+  {v:"Franziska",  n:"Kett",     o:"München", a:22, t:17}
+];
+
+/* Les 5 questions de la fiche. rep() : réponses acceptées, la PREMIÈRE est le modèle affiché et prononcé. */
+var CH = [
+  { id:"v", label:"VORNAME", fr:"son prénom", q:"Wie heißt du?", qOk:["Wie heißt du?"],
+    brut:function(j){ return j.v; }, val:function(j){ return j.v; },
+    rep:function(j){ return ["Ich heiße "+j.v+"."]; },
+    expl:"« Wie heißt du ? » = Comment t'appelles-tu ? On répond : « Ich heiße … » (je m'appelle …). heiße s'écrit avec ß." },
+  { id:"n", label:"NACHNAME", fr:"son nom de famille", q:"Und mit Nachnamen?", qOk:["Und mit Nachnamen?","Wie heißt du mit Nachnamen?"],
+    brut:function(j){ return j.n; }, val:function(j){ return j.n; },
+    rep:function(j){ return ["Mit Nachnamen heiße ich "+j.n+".","Ich heiße "+j.n+" mit Nachnamen.","Ich heiße "+j.n+".","Mein Nachname ist "+j.n+"."]; },
+    expl:"« Und mit Nachnamen ? » = Et ton nom de famille ? On répond : « Mit Nachnamen heiße ich … ». Nachnamen prend une majuscule (c'est un nom)." },
+  { id:"o", label:"WOHNORT", fr:"où elle habite", q:"Wo wohnst du?", qOk:["Wo wohnst du?"],
+    brut:function(j){ return j.o; }, val:function(j){ return "in "+j.o; },
+    rep:function(j){ return ["Ich wohne in "+j.o+"."]; },
+    expl:"« Wo wohnst du ? » = Où habites-tu ? On répond : « Ich wohne in … » (j'habite à …). Wo = où." },
+  { id:"a", label:"ALTER", fr:"son âge", q:"Wie alt bist du?", qOk:["Wie alt bist du?"],
+    brut:function(j){ return String(j.a); }, val:function(j){ return String(j.a); },
+    rep:function(j){ return ["Ich bin "+j.a+" Jahre alt.","Ich bin "+j.a+"."]; },
+    expl:"« Wie alt bist du ? » = Quel âge as-tu ? On répond : « Ich bin … Jahre alt. » En allemand, on EST son âge (ich bin), on ne l'a pas. Jahre prend une majuscule." },
+  { id:"t", label:"TRIKOTNUMMER", fr:"son numéro de maillot", q:"Welche Trikotnummer hast du?", qOk:["Welche Trikotnummer hast du?","Welche Nummer hast du?"],
+    brut:function(j){ return String(j.t); }, val:function(j){ return String(j.t); },
+    rep:function(j){ return ["Ich habe die Trikotnummer "+j.t+".","Ich habe die Nummer "+j.t+".","Meine Trikotnummer ist "+j.t+".","Meine Nummer ist "+j.t+"."]; },
+    expl:"« Welche Trikotnummer hast du ? » = Quel numéro de maillot as-tu ? On répond : « Ich habe die Trikotnummer … ». Trikotnummer prend une majuscule (c'est un nom)." }
+];
+
+/* Nombres de la fiche */
+var NB_ECOUTE = [1,7,17,18,19,22,25,26,27];
+var NB_ECRIT  = [17,18,19,22,25,26,27];
+var UNITES = ["null","eins","zwei","drei","vier","fünf","sechs","sieben","acht","neun","zehn","elf","zwölf","dreizehn","vierzehn","fünfzehn","sechzehn","siebzehn","achtzehn","neunzehn"];
+function zahl(n){
+  if(n<20) return UNITES[n];
+  if(n===20) return "zwanzig";
+  if(n<30) return (n%10===1?"ein":UNITES[n%10])+"undzwanzig";
+  return "dreißig";
+}
+function explZahl(n){
+  if(n===17) return "17 = siebzehn : attention, sieben perd « en » devant zehn (siebzehn, pas siebenzehn).";
+  if(n>=13 && n<20) return n+" = "+zahl(n)+" : l'unité, puis zehn ("+UNITES[n%10]+" + zehn).";
+  if(n>20 && n<30) return n+" = "+zahl(n)+" : en allemand on dit d'abord l'unité, puis « und », puis la dizaine (« "+UNITES[n%10]+"-et-vingt »), le tout en un seul mot."+(n===27?" Ici sieben garde son « en ».":"")+(n===25?" N'oublie pas le ü de fünf.":"");
+  return n+" = "+zahl(n)+".";
+}
+
+var LECON =
+  '<p class="doux" style="margin-top:12px">EURO in der Schweiz (2. bis 27. Juli 2025) — Jede Fußballspielerin stellt sich vor. Appuie sur 🔊 pour écouter.</p>'+
+  '<h3>Les 5 questions et les réponses</h3>'+
+  '<p>Exemple avec Franziska Kett.</p>'+
+  '<table><tr><th>Question</th><th>Réponse</th></tr>'+
+  CH.map(function(c){ var m=c.rep(JOUEUSES[4])[0];
+    return '<tr><td><b>'+echappe(c.q)+'</b>'+son(c.q)+'<br><span class="doux">'+echappe(trad(c))+'</span></td><td>'+echappe(m)+son(m)+'</td></tr>'; }).join("")+
+  '</table>'+
+  '<h3>Les mots de la fiche</h3>'+
+  '<table><tr><td><b>VORNAME</b></td><td>le prénom</td></tr><tr><td><b>NACHNAME</b></td><td>le nom de famille</td></tr>'+
+  '<tr><td><b>WOHNORT</b></td><td>le lieu où l\'on habite</td></tr><tr><td><b>ALTER</b></td><td>l\'âge</td></tr>'+
+  '<tr><td><b>TRIKOTNUMMER</b></td><td>le numéro de maillot</td></tr><tr><td><b>KAPITÄNIN</b></td><td>la capitaine</td></tr><tr><td><b>TORHÜTERIN</b></td><td>la gardienne de but</td></tr></table>'+
+  '<h3>⚠ Les nombres</h3>'+
+  '<table>'+[22,25,26,27,17,18,19].map(function(n){ return '<tr><td><b>'+n+'</b></td><td>'+zahl(n)+son(zahl(n))+'</td></tr>'; }).join("")+'</table>'+
+  '<p class="doux">22, 25, 26, 27 : l\'unité d\'abord, puis « und », puis « zwanzig ».</p>'+
+  '<h3>Die Spielerinnen</h3>'+
+  JOUEUSES.map(carte).join("");
+
+function trad(c){ return {v:"Comment t'appelles-tu ?",n:"Et ton nom de famille ?",o:"Où habites-tu ?",a:"Quel âge as-tu ?",t:"Quel numéro de maillot as-tu ?"}[c.id]; }
+
+var NOTIONS = [
+  { nom:"Comprendre les questions", types:[
+    function(){ /* j'entends la question, je choisis la réponse sur la fiche */
+      var j=unDe(JOUEUSES), c=unDe(CH);
+      return {type:"qcm", q:"Hör zu! Was antwortet sie?", fr:"Écoute la question. Que répond la joueuse ?", carte:j, audio:c.q, cacheTexte:true,
+        options:CH.map(function(x){ return x.val(j); }), r:[c.val(j)], cle:"ca"+c.id+j.n, dire:c.rep(j)[0],
+        expl:"La question était « "+c.q+" » ("+trad(c)+"). "+c.expl, bravo:"« "+c.q+" » → « "+c.rep(j)[0]+" »"};
+    },
+    function(){ /* je lis la question, je dis ce qu'elle demande */
+      var c=unDe(CH);
+      return {type:"qcm", q:"Was bedeutet die Frage?", fr:"Que demande cette question ?", grand:c.q, audio:c.q,
+        options:CH.map(function(x){ return x.fr; }), r:[c.fr], cle:"cb"+c.id, dire:c.q,
+        expl:"« "+c.q+" » demande "+c.fr+" : "+trad(c)+" "+c.expl, bravo:"« "+c.q+" » = "+trad(c)};
+    },
+    function(){ /* je lis la réponse, je retrouve la question */
+      var j=unDe(JOUEUSES), c=unDe(CH), rep=c.rep(j)[0];
+      return {type:"qcm", q:"Welche Frage passt?", fr:"Quelle question a posé le journaliste ?", grand:"« "+rep+" »", audio:rep,
+        options:CH.map(function(x){ return x.q; }), r:[c.q], cle:"cc"+c.id+j.n, dire:c.q,
+        expl:"Pour obtenir la réponse « "+rep+" », on demande : « "+c.q+" » ("+trad(c)+")", bravo:"« "+c.q+" » → « "+rep+" »"};
+    }
+  ]},
+  { nom:"Répondre à l'oral", types:[
+    function(){
+      var j=unDe(JOUEUSES), c=unDe(CH);
+      return {type:"oral", q:"Du bist "+j.v+". Antworte!", fr:"Tu es la joueuse : réponds à la question à voix haute, avec une phrase.", carte:j,
+        grand:c.q, audio:c.q, modeles:c.rep(j), noms:[j.v,j.n,j.o], cle:"ra"+c.id+j.n, dire:c.rep(j)[0],
+        expl:c.expl, bravo:"Tu as bien répondu à « "+c.q+" »."};
+    },
+    function(){
+      var j=unDe(JOUEUSES), c=unDe(CH);
+      return {type:"oral", q:"Du bist "+j.v+". Hör zu und antworte!", fr:"Écoute la question (elle n'est pas écrite) et réponds à voix haute.", carte:j,
+        audio:c.q, cacheTexte:true, modeles:c.rep(j), noms:[j.v,j.n,j.o], cle:"rb"+c.id+j.n, dire:c.rep(j)[0],
+        expl:"La question était « "+c.q+" » ("+trad(c)+"). "+c.expl, bravo:"Tu as compris « "+c.q+" » et bien répondu."};
+    }
+  ]},
+  { nom:"Poser les questions à l'oral", types:[
+    function(){
+      var c=unDe(CH), j=unDe(JOUEUSES);
+      return {type:"oral", q:"Du bist Journalist. Frag nach:", fr:"Tu es journaliste : dis la question qui correspond à ce mot de la fiche.",
+        grand:c.label, modeles:c.qOk, cle:"pa"+c.id+j.n, dire:c.q,
+        expl:c.label+" → on demande « "+c.q+" » ("+trad(c)+").", bravo:c.label+" → « "+c.q+" »"};
+    },
+    function(){
+      var j=unDe(JOUEUSES), c=unDe(CH), rep=c.rep(j)[0];
+      return {type:"oral", q:"Sie antwortet: Welche Frage? Sag sie!", fr:"Voici sa réponse. Quelle question lui a-t-on posée ? Dis-la à voix haute.",
+        grand:"« "+rep+" »", audio:rep, modeles:c.qOk, cle:"pb"+c.id+j.n, dire:c.q,
+        expl:"Pour obtenir « "+rep+" », on demande « "+c.q+" » ("+trad(c)+").", bravo:"« "+c.q+" » → « "+rep+" »"};
+    }
+  ]},
+  { nom:"Les nombres", types:[
+    function(){
+      var n=unDe(NB_ECOUTE);
+      return {type:"saisie", chiffres:true, q:"Hör zu! Schreib die Zahl.", fr:"Écoute et écris le nombre en chiffres.", audio:zahl(n), cacheTexte:true,
+        r:[String(n)], cle:"ne"+n, dire:zahl(n), expl:explZahl(n), bravo:n+" = "+zahl(n)};
+    },
+    function(){
+      var n=unDe(NB_ECRIT);
+      return {type:"ecrit", q:"Schreib die Zahl in Buchstaben.", fr:"Écris ce nombre en lettres.", grand:String(n),
+        modeles:[zahl(n)], cle:"nl"+n, dire:zahl(n), expl:explZahl(n), bravo:n+" = "+zahl(n)};
+    },
+    function(){
+      var n=unDe(NB_ECOUTE);
+      return {type:"oral", q:"Sag die Zahl!", fr:"Dis ce nombre en allemand, à voix haute.", grand:String(n),
+        modeles:[String(n)], cle:"nd"+n, dire:zahl(n), expl:explZahl(n), bravo:n+" = "+zahl(n)};
+    }
+  ]},
+  { nom:"Écrire les phrases", types:[
+    function(){
+      var j=unDe(JOUEUSES), c=unDe(CH);
+      return {type:"ecrit", q:"Du bist "+j.v+". Schreib die Antwort!", fr:"Écris la réponse de la joueuse : une phrase complète.", carte:j,
+        grand:c.q, audio:c.q, modeles:c.rep(j), cle:"ea"+c.id+j.n, dire:c.rep(j)[0], expl:c.expl, bravo:"Phrase bien écrite."};
+    },
+    function(){
+      var c=unDe(CH), j=unDe(JOUEUSES);
+      return {type:"ecrit", q:"Schreib die Frage!", fr:"Écris la question qui correspond à ce mot de la fiche.", grand:c.label,
+        modeles:c.qOk, cle:"eb"+c.id+j.n, dire:c.q, expl:c.label+" → « "+c.q+" » ("+trad(c)+").", bravo:"Question bien écrite."};
+    }
+  ]}
+];
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Fiche d'une joueuse (comme sur la feuille, sans photo) ---------------- */
+function carte(j,vise){
+  return '<div class="fiche">'+(j.r?'<p class="role">'+j.r.toUpperCase()+'</p>':'')+'<dl>'+
+    CH.map(function(c){ return '<dt>'+c.label+':</dt><dd>'+echappe(c.brut(j))+'</dd>'; }).join("")+'</dl></div>';
+}
+
+/* ---------------- Voix de synthèse allemande ---------------- */
+var VOIX=null;
+function chercherVoix(){
+  if(!window.speechSynthesis) return;
+  var v=speechSynthesis.getVoices().filter(function(x){ return /^de/i.test(x.lang); });
+  VOIX=v.filter(function(x){ return /de[-_]DE/i.test(x.lang); })[0]||v[0]||null;
+}
+if(window.speechSynthesis){ chercherVoix(); speechSynthesis.onvoiceschanged=chercherVoix; }
+function parler(txt, bouton){
+  if(!window.speechSynthesis){ var i=$("info"); if(i) i.textContent="Ce navigateur ne peut pas lire le texte à voix haute."; return; }
+  speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(txt); u.lang="de-DE"; if(VOIX) u.voice=VOIX; u.rate=0.85;
+  if(bouton){ bouton.classList.add("joue"); u.onend=u.onerror=function(){ bouton.classList.remove("joue"); }; }
+  speechSynthesis.speak(u);
+  if(!VOIX){ var i2=$("info"); if(i2) i2.textContent="Pas de voix allemande sur cet appareil : la prononciation peut être française."; }
+}
+function son(txt){ return '<button class="btn-son petit" type="button" data-dire="'+echappe(txt)+'" aria-label="Écouter">🔊</button>'; }
+document.addEventListener("click",function(e){ var b=e.target.closest&&e.target.closest("[data-dire]"); if(b) parler(b.getAttribute("data-dire"),b); });
+
+/* ---------------- Reconnaissance vocale (micro) ---------------- */
+var SR = window.SpeechRecognition||window.webkitSpeechRecognition, MICRO_KO = !SR, ECOUTE=null;
+function ecouterMicro(ok, ko){
+  var r; try{ r=new SR(); }catch(e){ MICRO_KO=true; ko("not-allowed"); return null; }
+  r.lang="de-DE"; r.interimResults=false; r.maxAlternatives=5; r.continuous=false;
+  var fini=false;
+  r.onresult=function(e){ fini=true; var a=[]; for(var i=0;i<e.results[0].length;i++) a.push(e.results[0][i].transcript); ok(a); };
+  r.onerror=function(e){ if(fini) return; fini=true; ko(e.error); };
+  r.onend=function(){ ECOUTE=null; if(!fini){ fini=true; ko("no-speech"); } };
+  try{ r.start(); }catch(e){ fini=true; ko("not-allowed"); return null; }
+  return r;
+}
+
+/* Comparaison orale : tolérante (le micro comprend parfois mal les noms), ordre libre, mots en trop acceptés */
+var MOTS_NB={}; for(var k=0;k<=30;k++) MOTS_NB[plat(zahl(k))]=String(k); MOTS_NB["ein"]="1"; MOTS_NB["eins"]="1";
+function plat(s){ return String(s).toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[̀-ͯ]/g,""); }
+function motsOral(s){
+  return plat(s).replace(/(\d)-(\d)/g,"$1$2").replace(/-/g,"").replace(/[^a-z0-9 ]/g," ").trim().split(/\s+/)
+    .filter(Boolean).map(function(m){ return MOTS_NB[m]||m; });
+}
+function lev(a,b){
+  var d=[],i,j; for(i=0;i<=a.length;i++){ d[i]=[i]; } for(j=0;j<=b.length;j++) d[0][j]=j;
+  for(i=1;i<=a.length;i++) for(j=1;j<=b.length;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[a.length][b.length];
+}
+function oralOk(alts, modeles, noms){
+  var nomsP=(noms||[]).map(function(x){ return plat(x).replace(/-/g,""); });
+  return alts.some(function(alt){
+    var t=motsOral(alt), cand=t.slice(); for(var i=0;i<t.length-1;i++) cand.push(t[i]+t[i+1]);
+    return modeles.some(function(m){
+      return motsOral(m).every(function(w){
+        var tol=/^\d+$/.test(w)?0:w.length<=3?0:w.length<=5?1:2;
+        if(nomsP.indexOf(w)>=0) tol+=1;
+        return cand.some(function(c){ return c===w || (tol>0 && lev(c,w)<=tol); });
+      });
+    });
+  });
+}
+
+/* Comparaison écrite : stricte sur l'orthographe (majuscules des noms, ß, ü), tolérante sur la ponctuation, les espaces
+   et la majuscule du premier mot. Renvoie "ok", "casse" (seulement des majuscules), "lettres" (ß/ü/ä/ö) ou "faux". */
+function motsEcrits(s){ return String(s).replace(/[’`]/g,"'").replace(/[.!?,;:«»"“”]/g," ").trim().split(/\s+/).filter(Boolean); }
+function statutEcrit(saisie, modeles){
+  var a=motsEcrits(saisie), meilleur="faux", rang={ok:3,casse:2,lettres:1,faux:0};
+  modeles.forEach(function(m){
+    var b=motsEcrits(m), s="ok";
+    if(a.length!==b.length) s="faux";
+    else for(var i=0;i<a.length;i++){
+      var x=a[i], y=b[i];
+      if(/^\d+$/.test(y) && (x===y || plat(x)===plat(zahl(+y)))) continue;
+      if(i===0){ x=x.toLowerCase(); y=y.toLowerCase(); }
+      if(x===y) continue;
+      if(x.toLowerCase()===y.toLowerCase()){ if(s==="ok") s="casse"; continue; }
+      var f=function(z){ return plat(z).replace(/ae/g,"a").replace(/oe/g,"o").replace(/ue/g,"u"); };
+      if(f(x)===f(y)){ s="lettres"; continue; }
+      s="faux"; break;
+    }
+    if(rang[s]>rang[meilleur]) meilleur=s;
+  });
+  return meilleur;
+}
+var NOTE_ECRIT = {
+  casse:"Attention aux majuscules : en allemand, tous les noms prennent une majuscule (Nachnamen, Jahre, Trikotnummer, Nummer, München…). Les verbes et les petits mots (ich, heiße, wohne, in, die) n'en prennent pas.",
+  lettres:"Presque ! Attention aux lettres allemandes : ß (heiße, heißt), ü (München, fünf, Bühl). Utilise les boutons sous la case."
+};
+
+/* ---------------- Pictogramme (ballon) : seulement dans le bilan, les retours et l'écran de fin ---------------- */
+function ballon(cx,cy,r){
+  var p=[],q=[]; for(var i=0;i<5;i++){ var a=-Math.PI/2+i*2*Math.PI/5; p.push((cx+r*.4*Math.cos(a)).toFixed(1)+","+(cy+r*.4*Math.sin(a)).toFixed(1));
+    q.push('M'+(cx+r*.4*Math.cos(a)).toFixed(1)+' '+(cy+r*.4*Math.sin(a)).toFixed(1)+' L'+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1)); }
+  return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#fff" stroke="#1f2a44" stroke-width="2"/><polygon points="'+p.join(" ")+'" fill="#1f2a44"/><path d="'+q.join(" ")+'" stroke="#1f2a44" stroke-width="1.5"/>';
+}
+function mascotte(h){
+  var c=h==="joie"?"var(--juste)":h==="encourage"?"var(--orange)":"var(--matiere-fort)";
+  var fond='<circle cx="32" cy="32" r="29" fill="'+(h==="joie"?"var(--juste-voile)":h==="encourage"?"var(--orange-voile)":"#f1f5f9")+'" stroke="'+c+'" stroke-width="2.5"/>';
+  if(h==="joie") return svgM(fond+'<path d="M12 44 V22 H52 V44" stroke="#1f2a44" stroke-width="2.5" fill="none"/><path d="M16 26 H48 M16 32 H48 M16 38 H48 M22 22 V44 M32 22 V44 M42 22 V44" stroke="#94a3b8" stroke-width="1"/>'+
+    ballon(32,36,8)+'<circle cx="48" cy="48" r="8" fill="'+c+'"/><path d="M44 48 l3 3 l5 -6" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>');
+  if(h==="encourage") return svgM(fond+ballon(28,30,12)+'<circle cx="46" cy="46" r="9" fill="'+c+'"/><path d="M49.8 43.6 A5 5 0 1 0 51 47.5" stroke="#fff" stroke-width="2.3" fill="none" stroke-linecap="round"/><path d="M47.2 42.6 L50.2 43.8 L50.6 40.6" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>');
+  return svgM(fond+ballon(32,32,14));
+}
+function svgM(x){ return '<svg class="mascotte" viewBox="0 0 64 64" aria-hidden="true">'+x+'</svg>'; }
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "exercices-allemand-se-presenter.html";
+if(!/\.html$/.test(FICHIER)) FICHIER="exercices-allemand-se-presenter.html";
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<60 && (deja[q.cle] || (essais<35 && hist.indexOf(q.cle)>=0)));
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){ ecrire("vues:"+FICHIER, vues().concat(qs.map(function(q){ return q.cle; })).slice(-120)); }
+function serieEntrainement(notion){
+  var deja={}, qs=[], d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function serieControle(){
+  var deja={}, qs=[];
+  NOTIONS.forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function stopTout(){ if(window.speechSynthesis) speechSynthesis.cancel(); if(ECOUTE){ try{ ECOUTE.abort(); }catch(e){} ECOUTE=null; } }
+function page(h,retour){ stopTout(); $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan">'+mascotte("calme")+'<div><p class="t">Prêt à commencer</p><p>Relis la leçon en écoutant les phrases, entraîne-toi sur chaque partie, puis fais le contrôle quand tu te sens prêt.</p></div></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret">'+mascotte("joie")+'<div><p class="t">✓ Tu es prêt pour l\'évaluation</p><p>Tu as eu '+dc.bon+' / '+dc.total+' au dernier contrôle.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div></div>';
+  return '<div class="bilan travail">'+mascotte("encourage")+'<div><p class="t">Pas encore tout à fait prêt</p><p>Dernier contrôle : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<p class="doux">🔊 Mets le son (sur iPhone, enlève le mode silencieux). 🎤 Pour les questions à l\'oral, autorise le micro quand on te le demande. '+
+    (MICRO_KO?'<b>Ce navigateur n\'a pas de micro utilisable</b> : tu diras les réponses à voix haute puis tu compareras avec le modèle. ':'')+'</p>'+
+    '<button class="btn" id="b-lecon">Relire la leçon<small>Les questions, les réponses et les nombres, à écouter</small></button>';
+  h+='<h2>S\'entraîner</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · dernier essai : '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=NOTIONS.length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Se tester</h2><button class="btn" id="b-ctrl">Faire le contrôle<small>'+nbC+' questions sur toute la leçon, correction à la fin'+(rec?' · meilleur score : '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><p class="info" id="info"></p><button class="btn plein centre" id="b-go">Retour au sommaire</button>', true);
+  $("b-go").onclick=accueil;
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function champSaisie(id,label,num){
+  return '<input id="'+id+'" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" lang="de" '+
+         (num?'inputmode="numeric" ':'')+'aria-label="'+label+'">';
+}
+function barreLettres(cible){
+  return '<div class="lettres" data-cible="'+cible+'">'+["ä","ö","ü","ß"].map(function(l){ return '<button type="button" data-l="'+l+'">'+l+'</button>'; }).join("")+'</div>';
+}
+function brancherLettres(){
+  [].forEach.call(document.querySelectorAll(".lettres button"),function(b){
+    b.onmousedown=function(e){ e.preventDefault(); };
+    b.onclick=function(){
+      var inp=$(b.parentNode.dataset.cible); if(!inp||inp.disabled) return;
+      var d=inp.selectionStart==null?inp.value.length:inp.selectionStart, f=inp.selectionEnd==null?d:inp.selectionEnd;
+      inp.value=inp.value.slice(0,d)+b.dataset.l+inp.value.slice(f); inp.focus(); inp.setSelectionRange(d+1,d+1);
+    };
+  });
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">On y revient, avec une autre question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Contrôle":q.notion)+'</p><p class="enonce">'+echappe(q.q)+'</p>'+
+     (q.fr?'<p class="fr">'+echappe(q.fr)+'</p>':'');
+  if(q.carte) h+=carte(q.carte);
+  if(q.grand && !q.cacheTexte) h+='<span class="grand">'+echappe(q.grand)+'</span>';
+  if(q.audio) h+='<button class="btn-son" type="button" id="b-audio">🔊 '+(q.cacheTexte?'Hör zu!':'Anhören')+'</button>';
+  h+='<p class="info" id="info"></p></div>';
+
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix">'+q.ordre.map(function(o,k){ return '<button class="btn" data-k="'+k+'">'+echappe(o)+'</button>'; }).join("")+'</div>';
+  } else if(q.type==="oral"){
+    h+='<div id="f">'+zoneOrale()+'</div>';
+  } else {
+    h+='<div class="saisie" id="f">'+champSaisie("in","Ta réponse",q.chiffres)+'<button class="btn plein" type="button" id="valider">Prüfen</button></div>'+
+       (q.type==="ecrit"?barreLettres("in"):"");
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+
+  if(q.audio){ $("b-audio").onclick=function(){ parler(q.audio,$("b-audio")); }; if(q.cacheTexte) setTimeout(function(){ parler(q.audio,$("b-audio")); },350); }
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else if(q.type==="oral"){
+    brancherOral(q);
+  } else {
+    brancherLettres();
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    if(!q.cacheTexte) setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+/* ----- Questions orales : micro, ou à défaut auto-correction avec le modèle ----- */
+function zoneOrale(){
+  if(MICRO_KO) return '<div class="auto" id="auto"><p><b>Sag die Antwort laut!</b> <span class="doux">Dis ta réponse à voix haute, puis écoute le modèle.</span></p>'+
+    '<button class="btn plein centre" type="button" id="b-modele">🔊 Antwort hören</button></div>';
+  return '<div class="zone-micro"><button class="micro" type="button" id="b-micro">🎤 Sprich!</button><p class="doux" style="font-size:15px;margin-top:6px">Appuie, puis parle.</p>'+
+    '<p class="entendu cache" id="entendu"></p><div class="rangee cache" id="apres"><button class="btn centre" type="button" id="b-encore">🎤 Nochmal</button>'+
+    '<button class="btn plein centre" type="button" id="b-prufen">Prüfen</button></div></div>';
+}
+function brancherOral(q){
+  if(MICRO_KO){
+    $("b-modele").onclick=function(){
+      parler(q.dire);
+      $("auto").innerHTML='<p>Modèle : <b>'+echappe(q.dire)+'</b> '+son(q.dire)+'</p><p>Tu avais bien dit ça ?</p>'+
+        '<div class="rangee"><button class="btn centre" type="button" id="b-non">✗ Nein</button><button class="btn plein centre" type="button" id="b-oui">✓ Ja</button></div>';
+      $("b-oui").onclick=function(){ repondre({auto:true}); };
+      $("b-non").onclick=function(){ repondre({auto:false}); };
+    };
+    return;
+  }
+  var alts=null;
+  var lancer=function(){
+    if(ECOUTE){ try{ ECOUTE.stop(); }catch(e){} return; }
+    if(window.speechSynthesis) speechSynthesis.cancel();
+    $("b-micro").classList.add("ecoute"); $("b-micro").textContent="🎤 Ich höre zu…"; $("info").textContent="";
+    ECOUTE=ecouterMicro(function(a){
+      if(!$("b-micro")) return;
+      alts=a; $("b-micro").classList.remove("ecoute"); $("b-micro").textContent="🎤 Sprich!";
+      $("entendu").innerHTML='J\'ai entendu : <b>« '+echappe(a[0])+' »</b>'; $("entendu").classList.remove("cache");
+      $("apres").classList.remove("cache"); $("b-micro").classList.add("cache");
+    }, function(err){
+      if(!$("b-micro")) return;
+      $("b-micro").classList.remove("ecoute"); $("b-micro").textContent="🎤 Sprich!";
+      if(err==="no-speech"||err==="aborted") $("info").textContent="Je n'ai rien entendu. Appuie sur le micro et parle bien fort.";
+      else {
+        MICRO_KO=true;
+        $("f").innerHTML='<p class="info">Le micro ne fonctionne pas ici (autorisation refusée ou navigateur incompatible). Tu vas t\'auto-corriger.</p>'+zoneOrale();
+        brancherOral(q);
+      }
+    });
+  };
+  $("b-micro").onclick=lancer;
+  $("b-encore").onclick=function(){ alts=null; $("apres").classList.add("cache"); $("entendu").classList.add("cache"); $("b-micro").classList.remove("cache"); lancer(); };
+  $("b-prufen").onclick=function(){ if(alts) repondre({alts:alts}); };
+}
+
+function repondre(donne, bouton){
+  var q=serie.qs[serie.i], ok, txtDonne, txtBonne, note=null;
+  if(q.type==="oral"){
+    ok = donne.alts ? oralOk(donne.alts,q.modeles,q.noms) : donne.auto;
+    txtDonne = donne.alts ? donne.alts[0] : (donne.auto?"(dit à voix haute : juste)":"(dit à voix haute : à revoir)");
+    txtBonne = q.dire;
+  } else if(q.type==="ecrit"){
+    var st=statutEcrit(donne,q.modeles); ok=st==="ok"; note=NOTE_ECRIT[st]||null;
+    txtDonne=donne.trim(); txtBonne=q.modeles[0];
+  } else {
+    ok = q.r.indexOf(String(donne).trim())>=0; txtDonne=String(donne).trim(); txtBonne=q.r[0];
+  }
+  var expl=(note?note+" ":"")+q.expl;
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){
+    serie.erreurs.push({q:q.q+(q.grand?" → "+q.grand:q.audio?" → (à l'écoute) "+q.audio:""), donne:txtDonne, bonne:txtBonne, notion:q.notion, expl:expl});
+    serie.rattrapage.push(1);
+  }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button, .lettres button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+  var libSuite = dernier?"Ergebnis sehen":"Nächste Frage";
+
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+libSuite+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status">'+mascotte(ok?"joie":"encourage")+'<div class="txt"><p class="v">'+(ok?unDe(["Richtig!","Super!","Toll!","Prima!"]):"Noch nicht ganz")+'</p>';
+  if(ok) h+='<p>'+echappe(q.bravo)+'</p>';
+  else {
+    if(q.type==="oral" && donne.alts) h+='<p>J\'ai entendu « '+echappe(txtDonne)+' ».</p>';
+    else if(q.type!=="oral") h+='<p>Tu as répondu « '+echappe(txtDonne)+' ».</p>';
+    h+='<p>La réponse : <b>'+echappe(txtBonne)+'</b></p><p>'+echappe(expl)+'</p>';
+  }
+  h+='<button class="btn-son modele" type="button" data-dire="'+echappe(q.dire)+'">🔊 '+echappe(q.dire)+'</button>';
+  var recopie = !ok && q.type==="ecrit";
+  if(recopie) h+='<div class="recopie"><p>Recopie la bonne réponse :</p><div class="saisie">'+champSaisie("rec","Recopie",false)+'</div>'+barreLettres("rec")+'</div>';
+  h+='</div></div><button class="btn plein centre" id="suite"'+(recopie?' disabled':'')+'>'+libSuite+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  if(recopie){
+    brancherLettres();
+    var verif=function(){ var okR=statutEcrit($("rec").value,[q.modeles[0]])==="ok"; $("suite").disabled=!okR; return okR; };
+    $("rec").oninput=verif;
+    $("rec").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); if(verif()) suivante(); } };
+    setTimeout(function(){ try{ $("rec").focus({preventScroll:true}); }catch(e){} },50);
+  } else $("suite").focus({preventScroll:true});
+  if(q.type==="oral" || ok) parler(q.dire);
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  var humeur = r>=SEUIL_PRET ? "joie" : "encourage";
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Résultat du contrôle</h2><div class="fin-tete">'+mascotte(humeur)+'<p class="score">'+s+' / '+n+'</p></div>'+bilan();
+    h+='<h3>Partie par partie</h3><ul class="revoir">'+NOTIONS.map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+'<span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><div class="fin-tete">'+mascotte(humeur)+'<p class="score">'+s+' / '+n+'</p></div>';
+    h+='<p>'+(s===n?"Sans faute ! Sehr gut!":r>=SEUIL_PRET?"Très bien. Relis les corrections ci-dessous.":
+         "Cette partie n'est pas encore sûre. Relis la leçon en écoutant les phrases et recommence : les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+son(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+echappe(e.expl)+'</span>':'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Nochmal</button><button class="btn centre" id="retour-acc">Sommaire</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>
