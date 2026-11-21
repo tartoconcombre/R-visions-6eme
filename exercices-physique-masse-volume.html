@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Masse et volume</title>
+<meta name="theme-color" content="#16a34a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Couleur de la matière : seule ligne à changer d'une matière à l'autre ====== */
+:root{ --matiere:#16a34a; --matiere-encre:#ffffff; --matiere-fort:#166534; }
+
+/* ====== Style commun « Mes révisions » (identique dans tous les exercices) ====== */
+:root{
+  --papier:#fbfcfe; --carte:#fff; --encre:#1f2a44; --encre-douce:#55607a; --trait:#dde3ee;
+  --juste:#15803d; --juste-voile:#dcfce7; --faux:#b42318; --faux-voile:#fee4e2; --orange:#b45309; --orange-voile:#fef3c7;
+  --titre:"Fredoka","Trebuchet MS",sans-serif; --texte:"Atkinson Hyperlegible",Verdana,sans-serif; --rayon:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:18px/1.5 var(--texte)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--matiere-fort);outline-offset:2px}
+.cache{display:none!important}
+.couverture{background:var(--matiere);color:var(--matiere-encre);padding:12px 16px 26px;border-bottom:4px solid var(--matiere-fort)}
+.barre-haut{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 14px;font-size:15px}
+.barre-haut a,.barre-haut button{color:inherit;text-decoration:none;background:none;border:0;padding:6px 0;font-weight:700}
+.etiquette{max-width:640px;margin:0 auto;background:#fff;color:var(--encre);border-radius:10px;padding:14px 18px 16px;box-shadow:0 2px 0 rgba(31,42,68,.18);display:flex;align-items:center;gap:12px}
+.etiquette div{flex:1}
+.etiquette p{margin:0 0 2px;font-size:15px;color:var(--encre-douce)}
+.etiquette h1{font:600 28px/1.15 var(--titre);margin:0}
+.illu{width:78px;height:66px;flex:none}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h2{font:600 23px var(--titre);margin:8px 0 12px}
+h3{font:600 20px var(--titre);margin:18px 0 6px}
+p{margin:0 0 10px}
+.doux{color:var(--encre-douce)}
+.btn{display:block;width:100%;text-align:left;background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:14px 16px;margin:0 0 10px;font-weight:700}
+.btn small{display:block;font-weight:400;color:var(--encre-douce);font-size:15px}
+.btn.plein{background:var(--matiere-fort);color:#fff;border-color:var(--matiere-fort)}
+.btn.plein small{color:inherit;opacity:.85}
+.btn.centre{text-align:center}
+.rangee{display:flex;gap:10px}
+.bilan{border:2px solid var(--trait);border-radius:var(--rayon);padding:12px 16px;margin:0 0 16px;background:var(--carte);display:flex;gap:12px;align-items:center}
+.bilan div{flex:1}
+.bilan p{margin:0}
+.bilan .t{font:600 20px var(--titre);margin-bottom:4px}
+.bilan.travail{border-color:var(--orange);background:var(--orange-voile)}
+.bilan.pret{border-color:var(--juste);background:var(--juste-voile)}
+.entete-q{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jauge{flex:1;height:10px;background:var(--trait);border-radius:5px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--matiere-fort);transition:width .3s}
+.compteur{font-size:15px;color:var(--encre-douce)}
+.carte-q{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:16px;margin-bottom:14px}
+.carte-q .theme{font-size:15px;color:var(--encre-douce);margin:0 0 4px}
+.carte-q .enonce{font-size:21px;font-weight:700;margin:0}
+.grand{display:block;font:600 25px/1.3 var(--titre);margin-top:8px}
+.choix .btn{font-weight:400}
+.choix .btn.juste{border-color:var(--juste);background:var(--juste-voile)}
+.choix .btn.faux{border-color:var(--faux);background:var(--faux-voile)}
+.choix .btn.choisi{border-color:var(--matiere-fort);background:#f8fafc}
+.saisie{display:flex;gap:8px;margin-bottom:10px}
+.saisie input{flex:1;min-width:0;padding:14px;border:2px solid var(--trait);border-radius:var(--rayon);background:#fff;font-size:20px}
+.saisie input:focus{border-color:var(--matiere-fort);outline:none}
+.saisie .btn{width:auto;margin:0;text-align:center}
+.saisie .unite{align-self:center;font:600 20px var(--titre)}
+.retour{border-radius:var(--rayon);padding:14px 16px;margin:4px 0 14px;border-left:6px solid;display:flex;gap:12px;align-items:flex-start}
+.retour > div{flex:1;min-width:0}
+.retour.juste{background:var(--juste-voile);border-color:var(--juste)}
+.retour.faux{background:var(--faux-voile);border-color:var(--faux)}
+.retour .v{font:600 21px var(--titre);margin:0 0 4px}
+.score{font:700 44px var(--titre);margin:0;color:var(--matiere-fort)}
+.fin-tete{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.revoir{list-style:none;padding:0}
+.revoir li{padding:10px 0;border-bottom:1px dashed var(--trait)}
+.revoir li > span{display:block}
+.revoir .ok{color:var(--juste);font-weight:700}
+.revoir .ko{color:var(--faux);text-decoration:line-through}
+.revoir .ko-doux{color:var(--orange);font-weight:700}
+.revoir .doux{font-size:16px}
+.lecon{background:var(--carte);border:2px solid var(--trait);border-radius:var(--rayon);padding:4px 16px 12px;margin-bottom:14px}
+.lecon b{color:var(--matiere-fort)}
+.lecon .ex{background:#f0fdf4;border-radius:8px;padding:8px 10px;margin:6px 0 10px}
+.lecon .rappel{font:600 19px var(--titre);color:var(--matiere-fort);margin:16px 0 6px}
+.lecon ol{margin:0 0 10px;padding-left:22px}
+.mascotte{width:58px;height:58px;flex:none}
+.retour .mascotte,.fin-tete .mascotte{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ====== Propre à cet exercice : décor « paillasse de labo », tableaux de conversion, éprouvette ====== */
+body{background:#f4faf6}
+/* Décor de la couverture : graduations d'éprouvette, discrètes */
+.couverture{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='120'%3E%3Cg stroke='%2322c55e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M10 10h18M10 22h10M10 34h10M10 46h10M10 58h18M10 70h10M10 82h10M10 94h10M10 106h18'/%3E%3C/g%3E%3Cg fill='none' stroke='%2322c55e' stroke-width='2'%3E%3Cpath d='M58 30v42a9 9 0 0 0 18 0V30M54 30h26'/%3E%3C/g%3E%3C/svg%3E")}
+mark.cle{background:#fde68a;color:inherit;padding:0 3px;border-radius:4px;font-weight:700}
+.tab-wrap{overflow-x:auto;margin:8px 0 10px;-webkit-overflow-scrolling:touch}
+table.conv{border-collapse:collapse;font-size:15px;background:#fff;min-width:100%}
+table.conv th,table.conv td{border:1px solid #94a3b8;text-align:center;padding:4px 2px;min-width:30px;height:30px;position:relative}
+table.conv th{font:600 14px var(--titre);background:#f0fdf4;color:var(--matiere-fort)}
+table.conv th.vide2{background:#f8fafc}
+table.conv th.dep{background:#dbeafe;color:#1e3a8a}
+table.conv th.arr{background:#fde68a;color:#7c2d12}
+table.conv td{font:700 19px var(--titre)}
+table.conv td.zero{color:var(--orange)}
+table.conv td.virg{border-right:4px solid #dc2626}
+table.conv td.virg::after{content:",";position:absolute;right:-7px;bottom:-2px;color:#dc2626;font:700 22px var(--titre)}
+table.conv td.hors{background:#f8fafc}
+.leg-tab{font-size:14px;color:var(--encre-douce);margin:0 0 6px}
+.leg-tab span{display:inline-block;padding:0 6px;border-radius:4px;margin-right:4px}
+.eprouvette{display:block;margin:8px auto 0;width:180px;height:auto}
+.doc{background:#fffdf5;border:2px solid #e7dfc4;border-radius:12px;padding:10px 14px;margin:10px 0 0;font-size:17px;font-weight:400}
+.doc .titre-doc{font:600 17px var(--titre);color:#7c5a12;margin:0 0 6px}
+.doc p{margin:0 0 4px}
+.lecon table.cube td{border:0;padding:2px 8px 2px 0;vertical-align:middle}
+.corr{margin-top:8px}
+@media print{ .couverture,.noprint{display:none!important} body{background:#fff} }
+</style>
+</head>
+<body>
+<header class="couverture">
+  <div class="barre-haut"><a href="index.html">‹ Mes révisions</a><button id="sommaire" class="cache">Sommaire</button></div>
+  <div class="etiquette">
+    <div><p>Physique-Chimie · Chapitre 2</p><h1>Masse et volume</h1></div>
+    <!-- Illustration liée à la leçon : une balance (la masse) et une éprouvette graduée (le volume) -->
+    <svg class="illu" viewBox="0 0 80 66" aria-hidden="true">
+      <rect x="2" y="50" width="44" height="12" rx="3" fill="#334155"/>
+      <rect x="8" y="53" width="18" height="6" rx="1.5" fill="#bbf7d0"/>
+      <text x="17" y="58.4" text-anchor="middle" font-size="5.5" font-family="Verdana" font-weight="700" fill="#14532d">250 g</text>
+      <circle cx="37" cy="56" r="2.6" fill="#22c55e"/>
+      <rect x="6" y="46" width="36" height="4" rx="2" fill="#94a3b8"/>
+      <path d="M14 46 q0 -14 10 -14 q10 0 10 14 z" fill="#f59e0b"/>
+      <path d="M58 6 h14 M60 6 v50 h10 v-50" fill="none" stroke="#1f2a44" stroke-width="2"/>
+      <path d="M61 30 q4 3 8 0 v25 h-8 z" fill="#38bdf8"/>
+      <path d="M60 14 h4 M60 22 h6 M60 30 h4 M60 38 h6 M60 46 h4" stroke="#1f2a44" stroke-width="1.4"/>
+      <rect x="54" y="56" width="22" height="5" rx="2" fill="#1f2a44"/>
+    </svg>
+  </div>
+</header>
+<main id="page"></main>
+
+<script>
+/* ======================= CONTENU DE L'EXERCICE ======================= */
+var Q_PAR_ENTRAINEMENT = 6;
+var Q_PAR_NOTION_CONTROLE = 3;   /* 6 parties → contrôle de 18 questions */
+var SEUIL_PRET = 0.8;
+
+/* ---------- Nombres décimaux écrits en texte (aucune erreur d'arrondi) ---------- */
+/* propre("0012,500") → "12,5" */
+function propre(s){
+  var p=s.split(","), e=p[0].replace(/^0+/,"")||"0", d=(p[1]||"").replace(/0+$/,"");
+  return d?e+","+d:e;
+}
+/* decaler("0,548",3) → "548" : multiplie par 10^n en déplaçant la virgule */
+function decaler(s,n){
+  var p=s.split(","), e=p[0], d=p[1]||"", ch=e+d, pos=e.length+n;
+  if(pos<=0){ ch="0".repeat(1-pos)+ch; pos=1; }
+  if(pos>ch.length) ch=ch+"0".repeat(pos-ch.length);
+  return propre(ch.slice(0,pos)+","+ch.slice(pos));
+}
+/* Ce que l'élève tape → forme canonique ; "" si ce n'est pas un nombre */
+function canonNombre(t){
+  var s=String(t).replace(/[\s\u00a0\u202f]/g,"").replace(/\./g,",").replace(/(dam|dm|cm|mm|m)(3|³)$/i,"").replace(/[a-z]+$/i,"");
+  if(!/^\d*,?\d+$|^\d+,$/.test(s)) return "";
+  if(s.charAt(0)===",") s="0"+s;
+  return propre(s.replace(/,$/,""));
+}
+/* "14872,5" → "14 872,5" (espaces des milliers, insécables) */
+function fmt(s){
+  var p=s.split(","); p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g," ");
+  return p.join(",");
+}
+
+/* ---------- Les tableaux de conversion, comme dans le cahier ---------- */
+var T_MASSE = { cols:["t","q","","kg","hg","dag","g","dg","cg","mg"] };
+/* Tableau des volumes du cahier : chaque unité « cube » occupe 3 colonnes ; son chiffre des unités est dans la colonne où son nom est écrit */
+var T_VOL = { cols:["","","","kL","hL","daL","L","dL","cL","mL","","",""],
+              cols2:["dam³","","","m³","","","dm³","","","cm³","","","mm³"] };
+function colDe(T,u){ var i=T.cols.indexOf(u); if(i<0&&T.cols2) i=T.cols2.indexOf(u); return i; }
+function unitesColonne(T,c){ var r=[]; if(T.cols[c]) r.push(T.cols[c]); if(T.cols2&&T.cols2[c]) r.push(T.cols2[c]); return r; }
+
+/* Dessine le tableau rempli : nombre placé (chiffre des unités dans la colonne de départ), zéros ajoutés en orange,
+   virgule rouge juste après la colonne d'arrivée */
+function tableau(T,s,uDep,uArr,court){
+  var cDep=colDe(T,uDep), cArr=colDe(T,uArr), p=s.split(","), e=p[0], d=p[1]||"", cases={};
+  for(var i=0;i<e.length;i++) cases[cDep-(e.length-1-i)]=e.charAt(i);
+  for(var j=0;j<d.length;j++) cases[cDep+1+j]=d.charAt(j);
+  var cs=Object.keys(cases).map(Number), mini=Math.min.apply(null,cs.concat([cArr])), maxi=Math.max.apply(null,cs.concat([cArr]));
+  var g=Math.min(0,mini), dr=Math.max(T.cols.length-1,maxi);
+  if(court){ g=Math.max(g,mini-1); dr=Math.min(dr,maxi+1); }   /* correction sur téléphone : seulement les colonnes utiles */
+  function th(lbl,c){ var cl=c===cDep&&c===cArr?"arr":c===cDep?"dep":c===cArr?"arr":(lbl?"":"vide2"); return '<th class="'+cl+'">'+lbl+'</th>'; }
+  var h1="",h2="",td="";
+  for(var c=g;c<=dr;c++){
+    var dedans=c>=0&&c<T.cols.length;
+    h1+=th(dedans?T.cols[c]:"",c);
+    if(T.cols2) h2+=th(dedans?T.cols2[c]:"",c);
+    var v=cases[c], zero=false;
+    if(v===undefined && ((c>maxDig(cs)&&c<=cArr) || (c<minDig(cs)&&c>=cArr))){ v="0"; zero=true; }
+    td+='<td class="'+(zero?"zero ":"")+(c===cArr?"virg ":"")+(dedans?"":"hors")+'">'+(v||"")+'</td>';
+  }
+  return '<div class="tab-wrap"><table class="conv"><tr>'+h1+'</tr>'+(T.cols2?'<tr>'+h2+'</tr>':'')+'<tr>'+td+'</tr></table></div>';
+}
+function minDig(cs){ return Math.min.apply(null,cs); }
+function maxDig(cs){ return Math.max.apply(null,cs); }
+var LEG_TAB='<p class="leg-tab"><span style="background:#dbeafe">départ</span><span style="background:#fde68a">arrivée</span> la virgule (rouge) se place juste après la colonne d\'arrivée ; <span style="color:#b45309;font-weight:700">0</span> = zéro ajouté</p>';
+
+/* Fabrique une conversion : nombre au hasard, adapté au décalage pour que le résultat reste raisonnable */
+function nombrePour(decal){
+  for(var k=0;k<200;k++){
+    var n=H(1,4), ch=String(H(1,9)); for(var i=1;i<n;i++) ch+=H(0,9);
+    var dec=H(0,Math.min(n,3)), s=dec===n?"0,"+ch:(dec?ch.slice(0,n-dec)+","+ch.slice(n-dec):ch);
+    s=propre(s);
+    var r=decaler(s,decal), pr=r.split(","), ps=s.split(",");
+    if(pr[0].length<=7 && (pr[1]||"").length<=4 && (ps[1]||"").length<=3 && r!=="0") return [s,r];
+  }
+  return ["3",decaler("3",decal)];
+}
+function conversion(T,uDep,uArr,cle){
+  var dec=colDe(T,uArr)-colDe(T,uDep), sr=nombrePour(dec), s=sr[0], r=sr[1];
+  return {s:s, r:r, uDep:uDep, uArr:uArr, cle:cle+uDep+uArr+s};
+}
+function explConv(T,c){
+  var e=c.s.split(",")[0];
+  return "Le chiffre des unités de "+fmt(c.s)+" ("+e.charAt(e.length-1)+") va dans la colonne "+c.uDep+
+    ". La virgule se place juste après la colonne "+c.uArr+" ; on complète avec des zéros les colonnes vides. Donc "+fmt(c.s)+" "+c.uDep+" = "+fmt(c.r)+" "+c.uArr+".";
+}
+/* Trois façons de demander une conversion */
+function qConvertir(T,uDep,uArr,cle,theme){
+  var c=conversion(T,uDep,uArr,cle);
+  return {type:"saisie", nombre:true, q:"Convertis :", grand:fmt(c.s)+" "+uDep+" = … "+uArr, unite:uArr,
+    r:[c.r], affR:fmt(c.r)+" "+uArr, cle:c.cle, corrHtml:LEG_TAB+tableau(T,c.s,uDep,uArr,true),
+    expl:explConv(T,c), bravo:fmt(c.s)+" "+uDep+" = "+fmt(c.r)+" "+uArr+" : la virgule est bien juste après la colonne "+uArr+"."};
+}
+function qUnite(T,uDep,uArr,cle){
+  var c=conversion(T,uDep,uArr,cle), ok=unitesColonne(T,colDe(T,uArr));
+  return {type:"saisie", q:"Quelle unité manque ?", grand:fmt(c.s)+" "+uDep+" = "+fmt(c.r)+" …",
+    r:ok, affR:ok.join(" ou "), verif:function(t){ var n=normU(t); return ok.some(function(u){ return normU(u)===n; }); },
+    cle:"u"+c.cle, corrHtml:LEG_TAB+tableau(T,c.s,uDep,uArr,true),
+    expl:"Place "+fmt(c.s)+" dans le tableau (chiffre des unités dans la colonne "+uDep+"). La virgule de "+fmt(c.r)+" tombe juste après la colonne "+ok.join(" / ")+".",
+    bravo:"La virgule de "+fmt(c.r)+" est juste après la colonne "+ok.join(" / ")+"."};
+}
+function normU(t){ return String(t).replace(/\s/g,"").replace(/3$/,"³").replace(/^dal$/i,"daL").toLowerCase(); }
+
+/* Choix des unités (les unités rares sont tirées moins souvent) */
+var U_MASSE=["t","q","kg","kg","hg","dag","g","g","g","dg","cg","mg","mg"];
+var U_LITRE=["kL","hL","daL","L","L","L","dL","cL","cL","mL","mL"];
+var U_CUBE=["dam³","m³","m³","dm³","dm³","cm³","cm³","mm³"];
+function deuxUnites(pool,sens,T){
+  for(var k=0;k<100;k++){
+    var a=unDe(pool), b=unDe(pool), d=colDe(T,b)-colDe(T,a);
+    if(a===b||d===0) continue;
+    if(sens==="petite"&&d<0) continue;
+    if(sens==="grande"&&d>0) continue;
+    if(Math.abs(d)>6) continue;
+    return [a,b];
+  }
+  return sens==="grande"?[unDe(["mg","cg","g"]),"kg"]:["kg","g"];
+}
+
+/* ---------- L'éprouvette graduée (dessin) ---------- */
+/* g = valeur d'une graduation ; n = nombre de graduations ; un nombre est écrit toutes les « pas » graduations */
+var EPR = [ {g:1,n:25,pas:5}, {g:2,n:25,pas:5}, {g:5,n:20,pas:4}, {g:10,n:25,pas:5}, {g:2,n:30,pas:5}, {g:1,n:30,pas:10}, {g:5,n:30,pas:2} ];
+function eprouvette(cfg,niv){
+  var H0=292, Ht=48, pasY=(H0-Ht)/cfg.n, y=function(t){ return H0-t*pasY; }, xg=62, xd=118, h="";
+  h+='<rect width="180" height="340" fill="#fff"/>';
+  var yl=y(niv);
+  h+='<path d="M'+(xg+1.5)+' '+(yl-6)+' Q'+((xg+xd)/2)+' '+(yl+6)+' '+(xd-1.5)+' '+(yl-6)+' V'+(H0+16)+' H'+(xg+1.5)+' Z" fill="#7dd3fc" opacity=".75"/>';
+  h+='<path d="M'+(xg+1.5)+' '+(yl-6)+' Q'+((xg+xd)/2)+' '+(yl+6)+' '+(xd-1.5)+' '+(yl-6)+'" fill="none" stroke="#0369a1" stroke-width="1.6"/>';
+  for(var t=1;t<=cfg.n;t++){
+    var maj=t%cfg.pas===0, yy=y(t);
+    h+='<line x1="'+xg+'" y1="'+yy+'" x2="'+(xg+(maj?22:12))+'" y2="'+yy+'" stroke="#1f2a44" stroke-width="'+(maj?1.8:1.1)+'"/>';
+    if(maj) h+='<text x="'+(xg-6)+'" y="'+(yy+4.5)+'" text-anchor="end" font-size="13" font-weight="700" font-family="Atkinson Hyperlegible,Verdana,sans-serif" fill="#1f2a44">'+(t*cfg.g)+'</text>';
+  }
+  h+='<path d="M'+(xg-4)+' 30 Q'+(xg-2)+' 24 '+xg+' 24 V'+(H0+18)+' H'+xd+' V24 H'+(xd+6)+'" fill="none" stroke="#1f2a44" stroke-width="2.5" stroke-linejoin="round"/>';
+  h+='<rect x="'+(xg-18)+'" y="'+(H0+18)+'" width="'+(xd-xg+36)+'" height="10" rx="3" fill="#1f2a44"/>';
+  h+='<text x="'+(xd+8)+'" y="'+(Ht+4)+'" font-size="13" font-family="Atkinson Hyperlegible,Verdana,sans-serif" fill="#55607a">mL</text>';
+  return '<svg class="eprouvette" viewBox="0 0 180 340" role="img" aria-label="Éprouvette graduée en mL"><title>Éprouvette graduée (mL)</title>'+h+'</svg>';
+}
+function tirageEpr(){
+  var cfg=unDe(EPR), t;
+  do{ t=H(2,cfg.n-2); }while(t%cfg.pas===0 && Math.random()<.85);
+  return {cfg:cfg, t:t, v:t*cfg.g};
+}
+function explEpr(e){
+  var c=e.cfg, base=Math.floor(e.t/c.pas)*c.pas, k=e.t-base, ecart=c.pas*c.g;
+  var g="Entre deux nombres écrits ("+fmt(String((base||c.pas)*c.g))+" et "+fmt(String(((base||c.pas)+c.pas)*c.g))+"), il y a "+c.pas+" intervalles : une graduation vaut "+ecart+" ÷ "+c.pas+" = "+c.g+" mL. ";
+  var l = base ? "Le bas du ménisque est "+(k?k+" graduation"+(k>1?"s":"")+" au-dessus de "+base*c.g+" : "+base*c.g+" + "+k+" × "+c.g+" = "+e.v+" mL.":"exactement sur "+e.v+" mL.")
+               : "Le bas du ménisque est à "+k+" graduation"+(k>1?"s":"")+" : "+k+" × "+c.g+" = "+e.v+" mL.";
+  return g+l;
+}
+
+/* ---------- Masse et volume ---------- */
+var MEME_MASSE = [
+  ["8 g de pâte à modeler","8 g de polystyrène"],["1 kg de plumes","1 kg de fer"],["100 g de coton","100 g de sable"],
+  ["500 g de pommes de terre","500 g de pop-corn"],["20 g de laine","20 g de cailloux"]
+];
+var MEME_VOLUME = [
+  ["1 L d'eau","1 L d'huile"],["un verre rempli d'eau","le même verre rempli de sable"],["un seau rempli de plumes","le même seau rempli de cailloux"],
+  ["une boîte remplie de polystyrène","la même boîte remplie de pâte à modeler"],["1 L de lait","1 L d'huile"]
+];
+/* masses de 1 L (valeurs arrondies ; huile : celle de l'exercice 2 page 28) */
+var LIQ = [ ["d'huile",918,"l'huile"], ["d'alcool",790,"l'alcool"], ["de lait",1030,"le lait"], ["de miel",1400,"le miel"], ["d'eau salée",1025,"l'eau salée"], ["de sirop",1300,"le sirop"] ];
+
+/* ---------- La leçon (texte du cahier) ---------- */
+var LECON =
+  '<p class="rappel">I. Masse</p>'+
+  '<p>On mesure la masse d\'un objet à l\'aide d\'une <mark class="cle">balance</mark>.<br>L\'unité internationale de la masse est le <mark class="cle">kilogramme</mark> (symbole : <b>kg</b>).</p>'+
+  '<p><b>Conversions de masse</b></p>'+
+  LEG_TAB+
+  '<p>3 dag = 3 000 cg</p>'+tableau(T_MASSE,"3","dag","cg")+
+  '<p>0,548 t = 548 kg</p>'+tableau(T_MASSE,"0,548","t","kg")+
+  '<p>12,3 mg = 0,123 dg</p>'+tableau(T_MASSE,"12,3","mg","dg")+
+  '<div class="ex"><b>Méthode :</b> 1. j\'écris le nombre dans le tableau, le chiffre des unités dans la colonne de l\'unité de départ. 2. Je place la virgule juste après la colonne de l\'unité demandée. 3. Je complète avec des zéros les colonnes vides.</div>'+
+  '<p class="rappel">II. Volume</p>'+
+  '<p>On mesure le volume d\'un liquide à l\'aide d\'un <b>récipient gradué</b> (ex. : <b>éprouvette graduée</b>).<br>L\'unité usuelle est le <mark class="cle">litre</mark> (symbole : <b>L</b>).</p>'+
+  '<div class="ex"><table class="cube"><tr><td><svg width="64" height="60" viewBox="0 0 64 60" aria-hidden="true"><path d="M6 18 L20 6 H58 V42 L44 54 H6 Z" fill="#dcfce7" stroke="#166534" stroke-width="2"/><path d="M6 18 H44 V54 M44 18 L58 6" fill="none" stroke="#166534" stroke-width="2"/></svg></td>'+
+  '<td>c = 10 cm<br>V = volume d\'un cube<br>V = c × c × c<br>V = 10 × 10 × 10 = 1 000 cm³<br>V = 1 000 cm³ = 1 000 mL<br><b>V = 1 cm³ = 1 mL</b></td></tr></table></div>'+
+  '<p><b>Conversions de volume</b> (le même tableau sert pour les litres et les unités « cube »)</p>'+
+  '<p>6 daL = 0,6 hL</p>'+tableau(T_VOL,"6","daL","hL",true)+
+  '<p>0,304 dL = 30,4 mL</p>'+tableau(T_VOL,"0,304","dL","mL",true)+
+  '<p>15,3 cL = 0,153 L</p>'+tableau(T_VOL,"15,3","cL","L",true)+
+  '<p>8 m³ = 8 000 dm³</p>'+tableau(T_VOL,"8","m³","dm³",true)+
+  '<p>0,0265 dam³ = 265 hL</p>'+tableau(T_VOL,"0,0265","dam³","hL",true)+
+  '<p>1 487,2 cL = 14 872 cm³</p>'+tableau(T_VOL,"1487,2","cL","cm³",true)+
+  '<div class="ex">Dans le tableau : <b>1 m³ = 1 kL</b>, <b>1 dm³ = 1 L</b>, <b>1 cm³ = 1 mL</b> (même colonne). Pour une unité « cube », on avance de <b>3 colonnes</b> à chaque fois.</div>'+
+  '<p class="rappel">III. Masse et volume</p>'+
+  '<p>Des matières ayant une <b>même masse</b> peuvent avoir des <b>volumes différents</b> (ex. : 8 g de pâte à modeler et 8 g de polystyrène).</p>'+
+  '<p>Des matières ayant un <b>même volume</b> peuvent avoir des <b>masses différentes</b> (ex. : eau et huile).</p>'+
+  '<div class="ex"><b>Exercice 2 page 28</b><ol>'+
+  '<li>1 L d\'eau est plus lourd que 1 L d\'huile (1 kg = 1 000 g &gt; 918 g).</li>'+
+  '<li>1 000 g d\'eau occupent le même volume (1 L) que 918 g d\'huile. Pour avoir 1 kg = 1 000 g d\'huile, il faut ajouter de l\'huile : l\'huile occupera un <b>plus grand volume</b> que l\'eau.</li>'+
+  '<li>L\'huile et l\'eau n\'ont pas la même masse pour un volume identique, car des matières ayant un volume identique peuvent avoir des masses différentes.</li>'+
+  '<li>On <b>tare</b> la balance avec l\'éprouvette vide. Puis on remplit l\'éprouvette avec 1 L d\'huile et on repèse : cela donne la masse d\'1 L d\'huile.</li></ol></div>'+
+  '<p class="rappel">IV. Mesurer le volume d\'un liquide avec une éprouvette graduée</p>'+
+  '<ol><li>On pose l\'éprouvette sur une <b>surface plane et horizontale</b>.</li>'+
+  '<li>On place l\'œil <b>à la hauteur de la surface du liquide</b>.</li>'+
+  '<li>La surface du liquide est courbée : c\'est le <b>ménisque</b>. On lit la graduation au <b>bas du ménisque</b>.</li>'+
+  '<li>Avant de lire, on cherche <b>la valeur d\'une graduation</b> : écart entre deux nombres écrits ÷ nombre d\'intervalles entre eux.</li></ol>'+
+  '<div class="ex">Exemple : entre 10 et 20 mL il y a 5 intervalles → une graduation vaut 10 ÷ 5 = <b>2 mL</b>.</div>';
+
+/* ---------- Les sous-notions ---------- */
+var NOTIONS = [
+  { nom:"Instruments et unités", types:[
+    function(){
+      return {type:"saisie", q:"Avec quel instrument mesure-t-on la masse d'un objet ?", r:["balance","balance électronique","balance de Roberval"], affR:"une balance", cle:"ib",
+        expl:"On mesure la masse d'un objet à l'aide d'une balance.", bravo:"On mesure la masse à l'aide d'une balance."};
+    },
+    function(){
+      return {type:"saisie", q:"Avec quel instrument mesure-t-on le volume d'un liquide ?", r:["éprouvette graduée","éprouvette","récipient gradué","une éprouvette graduée"], affR:"un récipient gradué (ex. : une éprouvette graduée)", cle:"iv",
+        expl:"On mesure le volume d'un liquide à l'aide d'un récipient gradué, par exemple une éprouvette graduée. (La balance mesure la masse, pas le volume.)", bravo:"Un récipient gradué, comme l'éprouvette graduée."};
+    },
+    function(){
+      var b=unDe([
+        {q:"Quelle est l'unité internationale de la masse ? Écris son nom en entier.", r:["kilogramme"], cle:"un-kg",
+         expl:"L'unité internationale de la masse est le kilogramme (symbole : kg). Attention : ce n'est pas le gramme !", bravo:"Le kilogramme, symbole kg."},
+        {q:"Quel est le symbole du kilogramme ?", r:["kg"], strict:true, cle:"sy-kg",
+         expl:"Le symbole du kilogramme est kg, tout en minuscules (pas Kg, ni kgr).", bravo:"kg, en minuscules."},
+        {q:"Quelle est l'unité usuelle de volume ? Écris son nom en entier.", r:["litre"], cle:"un-l",
+         expl:"L'unité usuelle de volume est le litre (symbole : L).", bravo:"Le litre, symbole L."},
+        {q:"Quel est le symbole du litre ?", r:["L","l"], strict:true, cle:"sy-l",
+         expl:"Le symbole du litre est L (L majuscule dans ton cours).", bravo:"L, comme dans ton cours."}
+      ]);
+      var q={type:"saisie", q:b.q, r:b.r, cle:b.cle, expl:b.expl, bravo:b.bravo};
+      if(b.strict) q.verif=function(t){ return b.r.indexOf(t.trim().replace(/\.$/,""))>=0; };
+      return q;
+    },
+    function(){
+      var c=H(2,10);
+      return {type:"saisie", nombre:true, q:"Un cube a une arête c = "+c+" cm. Calcule son volume.", unite:"cm³", r:[String(c*c*c)], affR:fmt(String(c*c*c))+" cm³", cle:"cu"+c,
+        expl:"V = c × c × c = "+c+" × "+c+" × "+c+" = "+fmt(String(c*c*c))+" cm³.", bravo:"V = c × c × c = "+fmt(String(c*c*c))+" cm³."};
+    },
+    function(){
+      var e=unDe([["1 cm³ = … mL","1","mL"],["1 000 cm³ = … mL","1000","mL"],["1 000 cm³ = … L","1","L"],["1 dm³ = … L","1","L"],["1 L = … cm³","1000","cm³"],["1 mL = … cm³","1","cm³"],["1 L = … mL","1000","mL"]]);
+      return {type:"saisie", nombre:true, q:"Complète :", grand:e[0], unite:e[2], r:[e[1]], affR:fmt(e[1])+" "+e[2], cle:"eq"+e[0],
+        expl:"Rappel du cube : c = 10 cm → V = 10 × 10 × 10 = 1 000 cm³ = 1 000 mL = 1 L. Et 1 cm³ = 1 mL ; 1 dm³ = 1 L (même colonne du tableau).",
+        bravo:e[0].replace("…",fmt(e[1]))+"."};
+    }
+  ]},
+  { nom:"Conversions de masse", types:[
+    function(){ var u=deuxUnites(U_MASSE,"petite",T_MASSE); return qConvertir(T_MASSE,u[0],u[1],"mp"); },
+    function(){ var u=deuxUnites(U_MASSE,"grande",T_MASSE); return qConvertir(T_MASSE,u[0],u[1],"mg"); },
+    function(){ var u=deuxUnites(U_MASSE,"",T_MASSE); return qUnite(T_MASSE,u[0],u[1],"mu"); }
+  ]},
+  { nom:"Conversions de volume en litres", types:[
+    function(){ var u=deuxUnites(U_LITRE,"petite",T_VOL); return qConvertir(T_VOL,u[0],u[1],"lp"); },
+    function(){ var u=deuxUnites(U_LITRE,"grande",T_VOL); return qConvertir(T_VOL,u[0],u[1],"lg"); },
+    function(){ var u=deuxUnites(U_LITRE,"",T_VOL); return qUnite(T_VOL,u[0],u[1],"lu"); }
+  ]},
+  { nom:"Conversions m³, dm³, cm³ et litres", types:[
+    function(){ var u=deuxUnites(U_CUBE,"",T_VOL); return qConvertir(T_VOL,u[0],u[1],"cc"); },
+    function(){ /* unité cube → litres */
+      var a,b,d; do{ a=unDe(U_CUBE); b=unDe(U_LITRE); d=colDe(T_VOL,b)-colDe(T_VOL,a); }while(d===0||Math.abs(d)>6);
+      return qConvertir(T_VOL,a,b,"cl"); },
+    function(){ /* litres → unité cube */
+      var a,b,d; do{ a=unDe(U_LITRE); b=unDe(U_CUBE); d=colDe(T_VOL,b)-colDe(T_VOL,a); }while(d===0||Math.abs(d)>6);
+      return qConvertir(T_VOL,a,b,"lc"); },
+    function(){ var a,b,d; do{ a=unDe(U_CUBE.concat(U_LITRE)); b=unDe(U_CUBE); d=colDe(T_VOL,b)-colDe(T_VOL,a); }while(d===0||Math.abs(d)>6);
+      return qUnite(T_VOL,a,b,"cu"); }
+  ]},
+  { nom:"Masse et volume", types:[
+    function(){
+      var m=unDe(MEME_MASSE);
+      return {type:"qcm", q:"On compare "+m[0]+" et "+m[1]+". Que peut-on dire ?", options:[
+        "Ils ont la même masse mais des volumes différents","Ils ont la même masse, donc le même volume","Ils ont le même volume mais des masses différentes","Le premier est plus lourd que le second"],
+        r:["Ils ont la même masse mais des volumes différents"], cle:"mm"+m[0],
+        expl:"Ils ont tous les deux la même masse, mais ils ne prennent pas la même place. Des matières ayant une même masse peuvent avoir des volumes différents.",
+        bravo:"Même masse, volumes différents."};
+    },
+    function(){
+      var v=unDe(MEME_VOLUME);
+      return {type:"qcm", q:"On compare "+v[0]+" et "+v[1]+". Que peut-on dire ?", options:[
+        "Ils ont le même volume mais des masses différentes","Ils ont le même volume, donc la même masse","Ils ont la même masse mais des volumes différents","Ils ont la même masse et le même volume"],
+        r:["Ils ont le même volume mais des masses différentes"], cle:"mv"+v[0],
+        expl:"Ils occupent la même place (même volume), mais ils ne pèsent pas pareil. Des matières ayant un même volume peuvent avoir des masses différentes (ex. : eau et huile).",
+        bravo:"Même volume, masses différentes."};
+    },
+    function(){
+      var m=Math.random()<.5;
+      return {type:"saisie", q:"Complète la phrase de ta leçon :<br><i>« Des matières ayant "+(m?"une même masse peuvent avoir des volumes":"un même volume peuvent avoir des masses")+" … »</i>",
+        r:["différents","différentes","différent","différente"], affR:m?"différents":"différentes", cle:"ph"+m,
+        expl:"Des matières ayant une même masse peuvent avoir des volumes différents ; des matières ayant un même volume peuvent avoir des masses différentes.",
+        bravo:m?"Même masse → volumes différents.":"Même volume → masses différentes."};
+    },
+    function(){
+      var l=unDe(LIQ), plus=l[1]>1000;
+      return {type:"saisie", q:"1 L d'eau a une masse de 1 000 g. 1 L "+l[0]+" a une masse d'environ "+fmt(String(l[1]))+" g.<br>Quel liquide est le plus lourd pour un même volume ?",
+        r:plus?[l[2]]:["eau","l'eau"], affR:plus?l[2]:"l'eau", cle:"lq"+l[0],
+        expl:"Pour le même volume (1 L), on compare les masses : "+(plus?fmt(String(l[1]))+" g > 1 000 g, donc 1 L "+l[0]+" est plus lourd que 1 L d'eau.":"1 000 g > "+fmt(String(l[1]))+" g, donc 1 L d'eau est plus lourd que 1 L "+l[0]+"."),
+        bravo:"Même volume : le plus lourd est celui qui a la plus grande masse."};
+    },
+    function(){
+      var l=unDe(LIQ), moins=l[1]<1000;
+      return {type:"qcm", q:"1 L d'eau a une masse de 1 000 g. 1 L "+l[0]+" a une masse d'environ "+fmt(String(l[1]))+" g.<br>Pour avoir 1 kg "+l[0]+", quel volume faut-il ?",
+        options:["Plus de 1 L","Moins de 1 L","Exactement 1 L"], r:[moins?"Plus de 1 L":"Moins de 1 L"], cle:"vk"+l[0],
+        expl:moins?"1 L "+l[0]+" ne pèse que "+fmt(String(l[1]))+" g : pour atteindre 1 000 g, il faut en ajouter. Il faut donc plus de 1 L (comme pour l'huile, exercice 2 page 28).":
+                   "1 L "+l[0]+" pèse déjà "+fmt(String(l[1]))+" g, plus que 1 000 g : pour avoir 1 000 g, il en faut moins de 1 L.",
+        bravo:moins?"Il en faut plus : 1 L pèse moins de 1 kg.":"Il en faut moins : 1 L pèse plus de 1 kg."};
+    },
+    function(){
+      var v=H(80,180), lq=unDe(LIQ.concat([["d'eau",1000,"l'eau"]])), m=Math.round(lq[1]*H(1,5)/10), tot=v+m;
+      return {type:"saisie", nombre:true, q:"Une éprouvette vide a une masse de "+v+" g. Remplie "+lq[0]+", sa masse est "+fmt(String(tot))+" g.<br>Quelle est la masse du liquide ?", unite:"g",
+        r:[String(m)], affR:fmt(String(m))+" g", cle:"ta"+v+m,
+        expl:"Masse du liquide = masse totale − masse de l'éprouvette vide = "+fmt(String(tot))+" − "+v+" = "+fmt(String(m))+" g. Pour éviter ce calcul, on tare la balance avec l'éprouvette vide : elle affiche alors directement la masse du liquide.",
+        bravo:"On enlève la masse de l'éprouvette : "+fmt(String(tot))+" − "+v+" = "+fmt(String(m))+" g."};
+    },
+    function(){
+      var bon="Poser l'éprouvette vide sur la balance et tarer (remettre à zéro)";
+      return {type:"qcm", q:"Pour mesurer la masse d'1 L d'huile, que fait-on en premier ?",
+        options:[bon,"Verser l'huile directement sur le plateau de la balance","Remplir l'éprouvette d'huile, puis tarer la balance","Mesurer le volume de l'huile avec la balance"], r:[bon], cle:"tr",
+        expl:"On tare la balance avec l'éprouvette vide, puis on la remplit avec 1 L d'huile et on repèse : la balance affiche la masse d'1 L d'huile seule. Si on tare après avoir versé l'huile, la balance afficherait 0 !",
+        bravo:"On tare avec l'éprouvette vide : la balance ne compte plus sa masse."};
+    }
+  ]},
+  { nom:"Lire une éprouvette graduée", types:[
+    function(){
+      var e=tirageEpr();
+      return {type:"saisie", nombre:true, q:"Quel est le volume de liquide dans cette éprouvette ?", doc:'<div class="doc">'+eprouvette(e.cfg,e.t)+'</div>', unite:"mL",
+        r:[String(e.v)], affR:fmt(String(e.v))+" mL", cle:"ev"+e.cfg.g+"-"+e.cfg.pas+"-"+e.t, expl:explEpr(e), bravo:explEpr(e)};
+    },
+    function(){
+      var e=tirageEpr();
+      return {type:"saisie", nombre:true, q:"Combien vaut <b>une graduation</b> de cette éprouvette ?", doc:'<div class="doc">'+eprouvette(e.cfg,e.t)+'</div>', unite:"mL",
+        r:[String(e.cfg.g)], affR:e.cfg.g+" mL", cle:"eg"+e.cfg.g+"-"+e.cfg.pas+"-"+e.cfg.n,
+        expl:"Entre deux nombres écrits, l'écart est de "+(e.cfg.pas*e.cfg.g)+" mL et il y a "+e.cfg.pas+" intervalles : "+(e.cfg.pas*e.cfg.g)+" ÷ "+e.cfg.pas+" = "+e.cfg.g+" mL.",
+        bravo:(e.cfg.pas*e.cfg.g)+" mL ÷ "+e.cfg.pas+" intervalles = "+e.cfg.g+" mL."};
+    },
+    function(){
+      var e=tirageEpr(), u=unDe(["cL","L","cL"]), r=decaler(String(e.v), u==="cL"?-1:-3);
+      return {type:"saisie", nombre:true, q:"Lis le volume, puis écris-le en <b>"+u+"</b>.", doc:'<div class="doc">'+eprouvette(e.cfg,e.t)+'</div>', unite:u,
+        r:[r], affR:fmt(r)+" "+u, cle:"ec"+e.cfg.g+"-"+e.t+u, corrHtml:tableau(T_VOL,String(e.v),"mL",u,true),
+        expl:explEpr(e)+" Puis on convertit : "+e.v+" mL = "+fmt(r)+" "+u+".", bravo:e.v+" mL = "+fmt(r)+" "+u+"."};
+    },
+    function(){
+      var bon="Au bas du ménisque, l'œil à la hauteur du liquide";
+      return {type:"qcm", q:"Où lit-on le volume dans une éprouvette graduée ?", options:[bon,
+        "En haut du ménisque, là où le liquide touche la paroi","Au bas du ménisque, en regardant d'en haut","Au milieu, entre le haut et le bas du ménisque"], r:[bon], cle:"lm",
+        expl:"La surface du liquide est courbée (le ménisque) : on lit au bas du ménisque, l'œil bien à la même hauteur. Si on regarde d'en haut ou d'en bas, la lecture est fausse.",
+        bravo:"Bas du ménisque, œil à la même hauteur."};
+    },
+    function(){
+      var b=unDe([
+        {q:"Comment s'appelle la surface courbée du liquide dans une éprouvette ?", r:["ménisque","le ménisque"], affR:"le ménisque", cle:"mn",
+         expl:"C'est le ménisque. On lit le volume au bas du ménisque.", bravo:"Le ménisque : on lit en bas."},
+        {q:"Où pose-t-on l'éprouvette pour lire le volume ?", type:"qcm", options:["Sur une surface plane et horizontale","Dans la main, bien droite","Un peu penchée, pour mieux voir","Sur le plateau de la balance"],
+         r:["Sur une surface plane et horizontale"], cle:"pl", expl:"Si l'éprouvette penche ou bouge, le liquide n'est pas à plat et la lecture est fausse : on la pose sur une surface plane et horizontale.",
+         bravo:"Bien à plat, sinon la lecture est fausse."}
+      ]);
+      return {type:b.type||"saisie", q:b.q, r:b.r, affR:b.affR, options:b.options, cle:b.cle, expl:b.expl, bravo:b.bravo};
+    }
+  ]}
+];
+/* ===================== FIN DU CONTENU ===================== */
+
+/* ---------------- Pictogramme labo : éprouvette (calme / joie / encourage) ---------------- */
+function mascotte(h){
+  var c=h==="joie"?"var(--juste)":h==="encourage"?"var(--orange)":"var(--matiere-fort)";
+  var fond='<circle cx="32" cy="32" r="29" fill="'+(h==="joie"?"var(--juste-voile)":h==="encourage"?"var(--orange-voile)":"#f0fdf4")+'" stroke="'+c+'" stroke-width="2.5"/>';
+  var epr='<path d="M22 12 h16 M24 12 v34 h12 v-34" fill="none" stroke="#1f2a44" stroke-width="2.2"/>'+
+    '<path d="M25.2 28 q4.8 3 9.6 0 v17 h-9.6 z" fill="#38bdf8"/>'+
+    '<path d="M24 18 h4 M24 24 h6 M24 30 h4 M24 36 h6 M24 42 h4" stroke="#1f2a44" stroke-width="1.3"/>'+
+    '<rect x="19" y="46" width="22" height="4" rx="1.5" fill="#1f2a44"/>';
+  if(h==="joie") return svgM(fond+epr+'<circle cx="46" cy="45" r="9" fill="'+c+'"/><path d="M41.5 45 l3 3 l6 -6.5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>');
+  if(h==="encourage") return svgM(fond+epr+'<circle cx="46" cy="45" r="9" fill="'+c+'"/><path d="M49.8 42.6 A5 5 0 1 0 51 46.5" stroke="#fff" stroke-width="2.3" fill="none" stroke-linecap="round"/><path d="M47.2 41.6 L50.2 42.8 L50.6 39.6" stroke="#fff" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>');
+  return svgM(fond+epr);
+}
+function svgM(x){ return '<svg class="mascotte" viewBox="0 0 64 64" aria-hidden="true">'+x+'</svg>'; }
+
+/* ---------------- Outils ---------------- */
+function $(id){ return document.getElementById(id); }
+function H(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+function unDe(a){ return a[Math.floor(Math.random()*a.length)]; }
+function melange(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function echappe(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function texte(h){ var d=document.createElement("div"); d.innerHTML=h.replace(/<br\s*\/?>/g," "); return d.textContent.replace(/\s+/g," ").trim(); }
+function lire(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function ecrire(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+var FICHIER = location.pathname.split("/").pop() || "exercices-physique-masse-volume.html";
+if(!/\.html$/.test(FICHIER)) FICHIER="exercices-physique-masse-volume.html";
+
+/* Correction tolérante sur la forme (majuscules, accents, article, pluriel) ; stricte sur les nombres */
+function norm(s){
+  s=String(s).toLowerCase().trim().replace(/[’`]/g,"'").replace(/œ/g,"oe");
+  s=s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[«»"“”.,;:!?()]/g," ").trim();
+  s=s.replace(/^(c'est|il est|elle est|ce sont)\s+/,"").replace(/^(une|un|des|du|de la|de l'|les|la|le|de)\s+/,"").replace(/^(d|l)'\s*/,"");
+  s=s.replace(/[-'°]/g," ").replace(/\s+/g,"");
+  if(s.length>3) s=s.replace(/[sx]$/,"");
+  return s;
+}
+function bon(saisie,r){ var n=norm(saisie); return n!=="" && r.some(function(x){ return norm(x)===n; }); }
+function estJuste(saisie,q){
+  if(q.verif) return q.verif(saisie);
+  if(q.nombre){ var c=canonNombre(saisie); return c!=="" && q.r.some(function(x){ return propre(x)===c; }); }
+  return bon(saisie,q.r);
+}
+function bonneTexte(q){ return q.affR || q.r[0]; }
+
+/* ---------- Fabrication d'une série sans répétition ---------- */
+function vues(){ return lire("vues:"+FICHIER) || []; }
+function fabriquer(notion, deja, premier){
+  var hist=vues(), q, essais=0, types=notion.types, d=premier===undefined?H(0,types.length-1):premier;
+  do{ q=types[(d+essais)%types.length](); essais++; }
+  while(essais<40 && (deja[q.cle] || (essais<25 && hist.indexOf(q.cle)>=0)));
+  deja[q.cle]=1; q.notion=notion.nom; return q;
+}
+function memoriser(qs){
+  var h=vues().concat(qs.map(function(q){ return q.cle; }));
+  ecrire("vues:"+FICHIER, h.slice(-150));
+}
+function serieEntrainement(notion){
+  var deja={}, qs=[], d=H(0,notion.types.length-1);
+  for(var i=0;i<Q_PAR_ENTRAINEMENT;i++) qs.push(fabriquer(notion,deja,d+i));
+  return melange(qs);
+}
+function serieControle(){
+  var deja={}, qs=[];
+  NOTIONS.forEach(function(n){ var d=H(0,n.types.length-1); for(var i=0;i<Q_PAR_NOTION_CONTROLE;i++) qs.push(fabriquer(n,deja,d+i)); });
+  return melange(qs);
+}
+
+/* ---------------- Écrans ---------------- */
+var serie=null;
+function page(h,retour){ $("page").innerHTML=h; $("sommaire").classList.toggle("cache",!retour); window.scrollTo(0,0); }
+$("sommaire").onclick=accueil;
+
+function listeNoms(l){ return "<b>"+l.map(echappe).join("</b>, <b>")+"</b>"; }
+function bilan(){
+  var dc=lire("dernier-controle:"+FICHIER);
+  if(!dc) return '<div class="bilan">'+mascotte("calme")+'<div><p class="t">Prêt à commencer</p><p>Relis la leçon, entraîne-toi sur chaque partie, puis fais le contrôle quand tu te sens prêt.</p></div></div>';
+  if(dc.bon/dc.total>=SEUIL_PRET)
+    return '<div class="bilan pret">'+mascotte("joie")+'<div><p class="t">✓ Tu es prêt pour l\'évaluation</p><p>Tu as eu '+dc.bon+' / '+dc.total+' au dernier contrôle.'+
+      (dc.aRevoir&&dc.aRevoir.length ? ' Petit point à relire avant : '+listeNoms(dc.aRevoir)+'.' : '')+'</p></div></div>';
+  return '<div class="bilan travail">'+mascotte("encourage")+'<div><p class="t">Pas encore tout à fait prêt</p><p>Dernier contrôle : '+dc.bon+' / '+dc.total+'. '+
+    (dc.aRevoir&&dc.aRevoir.length ? 'Encore à réviser : '+listeNoms(dc.aRevoir)+'. ' : '')+
+    'Entraîne-toi sur ces parties, puis reviens te tester quand tu te sens prêt.</p></div></div>';
+}
+
+function accueil(){
+  serie=null;
+  var rec=lire("meilleur:"+FICHIER), dc=lire("dernier-controle:"+FICHIER)||{};
+  var h=bilan()+'<button class="btn" id="b-lecon">Relire la leçon<small>Le cours, les tableaux de conversion corrigés et la lecture de l\'éprouvette</small></button>';
+  h+='<h2>S\'entraîner</h2>';
+  NOTIONS.forEach(function(n,i){
+    var e=lire("entr:"+FICHIER+":"+n.nom), arev=dc.aRevoir&&dc.aRevoir.indexOf(n.nom)>=0;
+    h+='<button class="btn'+(arev?' plein':'')+'" data-n="'+i+'">'+echappe(n.nom)+'<small>'+Q_PAR_ENTRAINEMENT+' questions'+
+       (e?' · dernier essai : '+e.bon+' / '+e.total:'')+(arev?' · à revoir':'')+'</small></button>';
+  });
+  var nbC=NOTIONS.length*Q_PAR_NOTION_CONTROLE;
+  h+='<h2>Se tester</h2><button class="btn" id="b-ctrl">Faire le contrôle<small>'+nbC+' questions sur toute la leçon, correction à la fin'+(rec?' · meilleur score : '+rec.bon+' / '+rec.total:'')+'</small></button>';
+  page(h,false);
+  $("b-lecon").onclick=lecon;
+  [].forEach.call(document.querySelectorAll("[data-n]"),function(b){ b.onclick=function(){ demarrer("entrainement", NOTIONS[+b.dataset.n]); }; });
+  $("b-ctrl").onclick=function(){ demarrer("controle"); };
+}
+
+function lecon(){
+  page('<div class="lecon">'+LECON+'</div><button class="btn plein centre" id="b-go">Retour au sommaire</button>', true);
+  $("b-go").onclick=accueil;
+}
+
+function demarrer(mode, notion){
+  var qs = mode==="controle" ? serieControle() : serieEntrainement(notion);
+  memoriser(qs);
+  serie={mode:mode, notion:notion, qs:qs, nb:qs.length, i:0, bon:0, erreurs:[], rattrapage:[], enRattrapage:false};
+  question();
+}
+
+function champSaisie(id,label,nombre){
+  return '<input id="'+id+'" type="text"'+(nombre?' inputmode="decimal"':'')+' autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-gramm="false" aria-label="'+echappe(label)+'">';
+}
+
+function question(){
+  if(serie.i>=serie.qs.length){
+    if(serie.mode==="entrainement" && !serie.enRattrapage && serie.rattrapage.length){
+      serie.enRattrapage=true;
+      var deja={}; serie.qs.forEach(function(q){ deja[q.cle]=1; });
+      serie.qs=serie.qs.concat(serie.rattrapage.map(function(){ var q=fabriquer(serie.notion,deja); q.reprise=true; return q; }));
+    } else return fin();
+  }
+  var q=serie.qs[serie.i], total=serie.qs.length;
+  var h='<div class="entete-q"><div class="jauge"><span style="width:'+Math.round(serie.i/total*100)+'%"></span></div>'+
+        '<span class="compteur">'+(serie.i+1)+' / '+total+'</span></div>';
+  if(q.reprise) h+='<p class="doux">On y revient, avec une autre question.</p>';
+  h+='<div class="carte-q"><p class="theme">'+echappe(serie.mode==="controle"?"Contrôle":q.notion)+'</p>'+
+     '<p class="enonce">'+q.q+(q.grand?'<span class="grand">'+echappe(q.grand)+'</span>':'')+'</p>'+(q.doc||'')+'</div>';
+  if(q.type==="qcm"){
+    q.ordre=melange(q.options);
+    h+='<div class="choix">'+q.ordre.map(function(o,k){ return '<button class="btn" data-k="'+k+'">'+echappe(o)+'</button>'; }).join("")+'</div>';
+  } else {
+    h+='<div class="saisie" id="f">'+champSaisie("in","Ta réponse",q.nombre)+(q.unite?'<span class="unite">'+echappe(q.unite)+'</span>':'')+
+       '<button class="btn plein" type="button" id="valider">Valider</button></div>';
+  }
+  h+='<div id="retour"></div>';
+  page(h,true);
+  if(q.type==="qcm"){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b){ b.onclick=function(){ repondre(q.ordre[+b.dataset.k], b); }; });
+  } else {
+    var valider=function(){ var v=$("in").value; if(v.trim() && !$("in").disabled) repondre(v); };
+    $("valider").onclick=valider;
+    $("in").onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); valider(); } };
+    if(!q.doc) setTimeout(function(){ try{ $("in").focus({preventScroll:true}); }catch(e){} },50);
+  }
+}
+
+function repondre(donne, bouton){
+  var q=serie.qs[serie.i], ok=q.type==="qcm" ? q.r.indexOf(donne)>=0 : estJuste(donne,q);
+  var txtDonne=donne+(q.unite&&q.nombre&&/\d\s*$/.test(donne)?" "+q.unite:""), txtBonne=bonneTexte(q);
+  if(ok && !q.reprise) serie.bon++;
+  if(!ok && !q.reprise){
+    serie.erreurs.push({q:texte(q.q)+(q.grand?" "+q.grand:""), donne:txtDonne, bonne:txtBonne, notion:q.notion, expl:q.expl, corrHtml:q.corrHtml});
+    serie.rattrapage.push(1);
+  }
+  [].forEach.call(document.querySelectorAll(".choix .btn, #f input, #f button"),function(el){ el.disabled=true; });
+  var dernier = serie.i+1>=serie.qs.length && (serie.mode==="controle" || serie.enRattrapage || !serie.rattrapage.length);
+
+  if(serie.mode==="controle"){
+    if(bouton) bouton.classList.add("choisi");
+    $("retour").innerHTML='<button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+    $("suite").onclick=suivante; $("suite").focus({preventScroll:true}); return;
+  }
+  if(bouton){
+    [].forEach.call(document.querySelectorAll(".choix .btn"),function(b,k){
+      if(q.r.indexOf(q.ordre[k])>=0) b.classList.add("juste"); else if(b===bouton) b.classList.add("faux");
+    });
+  }
+  var h='<div class="retour '+(ok?"juste":"faux")+'" role="status">'+mascotte(ok?"joie":"encourage")+'<div><p class="v">'+(ok?unDe(["Juste !","Bravo !","Exact !"]):"Pas tout à fait")+'</p>';
+  if(ok) h+='<p>'+echappe(q.bravo)+'</p>';
+  else h+=(q.type==="qcm"?'':'<p>Tu as répondu « '+echappe(txtDonne)+' ». La réponse : <b>'+echappe(txtBonne)+'</b></p>')+'<p>'+echappe(q.expl)+'</p>'+(q.corrHtml?'<div class="corr">'+q.corrHtml+'</div>':'');
+  h+='</div></div><button class="btn plein centre" id="suite">'+(dernier?"Voir mon résultat":"Question suivante")+'</button>';
+  $("retour").innerHTML=h;
+  $("suite").onclick=suivante;
+  $("suite").focus({preventScroll:true});
+  $("retour").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function suivante(){ serie.i++; question(); }
+
+function fin(){
+  var n=serie.nb, s=serie.bon, r=s/n, h='';
+  var humeur = r>=SEUIL_PRET ? "joie" : "encourage";
+  if(serie.mode==="controle"){
+    var noms=[]; serie.erreurs.forEach(function(e){ if(noms.indexOf(e.notion)<0) noms.push(e.notion); });
+    ecrire("dernier-controle:"+FICHIER,{bon:s,total:n,aRevoir:noms,date:Date.now()});
+    var prev=lire("meilleur:"+FICHIER);
+    if(!prev || r>prev.bon/prev.total) ecrire("meilleur:"+FICHIER,{bon:s,total:n});
+    h+='<h2>Résultat du contrôle</h2><div class="fin-tete">'+mascotte(humeur)+'<p class="score">'+s+' / '+n+'</p></div>'+bilan();
+    h+='<h3>Partie par partie</h3><ul class="revoir">'+NOTIONS.map(function(no){
+      var tot=serie.qs.filter(function(q){ return q.notion===no.nom; }).length;
+      var err=serie.erreurs.filter(function(e){ return e.notion===no.nom; }).length;
+      return '<li>'+echappe(no.nom)+'<span class="'+(err?'ko-doux':'ok')+'">'+(tot-err)+' / '+tot+(err?' : à retravailler':' : réussi')+'</span></li>';
+    }).join("")+'</ul>';
+  } else {
+    ecrire("entr:"+FICHIER+":"+serie.notion.nom,{bon:s,total:n});
+    h+='<h2>'+echappe(serie.notion.nom)+'</h2><div class="fin-tete">'+mascotte(humeur)+'<p class="score">'+s+' / '+n+'</p></div>';
+    h+='<p>'+(s===n?"Sans faute ! Tu maîtrises cette partie.":r>=SEUIL_PRET?"Très bien. Relis les corrections ci-dessous.":
+         "Cette partie n'est pas encore sûre. Relis la leçon et recommence : les questions changent à chaque fois.")+'</p>';
+  }
+  if(serie.erreurs.length){
+    h+='<h3>Corrections</h3><ul class="revoir">'+serie.erreurs.map(function(e){
+      return '<li>'+echappe(e.q)+'<span class="ko">'+echappe(e.donne)+'</span><span class="ok">'+echappe(e.bonne)+'</span>'+
+             (serie.mode==="controle"?'<span class="doux">'+echappe(e.expl)+'</span>'+(e.corrHtml||''):'')+'</li>';
+    }).join("")+'</ul>';
+  }
+  h+='<div class="rangee"><button class="btn plein centre" id="encore">Recommencer</button><button class="btn centre" id="retour-acc">Sommaire</button></div>';
+  page(h,true);
+  var m=serie.mode, no=serie.notion;
+  $("encore").onclick=function(){ demarrer(m,no); };
+  $("retour-acc").onclick=accueil;
+}
+
+accueil();
+</script>
+</body>
+</html>
